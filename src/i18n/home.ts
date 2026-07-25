@@ -55,12 +55,18 @@ export type PriceKind = (typeof priceKinds)[number]
 /** Which inline icon a service card draws. Paths live in `ServiceCard.astro`. */
 export type ServiceIcon = ServiceKey
 
-export interface ServiceCardCopy {
-  title: string
-  body: string
-  icon: ServiceIcon
-  priceKind: PriceKind
-}
+/**
+ * The five service cards were authored here in Phase 2, because the `services`
+ * content collection did not exist yet. Phase 4 built it and both home pages now
+ * map over `servicesFor(locale)`, so `ServiceCardCopy` and the `cards` array are
+ * gone — a card's title, body and priceKind come from its markdown file, which
+ * is also what the service page renders. Two places to change a service was one
+ * too many.
+ *
+ * The price vocabulary went the same way, into `ui.ts` as `price.from`,
+ * `price.unit` and `price.addon`: once the price line rendered on the services
+ * index and five service pages, the home page copy module was not its owner.
+ */
 
 /** `lead` renders bold and runs into `rest` as one sentence, as in direction D. */
 export interface TrustItem {
@@ -94,14 +100,10 @@ export interface HomeCopy {
     items: readonly [TrustItem, TrustItem, TrustItem, TrustItem]
     fineprint: string
   }
+  /** The section heading and lead only. The cards come from the collection. */
   services: {
     heading: string
     lead: string
-    /** Prefix required on every per-m² price. See CLAUDE.md, pricing rules. */
-    priceFrom: string
-    priceUnit: string
-    priceAddon: string
-    cards: readonly ServiceCardCopy[]
   }
   /**
    * The before/after evidence section. SPEC section 3 item 3.
@@ -173,41 +175,6 @@ export const homeCopy = {
     services: {
       heading: 'Teenused ja hinnad',
       lead: 'Avaldame hinnad, sest te ei peaks helistama selleks, et teada saada, kas see on teile taskukohane.',
-      priceFrom: 'Alates',
-      priceUnit: '/m²',
-      priceAddon: 'Lisateenusena',
-      cards: [
-        {
-          title: 'Katusepesu',
-          body: 'Sambla, vetika ja mustuse eemaldamine. Plekk-, kivi- ja eterniitkatused. Surve valitakse materjali järgi.',
-          icon: 'roof',
-          priceKind: 'roof',
-        },
-        {
-          title: 'Fassaadipesu',
-          body: 'Krohv, puit, plaat, plekk ja klaaspinnad. Surve ja puhastusaine valitakse materjali järgi — mitte vastupidi.',
-          icon: 'facade',
-          priceKind: 'facade',
-        },
-        {
-          title: 'Päikesepaneelide pesu',
-          body: 'Tolm, õietolm ja linnumustus vähendavad toodangut. Pesu deioniseeritud veega, katusele astumata.',
-          icon: 'solar',
-          priceKind: 'quote',
-        },
-        {
-          title: 'Aknad ja klaaspinnad',
-          body: 'Kõrged aknad, klaasfassaadid ja katuseaknad, kuhu redeliga ei ulatu.',
-          icon: 'glass',
-          priceKind: 'quote',
-        },
-        {
-          title: 'Vihmaveesüsteemid',
-          body: 'Rennide ja torude puhastus lehtedest ja samblast. Tellitav koos katusepesuga sama käiguga.',
-          icon: 'gutter',
-          priceKind: 'addon',
-        },
-      ],
     },
     work: {
       heading: 'Enne ja pärast',
@@ -310,41 +277,6 @@ export const homeCopy = {
     services: {
       heading: 'Services and prices',
       lead: "We publish our prices, because you shouldn't have to call to find out whether you can afford it.",
-      priceFrom: 'From',
-      priceUnit: '/m²',
-      priceAddon: 'As an add-on',
-      cards: [
-        {
-          title: 'Roof cleaning',
-          body: 'Moss, algae and grime removed. Metal, tile and fibre-cement roofs. Pressure is chosen to suit the material.',
-          icon: 'roof',
-          priceKind: 'roof',
-        },
-        {
-          title: 'Facade cleaning',
-          body: 'Render, timber, panel, metal and glass. Pressure and detergent are chosen to suit the material, not the other way round.',
-          icon: 'facade',
-          priceKind: 'facade',
-        },
-        {
-          title: 'Solar panel cleaning',
-          body: 'Dust, pollen and bird mess cut your yield. Cleaned with deionised water, without anyone stepping on the roof.',
-          icon: 'solar',
-          priceKind: 'quote',
-        },
-        {
-          title: 'Windows and glass',
-          body: 'High windows, glass facades and rooflights that a ladder cannot reach.',
-          icon: 'glass',
-          priceKind: 'quote',
-        },
-        {
-          title: 'Gutters',
-          body: 'Gutters and downpipes cleared of leaves and moss. Best booked together with a roof clean on the same visit.',
-          icon: 'gutter',
-          priceKind: 'addon',
-        },
-      ],
     },
     work: {
       heading: 'Before and after',

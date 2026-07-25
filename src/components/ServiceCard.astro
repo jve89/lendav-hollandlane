@@ -1,19 +1,31 @@
 ---
 /**
- * ServiceCard — one card in the home page's services grid, on the paper section.
+ * ServiceCard — one card in a services grid, on the paper section.
  *
- * In Phase 2 the grid is authored inline from the array in `i18n/home.ts`; the
- * `services` content collection does not exist until Phase 3. When it does, only
- * the source of `title`, `body` and `priceKind` changes — this component does not.
+ * Since Phase 4 the data comes from the `services` content collection rather
+ * than an array in `i18n/home.ts`, on both the home pages and the services
+ * index. `title`, `body` and `priceKind` are the same three props they always
+ * were; only their source changed.
  *
- * It never receives a price. It receives a `priceKind` and resolves it against
- * `site.prices`, so no euro amount is typed into a copy file or a page. The
- * "alates" / "From" prefix is mandatory on per-m² prices — CLAUDE.md, pricing
- * rules — and the ex-VAT label sits once per section rather than once per card.
+ * It never receives a price. It receives a `priceKind` and `priceLine` resolves
+ * it against `site.prices`, so no euro amount is typed into a copy file, a
+ * markdown file or a page. The "alates" / "From" prefix is mandatory on per-m²
+ * prices — CLAUDE.md, pricing rules — and the ex-VAT label sits once per
+ * section rather than once per card.
+ *
+ * THE LINK IS THE TITLE, NOT THE CARD. The `<a>` wraps the heading text alone,
+ * so its accessible name is the service title and nothing else; the rest of the
+ * card becomes a click target through an `::after` overlay on that link. A card
+ * wrapped in an anchor would give a screen reader an accessible name made of
+ * the title, the body and the price run together.
+ *
+ * `headingLevel` exists because the same card sits at two depths: under an
+ * `<h2>` section heading on the home page, and directly under the page `<h1>`
+ * on the services index, where an `<h3>` would skip a level. CLAUDE.md requires
+ * headings in order.
  */
-import { site } from '../config/site'
-import { homeCopy, type PriceKind, type ServiceIcon } from '../i18n/home'
-import { formatPrice, useTranslations } from '../i18n/utils'
+import type { PriceKind, ServiceIcon } from '../i18n/home'
+import { priceLine } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
 
 interface Props {
@@ -22,25 +34,14 @@ interface Props {
   body: string
   icon: ServiceIcon
   priceKind: PriceKind
+  /** Where the card goes. Required: a service card with nowhere to go is a bug. */
+  href: string
+  /** 3 under a section heading, 2 when the card sits directly under the page h1. */
+  headingLevel?: 2 | 3
 }
 
-const { locale, title, body, icon, priceKind } = Astro.props
-const t = useTranslations(locale)
-const c = homeCopy[locale].services
-
-/** A from-price, or the copy that stands in its place. Never a total. */
-function priceLine(kind: PriceKind): string {
-  switch (kind) {
-    case 'roof':
-      return `${c.priceFrom} ${formatPrice(site.prices.roofFrom, locale)}${c.priceUnit}`
-    case 'facade':
-      return `${c.priceFrom} ${formatPrice(site.prices.facadeFrom, locale)}${c.priceUnit}`
-    case 'quote':
-      return t('cta.quote')
-    case 'addon':
-      return c.priceAddon
-  }
-}
+const { locale, title, body, icon, priceKind, href, headingLevel = 3 } = Astro.props
+const Heading = `h${headingLevel}` as 'h2' | 'h3'
 ---
 <li class="card service">
   <span class="service__icon" aria-hidden="true">
@@ -76,19 +77,26 @@ function priceLine(kind: PriceKind): string {
     )}
   </span>
 
-  <h3>{title}</h3>
+  <Heading><a class="service__link" href={href}>{title}</a></Heading>
   <p class="service__body">{body}</p>
-  <p class="service__price">{priceLine(priceKind)}</p>
+  <p class="service__price">{priceLine(priceKind, locale)}</p>
 </li>
 
 <style>
   /* The card sets its own track width so a trailing row of two keeps exactly the
      width of a full row of three, rather than stretching to fill. `--card-gap`
-     is inherited from the grid container, so the two never drift apart. */
+     is inherited from the grid container, so the two never drift apart.
+     `position: relative` is what the link's overlay is positioned against. */
   .service {
     display: flex;
     flex-direction: column;
     flex: 1 1 100%;
+    position: relative;
+    transition: border-color 0.15s ease;
+  }
+
+  .service:hover {
+    border-color: var(--accent-wash-line);
   }
 
   @media (min-width: 760px) {
@@ -101,6 +109,29 @@ function priceLine(kind: PriceKind): string {
     .service {
       flex: 0 1 calc((100% - 2 * var(--card-gap, var(--sp-5))) / 3);
     }
+  }
+
+  /* An h2 here is a depth signal, not a size change — the card title reads the
+     same whichever level the calling page needs it to be. */
+  .service :is(h2, h3) {
+    font-size: var(--step-h3);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--ls-h3);
+    font-weight: var(--fw-strong);
+  }
+
+  .service__link {
+    text-decoration: none;
+  }
+
+  /* Extends the link's hit area over the whole card without extending its
+     accessible name. The focus ring stays on the title text, which is where the
+     focused element actually is. */
+  .service__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
   }
 
   .service__icon {

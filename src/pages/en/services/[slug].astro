@@ -1,0 +1,87 @@
+---
+/**
+ * One service, English. Identical composition to `teenused/[slug].astro`,
+ * different locale — see the notes there, including why no `interface Props`
+ * is declared in this file.
+ */
+import { render } from 'astro:content'
+import PageLayout from '../../../layouts/PageLayout.astro'
+import Cta from '../../../components/Cta.astro'
+import { site } from '../../../config/site'
+import { serviceAlternates, serviceHref, servicePairs } from '../../../i18n/services'
+import { path, priceLine, useTranslations } from '../../../i18n/utils'
+
+export async function getStaticPaths() {
+  const pairs = await servicePairs()
+  return pairs.map((pair) => ({
+    params: { slug: pair.entries.en.data.slug },
+    props: { entry: pair.entries.en, alternates: serviceAlternates(pair) },
+  }))
+}
+
+const locale = 'en' as const
+const { entry, alternates } = Astro.props
+const { Content } = await render(entry)
+const t = useTranslations(locale)
+
+const href = serviceHref(locale, entry.data.slug)
+const canonical = new URL(href, site.domain).href
+
+/** `Service`, and no `offers` — the reasoning is in `teenused/[slug].astro`. */
+const serviceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${canonical}#service`,
+  name: entry.data.title,
+  serviceType: entry.data.title,
+  description: entry.data.summary,
+  url: canonical,
+  provider: { '@id': `${site.domain}/#business` },
+  areaServed: { '@type': 'Country', name: 'Estonia' },
+}
+---
+<PageLayout
+  title={entry.data.seoTitle}
+  description={entry.data.seoDescription}
+  locale={locale}
+  routeKey="services"
+  heading={entry.data.title}
+  lead={entry.data.summary}
+  crumbs={[{ label: t('nav.services'), href: path('services', locale) }]}
+  alternates={alternates}
+  jsonLd={[serviceJsonLd]}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <p class="service-page__price">{priceLine(entry.data.priceKind, locale)}</p>
+      {entry.data.priceNote && <p class="service-page__note">{entry.data.priceNote}</p>}
+      <p class="fineprint service-page__vat">{t('footer.vatNote')}</p>
+
+      <div class="prose service-page__body"><Content /></div>
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>
+
+<style>
+  .service-page__price {
+    font-size: var(--step-sub);
+    font-weight: var(--fw-display);
+    color: var(--accent-text);
+  }
+
+  .service-page__note {
+    margin-block-start: var(--sp-3);
+    max-width: var(--measure);
+    color: var(--ink-3);
+  }
+
+  .service-page__vat {
+    margin-block-start: var(--sp-3);
+  }
+
+  .service-page__body {
+    margin-block-start: var(--sp-9);
+  }
+</style>

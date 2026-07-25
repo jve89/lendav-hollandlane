@@ -15,15 +15,24 @@ interface Props {
   locale: Locale
   routeKey: RouteKey
   class?: string
+  /**
+   * The target URL, when the route key cannot produce it. A page with a
+   * localised slug — a service, and later a post or a location — must send the
+   * reader to the paired slug, not to the section index: from
+   * `/teenused/katusepesu` the switch goes to `/en/services/roof-cleaning`, not
+   * to `/en/services`. `BaseLayout` derives it from the same alternates it puts
+   * in hreflang, so the two can never disagree.
+   */
+  href?: string
 }
 
-const { locale, routeKey, class: className } = Astro.props
+const { locale, routeKey, class: className, href } = Astro.props
 const t = useTranslations(locale)
 const target = otherLocale(locale)
 ---
 <a
   class:list={['lang-switch', className]}
-  href={path(routeKey, target)}
+  href={href ?? path(routeKey, target)}
   lang={bcp47(target)}
   hreflang={bcp47(target)}
 >

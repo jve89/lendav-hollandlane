@@ -12,7 +12,9 @@ export const defaultLocale: Locale = 'et'
  * notFound.*, and all footer.* keys except footer.vatNote) and in Phase 3 (every
  * beforeAfter.* key) is AI-drafted and has NOT been read by a native speaker.
  * CLAUDE.md's `<!-- needs-native-review -->` marker is for content files; this is
- * TypeScript, so the marker is this comment. Phase 10 clears it.
+ * TypeScript, so the marker is this comment. Phase 10 clears it. The Phase 4
+ * additions — every price.* and services.* key, and meta.services.* — are
+ * AI-drafted on the same terms.
  */
 export const ui = {
   et: {
@@ -47,6 +49,24 @@ export const ui = {
       'Katuse-, fassaadi- ja päikesepaneelide pesu droonilt. Ilma tellingute ja redeliteta, katusele astumata. Kogu Eesti.',
     'meta.notFound.title': 'Lehte ei leitud | Lennupesu',
     'meta.notFound.description': 'Seda lehte ei ole olemas või on see kolinud.',
+    'meta.services.title': 'Teenused ja hinnad | Lennupesu',
+    'meta.services.description':
+      'Katusepesu, fassaadipesu, päikesepaneelide pesu, aknad ja vihmaveesüsteemid. Kõik drooniga, katusele astumata. Hinnad on avaldatud.',
+
+    // services index
+    'services.heading': 'Teenused',
+    'services.lead':
+      'Viis teenust, kõik drooniga. Vali teenus, et näha, mida see hõlmab ja mida mitte.',
+
+    /**
+     * The price vocabulary. It lived in `home.ts` until Phase 4, when the price
+     * line started rendering on the services index and on five service pages —
+     * at which point the home page copy module was no longer its owner. The
+     * AMOUNT is never here; `priceLine` in `utils.ts` reads it from `site.ts`.
+     */
+    'price.from': 'Alates',
+    'price.unit': '/m²',
+    'price.addon': 'Lisateenusena',
 
     // 404
     'notFound.heading': 'Lehte ei leitud',
@@ -114,6 +134,19 @@ export const ui = {
       'Roof, facade and solar panel cleaning by drone. No scaffolding, no ladders, nobody on your roof. Across Estonia.',
     'meta.notFound.title': 'Page not found | Lennupesu',
     'meta.notFound.description': 'This page does not exist, or it has moved.',
+    'meta.services.title': 'Services and prices | Lennupesu',
+    'meta.services.description':
+      'Roof cleaning, facade cleaning, solar panels, windows and guttering. All by drone, with nobody on your roof. Prices published.',
+
+    // services index
+    'services.heading': 'Services',
+    'services.lead':
+      'Five services, all done by drone. Pick one to see what it covers and what it does not.',
+
+    // the price vocabulary — see the Estonian block
+    'price.from': 'From',
+    'price.unit': '/m²',
+    'price.addon': 'As an add-on',
 
     // 404
     'notFound.heading': 'Page not found',

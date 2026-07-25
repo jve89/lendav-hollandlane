@@ -1,0 +1,100 @@
+---
+/**
+ * One service, Estonian. `en/services/[slug].astro` is the same page in the
+ * other locale and the two must stay in step.
+ *
+ * NO `interface Props` IS DECLARED HERE, deliberately. Astro infers the type of
+ * `Astro.props` from what `getStaticPaths` puts in `props`; a hand-written
+ * `Props` would override that inference and quietly loosen it.
+ *
+ * `servicePairs()` runs the locale guard and the completeness assertion, so a
+ * file sitting in the wrong locale directory, or a service missing from one
+ * language, fails the build here rather than publishing a wrong-language page.
+ */
+import { render } from 'astro:content'
+import PageLayout from '../../layouts/PageLayout.astro'
+import Cta from '../../components/Cta.astro'
+import { site } from '../../config/site'
+import { serviceAlternates, serviceHref, servicePairs } from '../../i18n/services'
+import { path, priceLine, useTranslations } from '../../i18n/utils'
+
+export async function getStaticPaths() {
+  const pairs = await servicePairs()
+  return pairs.map((pair) => ({
+    params: { slug: pair.entries.et.data.slug },
+    props: { entry: pair.entries.et, alternates: serviceAlternates(pair) },
+  }))
+}
+
+const locale = 'et' as const
+const { entry, alternates } = Astro.props
+const { Content } = await render(entry)
+const t = useTranslations(locale)
+
+const href = serviceHref(locale, entry.data.slug)
+const canonical = new URL(href, site.domain).href
+
+/**
+ * `Service`, per PLAN Phase 4. It carries no `offers`: CLAUDE.md makes the
+ * "alates" prefix mandatory on a per-m² price and schema.org has no way to
+ * carry that qualifier, so a machine-readable `price` would state a figure the
+ * page is not allowed to state bare. Revisit in Phase 5, where `hinnakiri`
+ * gives it an honest human counterpart on the same URL.
+ */
+const serviceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${canonical}#service`,
+  name: entry.data.title,
+  serviceType: entry.data.title,
+  description: entry.data.summary,
+  url: canonical,
+  provider: { '@id': `${site.domain}/#business` },
+  areaServed: { '@type': 'Country', name: 'Estonia' },
+}
+---
+<PageLayout
+  title={entry.data.seoTitle}
+  description={entry.data.seoDescription}
+  locale={locale}
+  routeKey="services"
+  heading={entry.data.title}
+  lead={entry.data.summary}
+  crumbs={[{ label: t('nav.services'), href: path('services', locale) }]}
+  alternates={alternates}
+  jsonLd={[serviceJsonLd]}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <p class="service-page__price">{priceLine(entry.data.priceKind, locale)}</p>
+      {entry.data.priceNote && <p class="service-page__note">{entry.data.priceNote}</p>}
+      <p class="fineprint service-page__vat">{t('footer.vatNote')}</p>
+
+      <div class="prose service-page__body"><Content /></div>
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>
+
+<style>
+  .service-page__price {
+    font-size: var(--step-sub);
+    font-weight: var(--fw-display);
+    color: var(--accent-text);
+  }
+
+  .service-page__note {
+    margin-block-start: var(--sp-3);
+    max-width: var(--measure);
+    color: var(--ink-3);
+  }
+
+  .service-page__vat {
+    margin-block-start: var(--sp-3);
+  }
+
+  .service-page__body {
+    margin-block-start: var(--sp-9);
+  }
+</style>

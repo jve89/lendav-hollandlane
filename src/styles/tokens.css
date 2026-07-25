@@ -63,6 +63,10 @@
   --step-h1: clamp(2.3rem, 6vw, 4.4rem);
   --step-h2: clamp(1.7rem, 3.4vw, 2.5rem);
   --step-h3: 1.1rem;
+  /* Section headings inside rendered markdown. Neither existing step fits: the
+     h2 clamp is a page-opening size and dwarfs body copy sitting under an h1,
+     and --step-h3 is a card title and disappears in a column of prose. */
+  --step-prose-h2: clamp(1.25rem, 2vw, 1.5rem);
   --step-sub: clamp(1rem, 1.6vw, 1.2rem);
   --step-lead: 1.06rem;
   --step-body: 1rem;

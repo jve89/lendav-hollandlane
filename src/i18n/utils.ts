@@ -1,5 +1,7 @@
 import { ui, defaultLocale, locales, type Locale, type UIKey } from './ui'
 import { routes, type RouteKey } from './routes'
+import { site } from '../config/site'
+import type { PriceKind } from './home'
 
 /** Derive the active locale from a URL pathname. */
 export function getLocale(pathname: string): Locale {
@@ -75,6 +77,40 @@ export function formatPrice(amount: number, locale: Locale): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount)
+}
+
+/**
+ * A from-price, or the copy that stands in its place. Never a total.
+ *
+ * Takes a `priceKind` — a REFERENCE — and resolves it against `site.prices`, so
+ * no euro amount is typed into a copy file, a markdown file or a page. The
+ * "Alates" / "From" prefix on a per-m² price is mandatory, per CLAUDE.md's
+ * pricing rules; the ex-VAT label is a separate line, shown once per section
+ * rather than once per price.
+ *
+ * It lived inside `ServiceCard` until Phase 4, when the same line started
+ * rendering on the services index and on five service pages. It sits beside
+ * `formatPrice` for the same reason that one does, and Phase 5's `PriceTable`
+ * is the next caller.
+ *
+ * This is why `utils.ts` imports `config/site.ts` — a direction that did not
+ * exist before Phase 4. `site.ts` imports nothing, so there is no cycle.
+ *
+ * The switch has no `default` on purpose: a sixth `priceKind` must fail to
+ * compile here rather than silently render an empty line.
+ */
+export function priceLine(kind: PriceKind, locale: Locale): string {
+  const t = useTranslations(locale)
+  switch (kind) {
+    case 'roof':
+      return `${t('price.from')} ${formatPrice(site.prices.roofFrom, locale)}${t('price.unit')}`
+    case 'facade':
+      return `${t('price.from')} ${formatPrice(site.prices.facadeFrom, locale)}${t('price.unit')}`
+    case 'quote':
+      return t('cta.quote')
+    case 'addon':
+      return t('price.addon')
+  }
 }
 
 /**

@@ -46,7 +46,20 @@ i18n: {
 
 - Estonian is served at the root: `/teenused/katusepesu`
 - English is prefixed: `/en/services/roof-cleaning`
-- **Slugs are localised, not shared.** An Estonian searcher must land on an Estonian URL containing an Estonian keyword. The mapping between them lives in `src/i18n/routes.ts`, which is the single source of truth for cross-language links and hreflang tags.
+- **Slugs are localised, not shared.** An Estonian searcher must land on an Estonian URL containing an Estonian keyword.
+
+**Where the mapping lives, and it is two places, not one.** This document said until Phase 4 that `src/i18n/routes.ts` was the single source of truth for cross-language links and hreflang. That is true only of *static* pages, and stating it unqualified was wrong, because a page whose slug comes from a content collection cannot have that slug in `routes.ts` as well — the slug is frontmatter, validated by the schema, and duplicating it in a route map would create two places to change one URL.
+
+So:
+
+| Page | Slug lives in | Alternates come from |
+|---|---|---|
+| Static (`/hinnakiri`, `/meist`, …) | `src/i18n/routes.ts` | `alternates(routeKey)` in `i18n/utils.ts` |
+| Content-derived (`/teenused/katusepesu`, later a location or a post) | the entry's frontmatter | `localisedAlternates()` in `i18n/collections.ts`, passed to `BaseLayout` as the `alternates` prop |
+
+`routes.ts` still owns the **section** a content-derived page sits in — the first segment of its URL, its breadcrumb parent and its navigation highlight all come from the route key. What it does not own is the last segment.
+
+Pairing across locales therefore needs a key the entries share. For `services` that key is `icon`, which is an alias of `ServiceKey` and 1:1 with the service; `servicePairs()` in `i18n/services.ts` asserts that every key resolves to exactly one entry per locale, which is what makes the pairing safe rather than merely likely. `locations` and `posts` will each need to answer the same question when they arrive.
 - UI strings live in `src/i18n/ui.ts` as a typed object keyed by locale. A missing key is a type error.
 - Page content lives in content collections, one file per locale.
 
@@ -82,8 +95,11 @@ lennupesu/
     │   └── site.ts                 # SINGLE SOURCE: phone, email, prices, company details, service area
     ├── i18n/
     │   ├── ui.ts                   # UI strings per locale
-    │   ├── routes.ts               # localised slug map + hreflang pairs
-    │   └── utils.ts                # getLocale, t(), localisedPath()
+    │   ├── routes.ts               # static route map, built routes, nav order
+    │   ├── utils.ts                # getLocale, t(), path(), formatPrice, priceLine
+    │   ├── collections.ts          # locale guard + alternates for localised collections
+    │   ├── services.ts             # services: cross-locale pairing and its assertion
+    │   └── home.ts                 # home page copy — lists, not UI strings
     ├── styles/
     │   ├── tokens.css              # colours, spacing, type scale, radii
     │   └── global.css              # element defaults, layout primitives
@@ -97,6 +113,7 @@ lennupesu/
     │   ├── Hero.astro
     │   ├── TrustBar.astro
     │   ├── ServiceCard.astro
+    │   ├── ServiceGrid.astro       # the card list + its flex layout, in one place
     │   ├── PriceTable.astro
     │   ├── CompareTable.astro      # drone vs scaffolding
     │   ├── BeforeAfter.astro       # renders a job's photo pair, or an explicit empty state
@@ -216,7 +233,7 @@ unattributed review must not be publishable.
 
 ## 6. Component contracts
 
-- **`BaseLayout`** — props `{ title, description, locale, path, ogImage? }`. Emits `<html lang>`, canonical, full `hreflang` set from `routes.ts`, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. No page writes its own `<head>`.
+- **`BaseLayout`** — props `{ title, description, locale, routeKey, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
 - **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled. Note that `import.meta.env` values are inlined as strings and never coerced.

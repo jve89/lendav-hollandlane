@@ -22,9 +22,11 @@ interface Props {
   locale: Locale
   routeKey: RouteKey
   variant?: 'overlay' | 'solid'
+  /** Passed straight through to both LangSwitch instances. Contract lives there. */
+  langHref?: string
 }
 
-const { locale, routeKey, variant = 'solid' } = Astro.props
+const { locale, routeKey, variant = 'solid', langHref } = Astro.props
 const t = useTranslations(locale)
 
 /** Only routes with a built page. See the note on `builtRoutes` in routes.ts. */
@@ -64,7 +66,7 @@ const cta = contactLive
       )}
 
       <div class="nav__actions">
-        <span class="nav__lang"><LangSwitch locale={locale} routeKey={routeKey} /></span>
+        <span class="nav__lang"><LangSwitch locale={locale} routeKey={routeKey} href={langHref} /></span>
         <a class="btn btn--accent btn--sm nav__cta" href={cta.href}>
           <span class="nav__cta-short">{cta.short}</span>
           <span class="nav__cta-full">{cta.full}</span>
@@ -98,7 +100,7 @@ const cta = contactLive
           </nav>
           <div class="nav__panel-foot">
             <a class="nav__panel-phone" href={site.phoneHref}>{site.phone}</a>
-            <LangSwitch locale={locale} routeKey={routeKey} />
+            <LangSwitch locale={locale} routeKey={routeKey} href={langHref} />
           </div>
         </div>
       </details>

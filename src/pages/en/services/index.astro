@@ -1,0 +1,38 @@
+---
+/**
+ * The services index, English. Identical composition to `teenused/index.astro`,
+ * different locale — see the notes there.
+ */
+import PageLayout from '../../../layouts/PageLayout.astro'
+import ServiceGrid from '../../../components/ServiceGrid.astro'
+import Cta from '../../../components/Cta.astro'
+import { servicesFor } from '../../../i18n/services'
+import { useTranslations } from '../../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const services = await servicesFor(locale)
+---
+<PageLayout
+  title={t('meta.services.title')}
+  description={t('meta.services.description')}
+  locale={locale}
+  routeKey="services"
+  heading={t('services.heading')}
+  lead={t('services.lead')}
+>
+  <section class="section section--paper section--tight">
+    <div class="wrap">
+      <ServiceGrid locale={locale} entries={services} headingLevel={2} />
+      <p class="fineprint services__vat">{t('footer.vatNote')}</p>
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>
+
+<style>
+  .services__vat {
+    margin-block-start: var(--sp-7);
+  }
+</style>

@@ -165,6 +165,71 @@ h3 {
   color: var(--muted);
 }
 
+/* ---------- prose ----------
+   Wraps rendered markdown — <Content /> from a content collection. It lives
+   here and not in a scoped <style> because Astro's style scoping is applied at
+   compile time to the calling component's own markup, and markdown rendered
+   through <Content /> carries no scope attribute, so a scoped rule would never
+   reach it. Service pages need this now; blog posts and location pages will.
+
+   Note the list rules are not decoration. The reset above sets
+   `list-style: none` on every ul and ol, so prose has to put the marker back
+   explicitly or a "what this does not cover" list renders as unmarked
+   run-on paragraphs. */
+.prose {
+  max-width: var(--measure);
+  color: var(--ink-2);
+  line-height: var(--lh-body);
+}
+
+.prose > * + * {
+  margin-block-start: var(--sp-4);
+}
+
+.prose h2 {
+  font-size: var(--step-prose-h2);
+  letter-spacing: var(--ls-h3);
+  font-weight: var(--fw-display);
+  color: var(--ink);
+  margin-block-start: var(--sp-9);
+}
+
+.prose h3 {
+  color: var(--ink);
+  margin-block-start: var(--sp-7);
+}
+
+.prose > :first-child {
+  margin-block-start: 0;
+}
+
+.prose ul,
+.prose ol {
+  padding-inline-start: var(--sp-6);
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-block-start: var(--sp-2);
+}
+
+.prose a {
+  color: var(--accent-text);
+  text-underline-offset: 0.2em;
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: var(--fw-strong);
+}
+
 /* ---------- buttons ---------- */
 .btn {
   display: inline-flex;

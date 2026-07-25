@@ -1,0 +1,54 @@
+---
+/**
+ * ServiceGrid — the five service cards, from the content collection.
+ *
+ * Extracted in Phase 4. The list and its flex rules previously sat inline in
+ * both home pages; the services index in two locales would have made four
+ * copies of the same markup and the same layout reasoning. The reasoning is the
+ * part worth keeping in one place — see the comment on `.services__grid`.
+ *
+ * It takes entries rather than fetching them, so a caller can decide the order
+ * and the subset. Every current caller passes `servicesFor(locale)`, which is
+ * all five in `order`.
+ */
+import type { CollectionEntry } from 'astro:content'
+import ServiceCard from './ServiceCard.astro'
+import { serviceHref } from '../i18n/services'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+  entries: readonly CollectionEntry<'services'>[]
+  /** Passed through to each card. 2 when the grid sits directly under a page h1. */
+  headingLevel?: 2 | 3
+}
+
+const { locale, entries, headingLevel = 3 } = Astro.props
+---
+<ul class="services__grid">
+  {entries.map((entry) => (
+    <ServiceCard
+      locale={locale}
+      title={entry.data.title}
+      body={entry.data.summary}
+      icon={entry.data.icon}
+      priceKind={entry.data.priceKind}
+      href={serviceHref(locale, entry.data.slug)}
+      headingLevel={headingLevel}
+    />
+  ))}
+</ul>
+
+<style>
+  /* Flex, not grid: five cards in a three-up row leave a trailing row of two,
+     and a grid would stretch those two across the full width. Each card sets
+     its own track width from `--card-gap`, so a row of two keeps exactly the
+     width of a row of three and the ragged edge stays centred. */
+  .services__grid {
+    --card-gap: var(--sp-5);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--card-gap);
+  }
+</style>

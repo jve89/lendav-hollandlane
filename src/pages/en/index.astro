@@ -8,17 +8,21 @@ import { getCollection } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Hero from '../../components/Hero.astro'
 import TrustBar from '../../components/TrustBar.astro'
-import ServiceCard from '../../components/ServiceCard.astro'
+import ServiceGrid from '../../components/ServiceGrid.astro'
 import BeforeAfter from '../../components/BeforeAfter.astro'
 import CompareTable from '../../components/CompareTable.astro'
 import Faq from '../../components/Faq.astro'
 import Cta from '../../components/Cta.astro'
 import { homeCopy } from '../../i18n/home'
+import { servicesFor } from '../../i18n/services'
 import { useTranslations } from '../../i18n/utils'
 
 const locale = 'en' as const
 const t = useTranslations(locale)
 const c = homeCopy[locale]
+
+/** The service cards, from the content collection. See the note in `index.astro`. */
+const services = await servicesFor(locale)
 
 /** The newest published job, or nothing. See the note in `index.astro`. */
 const publishedJobs = await getCollection('jobs', ({ data }) => data.published)
@@ -39,17 +43,7 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
     <div class="wrap">
       <h2>{c.services.heading}</h2>
       <p class="lead services__lead">{c.services.lead}</p>
-      <ul class="services__grid">
-        {c.services.cards.map((card) => (
-          <ServiceCard
-            locale={locale}
-            title={card.title}
-            body={card.body}
-            icon={card.icon}
-            priceKind={card.priceKind}
-          />
-        ))}
-      </ul>
+      <ServiceGrid locale={locale} entries={services} />
       <p class="fineprint services__vat">{t('footer.vatNote')}</p>
     </div>
   </section>
@@ -73,17 +67,7 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
     margin-block: var(--sp-4) var(--sp-8);
   }
 
-  /* Flex, not grid: five cards in a three-up row leave a trailing row of two,
-     and a grid strands that pair at the left edge with a hole beside it. A
-     centred wrap reads as deliberate instead. `--card-gap` is inherited by
-     ServiceCard, which sizes its own track from it. */
-  .services__grid {
-    --card-gap: var(--sp-5);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--card-gap);
-  }
+  /* The grid moved into ServiceGrid.astro in Phase 4 — see `index.astro`. */
 
   .services__vat {
     margin-block-start: var(--sp-7);
