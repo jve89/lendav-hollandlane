@@ -1,28 +1,33 @@
 # ARCHITECTURE.md — LennuPesu website
 
-**Version 1.0 · 25 July 2026**
+**Version 1.1 · 25 July 2026**
 
 ---
 
 ## 1. Stack
 
-| Layer | Choice | Pinned | Why |
+| Layer | Package | Pinned | Why |
 |---|---|---|---|
-| Framework | Astro | `^5.14.0` | Static output, zero client JS by default, first-class i18n and content collections. The right tool for a content site. |
-| Language | TypeScript | `^5.9.0` | Content collection schemas are typed; a bad frontmatter key fails the build instead of the page. |
+| Framework | `astro` | `^7.1.3` | Static output, zero client JS by default, first-class i18n and content collections. The right tool for a content site. |
+| Language | `typescript` (dev) | `^5.9.0` | Content collection schemas are typed; a bad frontmatter key fails the build instead of the page. Held at 5.x: `@astrojs/check` peers `^5 \|\| ^6`, so TypeScript 7 is not yet available to us. |
+| Type checking | `@astrojs/check` (dev) | `^0.9.4` | Powers `npm run check`. Astro-aware diagnostics for `.astro` files; a plain `tsc` cannot read them. |
 | Styling | Plain CSS with custom properties | — | No Tailwind. The design tokens already exist from the one-pager, and this removes a build dependency and a class-name vocabulary from every future session. |
-| Sitemap | `@astrojs/sitemap` | `^3.6.0` | Generates sitemap with hreflang alternates. |
+| Sitemap | `@astrojs/sitemap` | `^3.7.3` | Generates sitemap with hreflang alternates. |
 | Forms | Formspree (external) | — | No backend, no database, free tier. Endpoint lives in one env var. |
 | Hosting | Vercel or Netlify, static | — | Free, atomic deploys, instant rollback. Nothing to patch. |
 | Analytics | Plausible or Vercel Analytics | — | Decided at Phase 9. No Google Analytics — cookie banner cost outweighs the benefit at this scale. |
 
-**Node 22 LTS.** Package manager: npm.
+That table is the whole dependency list. `package.json` carries `astro` and `@astrojs/sitemap` as dependencies, `typescript` and `@astrojs/check` as devDependencies, and nothing else.
+
+**Node 22.12 or newer.** Astro 7 requires it and will refuse to run below it. Declared in three places so it cannot drift: `.nvmrc` (`22`), the `engines.node` field in `package.json`, and the Node version configured on the deploy host. Package manager: npm.
 
 No other runtime dependencies. Adding one requires explicit approval — see CLAUDE.md.
 
 ## 2. Rendering and output
 
 `output: 'static'`. Every page is prerendered HTML at build time. No SSR, no serverless functions, no runtime environment beyond a CDN.
+
+`compressHTML: true` is set explicitly. Astro 7 changed the default to `'jsx'`, which strips whitespace between elements — including the significant space in markup like `<a>x</a> <a>y</a>`. The behaviour we want is stated in the config, not inherited from a default that has already changed once.
 
 Client-side JavaScript is permitted only for: the mobile navigation toggle, and FAQ disclosure (which uses native `<details>`, so in practice this is zero JS). The language switch is a link to a real URL, not a JS toggle — this matters for indexing.
 
@@ -43,6 +48,8 @@ i18n: {
 - UI strings live in `src/i18n/ui.ts` as a typed object keyed by locale. A missing key is a type error.
 - Page content lives in content collections, one file per locale.
 
+`routing.redirectToDefaultLocale` is deliberately not set. Since Astro 6 it may only be used when `prefixDefaultLocale` is `true`, which is not our routing shape.
+
 **Russian readiness:** adding `'ru'` to the locales array, a `ru` key to `ui.ts`, a `ru` column to `routes.ts`, and `ru/` content files is the entire job. No structural change. This is the reason for localised slugs and a route map rather than shared slugs.
 
 ## 4. File tree
@@ -57,6 +64,7 @@ lennupesu/
 ├── astro.config.mjs
 ├── tsconfig.json
 ├── package.json
+├── .nvmrc                          # 22
 ├── .env.example                    # PUBLIC_FORMSPREE_ID
 ├── .gitignore
 ├── public/
@@ -66,6 +74,7 @@ lennupesu/
 │       ├── jobs/                   # real before/after photos, added after each job
 │       └── og/                     # social share images
 └── src/
+    ├── content.config.ts           # zod schemas for every collection
     ├── config/
     │   └── site.ts                 # SINGLE SOURCE: phone, email, prices, company details, service area
     ├── i18n/
@@ -93,7 +102,6 @@ lennupesu/
     │   ├── Cta.astro
     │   └── Seo.astro
     ├── content/
-    │   ├── config.ts               # zod schemas for every collection
     │   ├── services/
     │   │   ├── et/                 # katusepesu.md, fassaadipesu.md, ...
     │   │   └── en/
@@ -161,7 +169,11 @@ export const site = {
 
 Nothing else in the codebase hardcodes a phone number, an email address or a price. A grep for `+372` outside this file is a bug.
 
-### Content collections (`src/content/config.ts`)
+### Content collections (`src/content.config.ts`)
+
+Schemas live at `src/content.config.ts`, not inside `src/content/`. Every collection declares a loader — `glob({ pattern, base })` — and the schema `z` is imported from `astro/zod`, not from `astro:content`. Both are Astro 6/7 requirements, not preferences.
+
+Markdown bodies render through Astro's own Markdown pipeline. Remark or rehype plugins are not available without adding the optional `@astrojs/markdown-remark` peer, which is a new dependency and therefore needs approval before anyone reaches for it.
 
 **`services`** — one markdown file per service per locale.
 `title, slug, locale, summary, priceFrom?, priceUnit?, priceNote?, order, icon, seoTitle, seoDescription, faqRefs[]`
@@ -181,7 +193,7 @@ Referenced by locations and service pages. `published: false` until the customer
 
 - **`BaseLayout`** — props `{ title, description, locale, path, ogImage? }`. Emits `<html lang>`, canonical, full `hreflang` set from `routes.ts`, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. No page writes its own `<head>`.
 - **`BeforeAfter`** — props `{ jobId }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result.
-- **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled.
+- **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled. Note that `import.meta.env` values are inlined as strings and never coerced.
 - **`PriceTable`** — reads prices from `site.ts`. Always renders the ex-VAT note. Never takes prices as props.
 
 ## 7. SEO
@@ -190,7 +202,7 @@ Referenced by locations and service pages. `published: false` until the customer
 - `hreflang` alternates on every page, plus `x-default` pointing at Estonian.
 - Canonical URLs absolute, from `site.domain`.
 - `LocalBusiness` JSON-LD sitewide; `Service` JSON-LD on service pages; `FAQPage` JSON-LD on the FAQ page only.
-- Sitemap generated at build; `robots.txt` in `public/`.
+- Sitemap generated at build; `robots.txt` in `public/`. Link to it as `/sitemap-index.xml` — since Astro 6, endpoints with a file extension are only reachable without a trailing slash.
 - Images: Astro's `<Image>`, WebP, explicit width and height, `loading="lazy"` below the fold. Alt text is required — a missing alt fails the build check.
 
 ## 8. Verification gates
@@ -210,6 +222,8 @@ Referenced by locations and service pages. `published: false` until the customer
 ## 9. Deployment
 
 Static build to `dist/`. Connected to the GitHub repo; push to `main` deploys. Preview deploys on branches. Rollback is redeploying a previous build, which is instant.
+
+The deploy host must be set to Node 22 (22.12 or newer). Astro 7 will not build on Node 20.
 
 DNS: `lennupesu.ee` apex plus `www` redirecting to apex. `lennupesu.com` redirects to `.ee`.
 

@@ -5,6 +5,10 @@ export default defineConfig({
   site: 'https://lennupesu.ee',
   output: 'static',
   trailingSlash: 'ignore',
+  // Stated, not inherited. Astro 7 changed the default from true to 'jsx',
+  // which strips whitespace between elements — including the significant
+  // space in markup like `<a>x</a> <a>y</a>`.
+  compressHTML: true,
   i18n: {
     defaultLocale: 'et',
     // Adding 'ru' here is the whole job. See ARCHITECTURE.md section 3.
