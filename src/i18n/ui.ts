@@ -9,10 +9,10 @@ export const defaultLocale: Locale = 'et'
  * every key present.
  *
  * needs-native-review — every Estonian string added in Phase 1 (nav.home through
- * notFound.*, and all footer.* keys except footer.vatNote) is AI-drafted and has
- * NOT been read by a native speaker. CLAUDE.md's `<!-- needs-native-review -->`
- * marker is for content files; this is TypeScript, so the marker is this comment.
- * Phase 10 clears it.
+ * notFound.*, and all footer.* keys except footer.vatNote) and in Phase 3 (every
+ * beforeAfter.* key) is AI-drafted and has NOT been read by a native speaker.
+ * CLAUDE.md's `<!-- needs-native-review -->` marker is for content files; this is
+ * TypeScript, so the marker is this comment. Phase 10 clears it.
  */
 export const ui = {
   et: {
@@ -68,6 +68,19 @@ export const ui = {
     'footer.claimNoRoofWalk': 'Katusele ei astuta.',
     'footer.claimInsured': 'Töö on kindlustatud.',
     'footer.claimPermitted': 'Meil on ametlik luba lendamiseks elamute kohal.',
+
+    // before/after evidence. The empty state is the DEFAULT state at launch and
+    // states a policy about ourselves, which is verifiable — it never apologises
+    // for a missing photo and never promises one by a date.
+    'beforeAfter.emptyHeading': 'Fotod lisame pärast esimesi töid',
+    'beforeAfter.emptyBody':
+      'Iga foto sellel lehel on meie enda töö. Ostetud ega võõraid pilte me ei kasuta, seega enne ja pärast pilte siin veel ei ole.',
+    'beforeAfter.before': 'Enne',
+    'beforeAfter.after': 'Pärast',
+    'beforeAfter.altBefore': 'Enne pesu, {town}',
+    'beforeAfter.altAfter': 'Pärast pesu, {town}',
+    /** Unit symbol, kept here so a third locale can change it. */
+    'beforeAfter.areaUnit': 'm²',
   },
   en: {
     // navigation
@@ -122,6 +135,16 @@ export const ui = {
     'footer.claimNoRoofWalk': 'Nobody walks on your roof.',
     'footer.claimInsured': 'The work is insured.',
     'footer.claimPermitted': 'We hold an official authorisation to fly over houses.',
+
+    // before/after evidence
+    'beforeAfter.emptyHeading': 'Photos go up after the first jobs',
+    'beforeAfter.emptyBody':
+      'Every photo on this site is our own work. We do not use stock or borrowed images, so there are no before and after photos here yet.',
+    'beforeAfter.before': 'Before',
+    'beforeAfter.after': 'After',
+    'beforeAfter.altBefore': 'Before cleaning, {town}',
+    'beforeAfter.altAfter': 'After cleaning, {town}',
+    'beforeAfter.areaUnit': 'm²',
   },
 } as const
 

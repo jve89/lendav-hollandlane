@@ -1,0 +1,211 @@
+---
+/**
+ * BeforeAfter — one job's photo pair, or an explicit empty state.
+ * ARCHITECTURE section 6.
+ *
+ * THE EMPTY STATE IS THE DEFAULT PATH, NOT A DEGRADED ONE, exactly as with
+ * `Hero`. There are no job files and there will be none until the first jobs are
+ * done, so the state this component ships in is the state with no photograph. It
+ * has to look finished, because it is what the site launches with and may run on
+ * for months.
+ *
+ * TODO(photos): real before/after pairs land in `src/content/jobs/` after the
+ * first jobs, expected September 2026 — PLAN Phase 10. This marker lives in the
+ * repo and is never rendered onto a page: the visitor sees a finished panel, and
+ * a future session does not mistake that panel for unfinished work. See
+ * CLAUDE.md on what a `TODO:` marker is and is not.
+ *
+ * WHAT THIS MUST NEVER RENDER: a stock photograph, a sample pair, a greyed-out
+ * mock, a blurred gradient standing in for a photograph, or the words "coming
+ * soon". CLAUDE.md forbids all of them, and a placeholder that could be mistaken
+ * for a real result is the specific failure this component exists to prevent.
+ *
+ * A job is shown only when it exists AND `published` is true. `published` is
+ * false by default in the schema, so a job whose customer has not agreed to the
+ * photos falls back to the empty state rather than leaking.
+ *
+ * The empty state deliberately uses no heading element. This component does not
+ * know where on the page it sits, and inventing an `<h2>` or `<h3>` would break
+ * the caller's heading order — which `npm run links` checks.
+ */
+import { getEntry } from 'astro:content'
+import { Image } from 'astro:assets'
+import { bcp47, useTranslations } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  /** A `jobs` entry id, i.e. the job's filename without its extension. */
+  jobId: string
+  /**
+   * Added to ARCHITECTURE's `{ jobId }` contract: a bilingual empty state and
+   * bilingual alt text cannot come from nowhere. Corrected in the doc.
+   */
+  locale: Locale
+}
+
+const { jobId, locale } = Astro.props
+const t = useTranslations(locale)
+
+const entry = await getEntry('jobs', jobId)
+const job = entry?.data.published ? entry.data : undefined
+
+/** Town interpolation, the same `{token}` convention `Faq.astro` uses for `{season}`. */
+const alt = (key: 'beforeAfter.altBefore' | 'beforeAfter.altAfter', town: string) =>
+  t(key).replace('{town}', town)
+
+/**
+ * The caption is the evidence: where, how large, when. Every value comes from
+ * the job file, and the number and the date are formatted by `Intl` rather than
+ * written out, so neither is typed into this repository in any language.
+ *
+ * The localised SERVICE NAME belongs here too, and is deliberately absent: it
+ * lives in the `services` collection as `title`, which needs a cross-collection
+ * lookup and a service page to read it on. Phase 4 adds it. No job exists to
+ * render, so nothing is lost by waiting.
+ */
+const caption = job
+  ? [
+      job.town,
+      `${new Intl.NumberFormat(bcp47(locale)).format(job.areaM2)} ${t('beforeAfter.areaUnit')}`,
+      new Intl.DateTimeFormat(bcp47(locale), { month: 'long', year: 'numeric' }).format(job.date),
+    ].join(' · ')
+  : ''
+---
+{
+  job ? (
+    <figure class="ba">
+      <div class="ba__pair">
+        <div class="ba__side">
+          {/* aria-hidden: the alt text already says "before", so a screen reader
+              would otherwise hear it twice. */}
+          <span class="ba__tag" aria-hidden="true">{t('beforeAfter.before')}</span>
+          <Image src={job.beforeImage} alt={alt('beforeAfter.altBefore', job.town)} loading="lazy" />
+        </div>
+        <div class="ba__side">
+          <span class="ba__tag" aria-hidden="true">{t('beforeAfter.after')}</span>
+          <Image src={job.afterImage} alt={alt('beforeAfter.altAfter', job.town)} loading="lazy" />
+        </div>
+      </div>
+      <figcaption class="ba__caption">{caption}</figcaption>
+    </figure>
+  ) : (
+    <div class="ba ba--empty">
+      <span class="ba__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" focusable="false">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <circle cx="12" cy="12" r="3" />
+          <path d="M8 5l1.2-2h5.6L16 5" />
+        </svg>
+      </span>
+      <p class="ba__emptyHeading">{t('beforeAfter.emptyHeading')}</p>
+      <p class="ba__emptyBody">{t('beforeAfter.emptyBody')}</p>
+    </div>
+  )
+}
+
+<style>
+  /* Both states are built from `--line`, `--ink` and `--muted`, all of which
+     `.section--paper` re-maps in global.css. That is what lets one component sit
+     on the near-black base and on the paper section without a light variant. */
+  .ba {
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+  }
+
+  /* ---------- populated ---------- */
+  .ba__pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--line);
+    border-radius: calc(var(--r-card) - 1px);
+    overflow: hidden;
+  }
+
+  @media (min-width: 760px) {
+    .ba__pair {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .ba__side {
+    position: relative;
+  }
+
+  /* The images carry their own intrinsic width and height from `image()`, so the
+     ratio is reserved before they load and nothing shifts. */
+  .ba__side :global(img) {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .ba__tag {
+    position: absolute;
+    inset-block-start: var(--sp-3);
+    inset-inline-start: var(--sp-3);
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    border-radius: var(--r-pill);
+    padding: var(--sp-1) var(--sp-3);
+    /* Not --ink: .section--paper re-maps that to near-black, which would put
+       dark text on this dark glass pill. The glass is dark on every surface. */
+    color: var(--ink-on-glass);
+    font-size: var(--step-micro);
+    font-weight: var(--fw-strong);
+    letter-spacing: var(--ls-caps);
+    text-transform: uppercase;
+  }
+
+  .ba__caption {
+    padding: var(--sp-4) var(--sp-5);
+    color: var(--muted);
+    font-size: var(--step-sm);
+  }
+
+  /* ---------- empty: the launch state ---------- */
+  .ba--empty {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--sp-3);
+    /* Dashed, so the panel reads as a deliberate blank rather than a frame
+       waiting for an image to arrive inside it. */
+    border-style: dashed;
+    padding: var(--sp-8) var(--sp-6);
+    /* Deliberately NARROWER than the image pair it replaces. At full section
+       width the panel reads as a reserved slot with nothing in it, which is
+       precisely the impression CLAUDE.md rules out. Sized to its own sentence
+       instead, it reads as a note the operator wrote. */
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+
+  .ba__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--r-chip);
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .ba__mark svg {
+    inline-size: 20px;
+    block-size: 20px;
+  }
+
+  .ba__emptyHeading {
+    color: var(--ink);
+    font-weight: var(--fw-strong);
+    font-size: var(--step-h3);
+    letter-spacing: var(--ls-h3);
+  }
+
+  .ba__emptyBody {
+    color: var(--muted);
+    font-size: var(--step-sm);
+    max-width: var(--measure-narrow);
+  }
+</style>

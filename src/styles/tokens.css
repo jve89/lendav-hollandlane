@@ -48,6 +48,11 @@
   /* ---- glass: the floating pill navigation ---- */
   --glass: rgba(12, 16, 23, 0.55);
   --glass-line: rgba(255, 255, 255, 0.09);
+  /* Text on a --glass fill. Always light, because the glass is always dark —
+     even inside .section--paper, which re-maps --ink to near-black ink and would
+     otherwise put dark text on a dark pill. Added in Phase 3 for BeforeAfter's
+     Enne/Pärast tags, which sit on glass over a photograph. */
+  --ink-on-glass: #f2f5f8;
   --pill-fill: rgba(255, 255, 255, 0.07);
   --pill-line: rgba(255, 255, 255, 0.13);
   --ghost-line: rgba(255, 255, 255, 0.28);   /* outlined button on dark */

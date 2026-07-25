@@ -74,7 +74,6 @@ lennupesu/
 │   ├── robots.txt
 │   ├── video/                      # hero loop, if self-hosted — see section 6
 │   └── images/
-│       ├── jobs/                   # real before/after photos, added after each job
 │       ├── hero/                   # hero poster still, from our own footage
 │       └── og/                     # social share images
 └── src/
@@ -113,6 +112,7 @@ lennupesu/
     │   │   ├── et/                 # tallinn.md, harjumaa.md
     │   │   └── en/
     │   ├── jobs/                   # completed jobs: photos, area, duration, town
+    │   │   └── photos/             # real before/after photos, in src/ so <Image> can process them
     │   └── posts/
     │       ├── et/                 # empty at launch
     │       └── en/
@@ -179,16 +179,37 @@ Schemas live at `src/content.config.ts`, not inside `src/content/`. Every collec
 
 Markdown bodies render through Astro's own Markdown pipeline. Remark or rehype plugins are not available without adding the optional `@astrojs/markdown-remark` peer, which is a new dependency and therefore needs approval before anyone reaches for it.
 
+Every schema is a `z.strictObject`, not a `z.object`. `z.object` strips an unknown
+key silently, so a misspelled optional field would validate and the page would
+render wrong; `strictObject` raises `unrecognized_keys` and fails the build. This
+is what "a bad frontmatter key must fail the build" requires. Astro 7 ships Zod 4,
+where `strictObject` is the current spelling of this.
+
 **`services`** — one markdown file per service per locale.
-`title, slug, locale, summary, priceFrom?, priceUnit?, priceNote?, order, icon, seoTitle, seoDescription, faqRefs[]`
+`title, slug, locale, summary, priceKind, priceNote?, order, icon, seoTitle, seoDescription, faqRefs[]`
+
+`priceKind` is a REFERENCE — one of `roof | facade | quote | addon` — that
+`ServiceCard` resolves against `site.prices`. It is deliberately not a `priceFrom`
+amount: a euro figure typed into a markdown file breaks the single-source rule in
+CLAUDE.md, which overrides this document. `priceNote` is prose and never a figure.
+`faqRefs` is a plain string array, not a `reference()`, because there is no `faq`
+collection — the FAQ id space arrives with Phase 5.
 
 **`locations`** — one per region we can honestly claim.
 `name, slug, locale, intro, isPrimary, jobRefs[], seoTitle, seoDescription`
 Body must contain region-specific substance. A location file with no `jobRefs` and under 300 words fails review — see CLAUDE.md.
 
 **`jobs`** — a completed job. This is the evidence layer and it is locale-independent.
-`id, date, town, service, areaM2, durationHours, roofType, beforeImage, afterImage, videoUrl?, testimonial?, testimonialAuthor?, published`
+`date, town, service, areaM2, durationHours, roofType, beforeImage, afterImage, videoUrl?, testimonial?, testimonialAuthor?, published`
 Referenced by locations and service pages. `published: false` until the customer has agreed.
+
+There is no `id` field: the glob loader derives the entry id from the filename, so
+declaring one in frontmatter would collide with it. `beforeImage` and `afterImage`
+use the `image()` schema helper and resolve relative to the entry
+(`./photos/x.jpg`), which is what gives them WebP, intrinsic width and height, and
+a build error when a photo is missing — none of which a `public/` path can do.
+`testimonial` and `testimonialAuthor` are enforced as both-or-neither: an
+unattributed review must not be publishable.
 
 **`posts`** — blog. Empty at launch.
 `title, slug, locale, date, excerpt, heroImage?, tags[], draft`
@@ -196,7 +217,7 @@ Referenced by locations and service pages. `published: false` until the customer
 ## 6. Component contracts
 
 - **`BaseLayout`** — props `{ title, description, locale, path, ogImage? }`. Emits `<html lang>`, canonical, full `hreflang` set from `routes.ts`, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. No page writes its own `<head>`.
-- **`BeforeAfter`** — props `{ jobId }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result.
+- **`BeforeAfter`** — props `{ jobId, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
 - **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled. Note that `import.meta.env` values are inlined as strings and never coerced.
 - **`PriceTable`** — reads prices from `site.ts`. Always renders the ex-VAT note. Never takes prices as props.

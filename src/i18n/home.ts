@@ -32,11 +32,28 @@ import type { Locale } from './ui'
  * drives the interval rather than asserting a number.
  */
 
+/**
+ * The five services, as keys. The SINGLE source of the set: `content.config.ts`
+ * builds `z.enum(serviceKeys)` from this tuple for both the `services.icon` and
+ * the `jobs.service` field, so a service cannot exist in a content file and be
+ * unknown to the card that draws it. Order here is not meaningful — the services
+ * collection carries `order` for that.
+ *
+ * A service key and its icon are 1:1 by design, which is why `ServiceIcon` is an
+ * alias rather than a second list to keep in step.
+ */
+export const serviceKeys = ['roof', 'facade', 'solar', 'glass', 'gutter'] as const
+
+/** Which price a service shows. A reference, never an amount. */
+export const priceKinds = ['roof', 'facade', 'quote', 'addon'] as const
+
+export type ServiceKey = (typeof serviceKeys)[number]
+
 /** Which price a service card shows. A reference, never an amount. */
-export type PriceKind = 'roof' | 'facade' | 'quote' | 'addon'
+export type PriceKind = (typeof priceKinds)[number]
 
 /** Which inline icon a service card draws. Paths live in `ServiceCard.astro`. */
-export type ServiceIcon = 'roof' | 'facade' | 'solar' | 'glass' | 'gutter'
+export type ServiceIcon = ServiceKey
 
 export interface ServiceCardCopy {
   title: string
