@@ -85,7 +85,14 @@ This is the whole of section 3 items 1 and 2 in a single screen. The video answe
 
 **Hosting — self-hosted in `public/video/`.** Not a video CDN. At this site's traffic the file is free to serve on the hosting plan we already have, with roughly two orders of magnitude of headroom. More importantly, what a video CDN sells — adaptive bitrate, a media library, a player — is of no use to a twelve-second silent loop, and its player is client JavaScript delivering HLS, which works against both the Lighthouse target above and the zero-JS rule. Revisit only if a real video library appears, meaning several job clips at Phase 10.
 
-**Fallback chain — three states, all built from the start.** Video, then poster still, then a designed image-free hero. The third state is the one the site launches with and may run on for months, so it is built first and must look finished. It is a type-led hero that later *gains* a video, not a video hero with a hole in it. Detail in the Hero contract, ARCHITECTURE section 6.
+**Two states, and the NO-FOOTAGE state is what ships.** `reference/direction-d.html` is the approved design direction and demonstrates both states on the same page.
+
+- **NO-FOOTAGE — what launches, and what the site lives on until the footage exists.** A black, type-led hero: the headline, the sub, and the price and credentials block, carried by type and the tokens alone. **No media band, no poster, no placeholder.** Not a reserved empty band, not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon" — the section simply has no media in it. This is the default path. It is built first and it must look finished, because it is what the site launches with and may run on for months.
+- **FOOTAGE — what the same hero becomes.** It *gains* a media band above the price and credentials block. Within this state the media degrades video → poster still, under the two guards below.
+
+The distinction matters for how it is built: this is a type-led hero that later gains a video, not a video hero with a hole in it. The no-footage state is not the bottom of a fallback chain — it is a finished design in its own right, and nothing about it is a placeholder awaiting an asset.
+
+Detail in the Hero contract, ARCHITECTURE section 6.
 
 **Mobile and `prefers-reduced-motion` — no video is fetched in either case.** A phone and a reduced-motion visitor both get the poster, or the image-free hero when there is no poster. Two independent guards enforce this, and both are built from the start rather than one held in reserve: a `media` gate on `<source>` that prevents the fetch, and a CSS rule that hides the video under `prefers-reduced-motion: reduce`. The guards cover different failure modes and neither is a substitute for the other.
 

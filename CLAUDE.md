@@ -61,6 +61,20 @@ The distinction is between a gap the visitor must see and a gap the visitor must
 - Any specific percentage, speed multiple or saving that is not backed by a measurement in this repo.
 - Guarantees about outcomes, longevity or damage.
 
+**Customer language, not regulator language.** Customer-facing pages use the customer's language, not the regulator's.
+
+`SAIL II`, `SORA` and `määrus (EÜ) 785/2004` must not appear in hero copy, in badges or pills, or in body text aimed at homeowners. A homeowner does not know what SAIL II is and will not look it up. The term buys no trust and spends attention that the price and the benefit need.
+
+State the benefit instead:
+
+- nobody walks on your roof
+- the work is insured
+- we are permitted to fly over houses
+
+The exact regulatory references belong on the **credentials page** and in the **KÜ and commercial small print**, where the reader has come looking for documents and the precision is an advantage rather than noise. This rule governs *where* those references appear, not whether they are stated accurately — where they do appear they remain exact, per SPEC section 5.
+
+Note that `reference/direction-d.html` predates this rule and still carries `Transpordiameti luba · SAIL II` in a hero pill and the full regulation number in its proof strip. Port its layout, not those strings.
+
 ## Pricing rules
 
 - Every price displayed is **excluding VAT** and must be labelled as such. Estonian VAT is 24%.

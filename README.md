@@ -12,8 +12,15 @@ Consumer brand of AIF Drone Services OÜ.
 | `CLAUDE.md` | Working rules. Read every session. Non-negotiable. |
 | `PLAN.md` | Numbered phases, each with a verification command |
 
-`reference/one-pager-v1.html` is the original single-file site. It is the design source
-and the content source for Phases 1 and 3. It is not part of the build.
+`reference/direction-d.html` is the **approved design direction** and the design source
+from Phase 1 onwards: near-black base, cyan accent, floating glass pill navigation, large
+tight centred headline type, and a light section for services. It also demonstrates the
+two hero states — see SPEC section 9. It is not part of the build.
+
+`reference/one-pager-v1.html` is the original single-file site. It is **superseded as the
+design source** by `reference/direction-d.html` and is kept for reference only. It remains
+a *content* source for Phase 3, where its Estonian copy is still the draft to work from.
+Do not take colour, type or layout decisions from it.
 
 ## Commands
 

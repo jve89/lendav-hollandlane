@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lennupesu — direction D</title>
+<style>
+  :root{
+    --bg:#07090D; --bg-2:#0C1017; --panel:#11161F;
+    --ink:#F2F5F8; --muted:#8A95A5; --line:#1B222D;
+    --accent:#22D3EE; --accent-ink:#04222B;
+    --paper:#FFFFFF; --paper-ink:#0B1220; --paper-muted:#5A6675; --paper-line:#E4E8EE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.6}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* ---- state switcher (not part of the design) ---- */
+  .switch{position:sticky;top:0;z-index:200;background:#000;border-bottom:1px solid #1B222D;
+    padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .switch strong{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#5A6675}
+  .switch button{background:#11161F;color:#8A95A5;border:1px solid #232B38;padding:8px 15px;
+    border-radius:999px;font:inherit;font-size:.84rem;font-weight:600;cursor:pointer}
+  .switch button.on{background:#fff;color:#000;border-color:#fff}
+  .switch .hint{margin-left:auto;font-size:.76rem;color:#4A5464}
+
+  /* ---- nav: floating glass pill, from AirHub ---- */
+  .site{position:relative}
+  header{position:absolute;top:0;left:0;right:0;z-index:60;padding:20px 0}
+  .nav{display:flex;align-items:center;gap:8px;background:rgba(12,16,23,.55);
+    backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.09);
+    border-radius:999px;padding:9px 9px 9px 22px}
+  .logo{font-weight:800;letter-spacing:-.03em;font-size:1.12rem;color:#fff}
+  .navlinks{display:none;gap:24px;margin-left:26px;font-size:.88rem;color:#B7C1CE;font-weight:500}
+  .navcta{margin-left:auto;background:var(--accent);color:var(--accent-ink);
+    padding:10px 20px;border-radius:999px;font-weight:700;font-size:.87rem;text-decoration:none}
+
+  /* ---- hero ---- */
+  .hero{position:relative;min-height:min(88vh,760px);display:flex;align-items:center;
+    justify-content:center;text-align:center;overflow:hidden;padding:130px 0 70px}
+  .media{position:absolute;inset:0;z-index:0}
+  .media .stand{position:absolute;inset:0;
+    background:
+      radial-gradient(38% 26% at 68% 32%, rgba(196,214,222,.42) 0%, transparent 70%),
+      radial-gradient(120% 90% at 18% 12%, #3A5570 0%, transparent 58%),
+      radial-gradient(100% 80% at 85% 82%, #2A6B72 0%, transparent 58%),
+      linear-gradient(155deg,#12384C 0%,#1B4A5C 38%,#3C6068 66%,#6E7F6A 100%);
+    animation:drift 24s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:scale(1.06) translate3d(0,0,0)}to{transform:scale(1.14) translate3d(-2%,-2%,0)}}
+  .media:after{content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom,rgba(7,9,13,.72) 0%,rgba(7,9,13,.38) 45%,rgba(7,9,13,.92) 100%)}
+  .vidtag{position:absolute;top:96px;right:26px;z-index:5;background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.16);color:#B7C1CE;font-size:.72rem;padding:7px 13px;border-radius:4px}
+  .heroInner{position:relative;z-index:10;max-width:920px;margin:0 auto;padding:0 24px}
+  .pills{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+  .pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);
+    color:#C7D2E0;font-size:.78rem;font-weight:600;padding:7px 14px;border-radius:999px}
+  h1{font-size:clamp(2.3rem,6vw,4.4rem);line-height:1.03;letter-spacing:-.035em;font-weight:800;
+    text-wrap:balance}
+  .sub{margin:22px auto 0;color:#9DAABA;font-size:clamp(1rem,1.6vw,1.2rem);max-width:56ch;line-height:1.55}
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:36px}
+  .b1{background:var(--accent);color:var(--accent-ink);padding:16px 30px;border-radius:999px;
+    font-weight:750;text-decoration:none;font-size:1rem}
+  .b2{border:1px solid rgba(255,255,255,.28);color:#fff;padding:16px 30px;border-radius:999px;
+    font-weight:700;text-decoration:none;font-size:1rem}
+  .pricebar{margin-top:30px;color:#7F8B9B;font-size:.93rem}
+  .pricebar b{color:#fff;font-size:1.35rem;letter-spacing:-.01em}
+
+  /* ---- proof strip: replaces the logo wall ---- */
+  .proof{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2)}
+  .proof .wrap{padding:26px 24px}
+  .proofLabel{text-align:center;font-size:.71rem;letter-spacing:.16em;text-transform:uppercase;
+    color:#5A6675;margin-bottom:20px}
+  .proofGrid{display:grid;grid-template-columns:1fr;gap:16px}
+  .pf{display:flex;gap:11px;align-items:flex-start;font-size:.86rem;color:#B7C1CE;line-height:1.45}
+  .pf svg{width:17px;height:17px;color:var(--accent);flex:none;margin-top:2px}
+
+  /* ---- services on light ---- */
+  .light{background:var(--paper);color:var(--paper-ink)}
+  .light .wrap{padding:82px 24px}
+  h2{font-size:clamp(1.7rem,3.4vw,2.5rem);letter-spacing:-.025em;font-weight:800;margin-bottom:12px}
+  .lead{color:var(--paper-muted);font-size:1.06rem;max-width:60ch;margin-bottom:40px}
+  .cards{display:grid;grid-template-columns:1fr;gap:18px}
+  .card{border:1px solid var(--paper-line);border-radius:16px;padding:28px;background:#fff}
+  .card h3{font-size:1.1rem;margin-bottom:8px;letter-spacing:-.01em}
+  .card p{color:var(--paper-muted);font-size:.94rem;line-height:1.62}
+  .card .p{margin-top:18px;padding-top:15px;border-top:1px dashed var(--paper-line);
+    font-weight:800;color:#0E7490}
+  .ico{width:40px;height:40px;border-radius:11px;background:#ECFEFF;border:1px solid #CFFAFE;margin-bottom:16px}
+
+  .end{background:var(--bg-2);text-align:center}
+  .end .wrap{padding:76px 24px}
+  .end h2{color:#fff}
+  .end p{color:var(--muted);max-width:52ch;margin:0 auto 30px}
+
+  @media(min-width:760px){
+    .proofGrid{grid-template-columns:repeat(2,1fr)}
+    .cards{grid-template-columns:repeat(3,1fr)}
+  }
+  @media(min-width:1000px){
+    .navlinks{display:flex}
+    .proofGrid{grid-template-columns:repeat(4,1fr)}
+  }
+
+  /* state handling */
+  body[data-state="launch"] .media .stand{display:none}
+  body[data-state="launch"] .media{background:
+      radial-gradient(90% 70% at 50% 0%, #14202E 0%, transparent 60%), var(--bg)}
+  body[data-state="launch"] .media:after{background:none}
+  body[data-state="launch"] .vidtag{display:none}
+  body[data-state="launch"] .hero{min-height:auto;padding:150px 0 80px}
+  body[data-state="sept"] .launchOnly{display:none}
+</style>
+</head>
+<body data-state="launch">
+
+<div class="switch">
+  <strong>State</strong>
+  <button class="on" onclick="setState('launch',this)">Launch — no footage yet</button>
+  <button onclick="setState('sept',this)">September — footage in</button>
+  <span class="hint">Same page, two states. The left one is what ships and what you live with for two months.</span>
+</div>
+
+<div class="site">
+<header><div class="wrap"><div class="nav">
+  <span class="logo">Lennupesu</span>
+  <nav class="navlinks"><span>Teenused</span><span>Hinnakiri</span><span>Meist</span><span>Kontakt</span></nav>
+  <a class="navcta" href="#">Küsi pakkumist</a>
+</div></div></header>
+
+<section class="hero">
+  <div class="media"><div class="stand"></div></div>
+  <span class="vidtag">Teie enda droonivideo — 10 s, helita, kordub</span>
+  <div class="heroInner">
+    <div class="pills">
+      <span class="pill">Transpordiameti luba · SAIL II</span>
+      <span class="pill">Kindlustatud</span>
+      <span class="pill">Kogu Eesti</span>
+    </div>
+    <h1>Teie katus saab puhtaks. Keegi ei astu sellele.</h1>
+    <p class="sub">Katuse-, fassaadi- ja päikesepaneelide pesu droonilt. Ilma tellingute ja redeliteta. Enamik eramaju saab valmis ühe päevaga.</p>
+    <div class="btns">
+      <a class="b1" href="#">Küsi tasuta pakkumist</a>
+      <a class="b2" href="#">+372 0000 0000</a>
+    </div>
+    <p class="pricebar">Hind alates <b>3 €/m²</b> · pakkumine 24 tunni jooksul · hinnale lisandub käibemaks</p>
+  </div>
+</section>
+</div>
+
+<section class="proof">
+  <div class="wrap">
+    <p class="proofLabel">Miks meid usaldada</p>
+    <div class="proofGrid">
+      <div class="pf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Transpordiameti käitamisluba erikategooria lendudeks (SORA, SAIL II)</span></div>
+      <div class="pf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg><span>Vastutuskindlustus vastavalt määrusele (EÜ) 785/2004</span></div>
+      <div class="pf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><span>Katusele ei astuta — katend ja kinnitused jäävad puutumata</span></div>
+      <div class="pf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/></svg><span>Avaldatud hinnad — te ei pea helistama, et neid teada saada</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="light">
+  <div class="wrap">
+    <h2>Teenused ja hinnad</h2>
+    <p class="lead">Avaldame hinnad, sest te ei peaks helistama selleks, et teada saada, kas see on teile taskukohane.</p>
+    <div class="cards">
+      <div class="card"><div class="ico"></div><h3>Katusepesu</h3>
+        <p>Sambla, vetika ja mustuse eemaldamine. Plekk-, kivi- ja eterniitkatused. Surve valitakse materjali järgi.</p>
+        <div class="p">Alates 3 €/m²</div></div>
+      <div class="card"><div class="ico"></div><h3>Fassaadipesu</h3>
+        <p>Krohv, puit, plaat, plekk ja klaaspinnad. Sobib ka kohtadesse, kuhu redeliga ei ulatu.</p>
+        <div class="p">Alates 3 €/m²</div></div>
+      <div class="card"><div class="ico"></div><h3>Päikesepaneelide pesu</h3>
+        <p>Tolm ja õietolm vähendavad toodangut. Pesu deioniseeritud veega, katusele astumata.</p>
+        <div class="p">Küsi pakkumist</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <h2>Küsi tasuta pakkumist</h2>
+    <p>Saatke objekti aadress ja foto. Vastame tööpäeviti 24 tunni jooksul kirjaliku hinnaga.</p>
+    <a class="b1" href="#">Küsi pakkumist</a>
+  </div>
+</section>
+
+<script>
+function setState(s, btn){
+  document.body.dataset.state = s;
+  document.querySelectorAll('.switch button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

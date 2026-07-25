@@ -30,7 +30,24 @@ The thinnest possible end-to-end slice: one route in two locales, rendered from 
 
 ## Phase 1 — Design system and shell
 
-Port the design tokens and layout from the existing one-page site. No page content yet.
+**Design source: `reference/direction-d.html`** — the approved direction. *Not*
+`reference/one-pager-v1.html`, which is superseded for design and kept only for its
+Estonian copy in Phase 3.
+
+Port direction D's tokens and layout. No page content yet.
+
+Direction D's decisions, which Phase 1 must carry across:
+
+- **Near-black base.** `#07090D` page, `#0C1017` raised, `#11161F` panel, `#1B222D` hairline.
+- **Cyan accent.** `#22D3EE` on dark ink `#04222B`; `#0E7490` for accent text on light.
+- **Floating glass pill navigation.** Absolutely positioned over the hero, translucent
+  fill, backdrop blur, full-round radius, hairline border.
+- **Large, tight, centred headline type.** Fluid clamp, line-height ~1.03, letter-spacing
+  ~-0.035em, weight 800, balanced wrapping.
+- **A light section for services.** White paper background with its own ink, muted and
+  line tokens — the one deliberate inversion in the page.
+
+Then:
 
 - `tokens.css` (colour, type scale, spacing, radii, shadow) and `global.css`
 - `Header.astro` with nav, language switch, phone CTA, mobile toggle
@@ -38,7 +55,12 @@ Port the design tokens and layout from the existing one-page site. No page conte
 - `PageLayout.astro`
 - `404.astro` in both locales
 
-**Verify:** gate passes · header and footer render on `/` and `/en/` · mobile nav works at 390px · no hardcoded contact details.
+**Port the layout, not the copy.** Direction D predates the customer-language rule in
+CLAUDE.md and still shows `Transpordiameti luba · SAIL II` in a hero pill and the full
+regulation number in its proof strip. Those strings do not come across. Its phone number
+and prices are placeholders and come from `site.ts`.
+
+**Verify:** gate passes · header and footer render on `/` and `/en/` · mobile nav works at 390px · no hardcoded contact details · no `SAIL II`, `SORA` or `785/2004` in any customer-facing string.
 
 **Commit:** `feat: design tokens, header, footer, page layout`
 
