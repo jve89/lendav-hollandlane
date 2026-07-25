@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { site } from '../config/site'
+import { useTranslations, path } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+---
+<BaseLayout
+  title={t('meta.home.title')}
+  description={t('meta.home.description')}
+  locale={locale}
+  routeKey="home"
+>
+  <main>
+    <h1>{site.brand}</h1>
+    <p>Katuse- ja fassaadipesu droonilt. Kogu Eesti.</p>
+    <p><a href={site.phoneHref}>{site.phone}</a></p>
+    <p><a href={path('home', 'en')}>{t('lang.switch')}</a></p>
+    <!-- Phase 0 walking skeleton. Real content arrives in Phase 3. -->
+  </main>
+</BaseLayout>

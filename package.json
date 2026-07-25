@@ -1,0 +1,22 @@
+{
+  "name": "lennupesu",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "links": "node scripts/check-html.mjs",
+    "verify": "npm run check && npm run build && npm run links"
+  },
+  "dependencies": {
+    "astro": "^5.14.0",
+    "@astrojs/sitemap": "^3.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "@astrojs/check": "^0.9.4"
+  }
+}

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lennupesu — Katuse- ja fassaadipesu droonilt | Kogu Eesti</title>
+<meta name="description" content="Katuse-, fassaadi- ja päikesepaneelide pesu droonilt. Ilma tellingute ja redeliteta, katusele astumata. Hind alates 3 €/m². Transpordiameti luba, vastutuskindlustus. Kogu Eesti.">
+<meta property="og:title" content="Lennupesu — Katuse- ja fassaadipesu droonilt">
+<meta property="og:description" content="Ilma tellingute ja redeliteta. Katusele ei astuta. Hind alates 3 €/m².">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💧</text></svg>">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"LocalBusiness",
+  "name":"Lennupesu",
+  "description":"Katuse- ja fassaadipesu droonilt kogu Eestis",
+  "telephone":"+372 0000 0000",
+  "email":"info@lennupesu.ee",
+  "url":"https://lennupesu.ee",
+  "areaServed":{"@type":"Country","name":"Estonia"},
+  "priceRange":"€€"
+}
+</script>
+<style>
+  :root{
+    --ink:#0B1220; --ink-2:#1E293B; --muted:#64748B; --line:#E2E8F0;
+    --bg:#FFFFFF; --bg-2:#F8FAFC; --sky:#0284C7; --sky-2:#0EA5E9; --sky-soft:#E0F2FE;
+    --ok:#059669; --warn:#B45309;
+    --r:14px; --shadow:0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  h1,h2,h3{line-height:1.15;letter-spacing:-.02em;font-weight:700}
+  h1{font-size:clamp(2rem,5.2vw,3.5rem)}
+  h2{font-size:clamp(1.5rem,3.2vw,2.25rem);margin-bottom:.6em}
+  h3{font-size:1.125rem}
+  p{color:var(--ink-2)}
+  a{color:inherit}
+  section{padding:clamp(52px,7vw,88px) 0}
+  .lead{font-size:1.15rem;color:var(--muted);max-width:62ch}
+
+  /* header */
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:18px;height:66px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.03em;font-size:1.22rem;text-decoration:none}
+  .logo svg{width:26px;height:26px;flex:none}
+  .nav-links{display:none;gap:26px;margin-left:auto;font-size:.94rem;font-weight:500}
+  .nav-links a{text-decoration:none;color:var(--ink-2)}
+  .nav-links a:hover{color:var(--sky)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .nav-links + .nav-right{margin-left:0}
+  .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:.8rem;font-weight:700}
+  .lang button{border:0;background:none;padding:6px 11px;cursor:pointer;color:var(--muted);font:inherit}
+  .lang button.on{background:var(--ink);color:#fff}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:999px;
+    font-weight:650;font-size:.95rem;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:.15s;white-space:nowrap}
+  .btn-primary{background:var(--sky);color:#fff}
+  .btn-primary:hover{background:#0369A1}
+  .btn-ghost{border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--ink);background:var(--bg-2)}
+  .btn-lg{padding:15px 26px;font-size:1.02rem}
+
+  /* hero */
+  .hero{position:relative;background:linear-gradient(160deg,#071019 0%,#0B1F33 45%,#0C3350 100%);color:#fff;overflow:hidden}
+  .hero:after{content:"";position:absolute;inset:0;background:
+    radial-gradient(900px 380px at 78% 8%,rgba(14,165,233,.30),transparent 62%),
+    radial-gradient(600px 300px at 8% 92%,rgba(2,132,199,.20),transparent 60%);pointer-events:none}
+  .hero .wrap{position:relative;z-index:2;padding-top:clamp(56px,8vw,96px);padding-bottom:clamp(56px,8vw,96px)}
+  .hero h1{color:#fff;max-width:24ch;text-wrap:balance}
+  .hero p.lead{color:#BFD9EC;margin-top:20px}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
+    color:#DBEAFE;padding:7px 15px;border-radius:999px;font-size:.85rem;font-weight:600;margin-bottom:22px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#34D399;box-shadow:0 0 0 3px rgba(52,211,153,.25)}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+  .hero .btn-ghost{border-color:rgba(255,255,255,.35);color:#fff}
+  .hero .btn-ghost:hover{background:rgba(255,255,255,.10);border-color:#fff}
+  .price-tag{margin-top:26px;font-size:.95rem;color:#93C5FD}
+  .price-tag b{color:#fff;font-size:1.25rem}
+
+  /* trust strip */
+  .trust{background:var(--ink);color:#CBD5E1;border-top:1px solid rgba(255,255,255,.08)}
+  .trust .wrap{display:grid;grid-template-columns:1fr;gap:14px;padding-top:22px;padding-bottom:22px}
+  .trust div{display:flex;align-items:flex-start;gap:10px;font-size:.88rem}
+  .trust svg{width:17px;height:17px;flex:none;margin-top:3px;color:#38BDF8}
+
+  /* generic grid + cards */
+  .grid{display:grid;gap:20px;grid-template-columns:1fr}
+  .card{border:1px solid var(--line);border-radius:var(--r);padding:26px;background:#fff;box-shadow:var(--shadow)}
+  .card h3{margin-bottom:8px}
+  .card p{font-size:.95rem;color:var(--muted)}
+  .card .price{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-weight:700;color:var(--sky)}
+  .icon{width:42px;height:42px;border-radius:11px;background:var(--sky-soft);color:var(--sky);
+    display:grid;place-items:center;margin-bottom:16px}
+  .icon svg{width:21px;height:21px}
+
+  .alt{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+  /* steps */
+  .steps{counter-reset:s;display:grid;gap:22px;grid-template-columns:1fr}
+  .step{position:relative;padding-left:56px}
+  .step:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:38px;height:38px;
+    border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.95rem}
+  .step h3{margin-bottom:5px}
+  .step p{font-size:.95rem;color:var(--muted)}
+
+  /* comparison */
+  table.cmp{width:100%;border-collapse:collapse;font-size:.94rem;background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+  table.cmp th,table.cmp td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  table.cmp thead th{background:var(--ink);color:#fff;font-weight:650;font-size:.85rem;letter-spacing:.02em}
+  table.cmp tbody tr:last-child td{border-bottom:0}
+  table.cmp td:first-child{font-weight:600;width:34%}
+  .yes{color:var(--ok);font-weight:650}
+  .no{color:var(--warn)}
+
+  /* gallery */
+  .shots{display:grid;gap:16px;grid-template-columns:1fr}
+  .shot{aspect-ratio:4/3;border-radius:var(--r);border:2px dashed #CBD5E1;background:var(--bg-2);
+    display:grid;place-items:center;text-align:center;padding:20px;color:var(--muted);font-size:.88rem}
+
+  /* faq */
+  details{border:1px solid var(--line);border-radius:12px;padding:0;margin-bottom:10px;background:#fff;overflow:hidden}
+  details summary{cursor:pointer;padding:17px 20px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center}
+  details summary::-webkit-details-marker{display:none}
+  details summary:after{content:"+";font-size:1.35rem;color:var(--sky);font-weight:400;line-height:1}
+  details[open] summary:after{content:"−"}
+  details .body{padding:0 20px 18px;color:var(--muted);font-size:.95rem}
+
+  /* form */
+  .formwrap{display:grid;gap:34px;grid-template-columns:1fr}
+  form{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px;box-shadow:var(--shadow)}
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:.85rem;font-weight:650;margin-bottom:6px}
+  .field input,.field select,.field textarea{
+    width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:.95rem;background:#fff;color:var(--ink)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--sky-2);outline-offset:1px;border-color:transparent}
+  .field textarea{min-height:104px;resize:vertical}
+  .two{display:grid;gap:15px;grid-template-columns:1fr}
+  .formnote{font-size:.8rem;color:var(--muted);margin-top:12px}
+  .contactbox{font-size:.97rem}
+  .contactbox a{color:var(--sky);font-weight:600;text-decoration:none}
+  .contactbox .row{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
+  .contactbox svg{width:19px;height:19px;color:var(--sky);flex:none;margin-top:3px}
+
+  footer{background:var(--ink);color:#94A3B8;font-size:.88rem}
+  footer .wrap{padding:44px 22px}
+  footer a{color:#CBD5E1;text-decoration:none}
+  .fgrid{display:grid;gap:26px;grid-template-columns:1fr;margin-bottom:26px}
+  .fgrid strong{color:#fff;display:block;margin-bottom:9px;font-size:.94rem}
+  .fbottom{border-top:1px solid rgba(255,255,255,.10);padding-top:20px;font-size:.8rem;color:#64748B}
+
+  .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);
+    padding:10px 14px;display:flex;gap:10px;box-shadow:0 -4px 20px rgba(15,23,42,.08)}
+  .sticky-cta .btn{flex:1}
+
+  @media(min-width:720px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .steps{grid-template-columns:repeat(2,1fr)}
+    .two{grid-template-columns:1fr 1fr}
+    .shots{grid-template-columns:repeat(3,1fr)}
+    .trust .wrap{grid-template-columns:repeat(2,1fr)}
+    .fgrid{grid-template-columns:repeat(3,1fr)}
+  }
+  @media(min-width:980px){
+    .nav-links{display:flex}
+    .grid{grid-template-columns:repeat(3,1fr)}
+    .steps{grid-template-columns:repeat(4,1fr)}
+    .trust .wrap{grid-template-columns:repeat(4,1fr)}
+    .formwrap{grid-template-columns:1.35fr .8fr}
+    .sticky-cta{display:none}
+    body{padding-bottom:0}
+  }
+  @media(max-width:979px){ body{padding-bottom:68px} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2.5C12 2.5 6 9.2 6 13.4a6 6 0 0 0 12 0C18 9.2 12 2.5 12 2.5z"/>
+      </svg>
+      <span>Lennupesu</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#teenused" data-et="Teenused" data-en="Services">Teenused</a>
+      <a href="#kuidas" data-et="Kuidas see käib" data-en="How it works">Kuidas see käib</a>
+      <a href="#miks" data-et="Miks droon" data-en="Why a drone">Miks droon</a>
+      <a href="#kkk" data-et="KKK" data-en="FAQ">KKK</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang">
+        <button id="btn-et" class="on" onclick="setLang('et')">ET</button>
+        <button id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+      <a class="btn btn-primary" href="#pakkumine" data-et="Küsi pakkumist" data-en="Get a quote">Küsi pakkumist</a>
+    </div>
+  </div>
+</header>
+
+<div id="top" class="hero">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span><span data-et="Võtame vastu tellimusi 2026. aasta sügiseks" data-en="Taking bookings for autumn 2026">Võtame vastu tellimusi 2026. aasta sügiseks</span></span>
+    <h1 data-et="Katuse- ja fassaadipesu droonilt" data-en="Roof and facade cleaning by drone">Katuse- ja fassaadipesu droonilt</h1>
+    <p class="lead" data-et="Ilma tellingute ja redeliteta. Keegi ei astu teie katusele. Enamik eramaju saab puhtaks ühe päevaga — kogu Eestis."
+       data-en="No scaffolding, no ladders, and nobody walks on your roof. Most detached houses are finished in a single day — anywhere in Estonia.">
+      Ilma tellingute ja redeliteta. Keegi ei astu teie katusele. Enamik eramaju saab puhtaks ühe päevaga — kogu Eestis.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary btn-lg" href="#pakkumine" data-et="Küsi tasuta pakkumist" data-en="Get a free quote">Küsi tasuta pakkumist</a>
+      <a class="btn btn-ghost btn-lg" href="tel:+3720000000" data-et="Helista: +372 0000 0000" data-en="Call: +372 0000 0000">Helista: +372 0000 0000</a>
+    </div>
+    <p class="price-tag"><span data-et="Hind alates" data-en="From">Hind alates</span> <b>3 €/m²</b> · <span data-et="pakkumine 24 tunni jooksul" data-en="quote within 24 hours">pakkumine 24 tunni jooksul</span></p>
+  </div>
+</div>
+
+<div class="trust">
+  <div class="wrap">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span data-et="Transpordiameti käitamisluba erikategooria lendudeks (SORA, SAIL II)" data-en="Operational authorisation for specific-category flights (SORA, SAIL II)">Transpordiameti käitamisluba erikategooria lendudeks (SORA, SAIL II)</span></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+      <span data-et="Vastutuskindlustus vastavalt määrusele (EÜ) 785/2004" data-en="Third-party liability insurance under Regulation (EC) 785/2004">Vastutuskindlustus vastavalt määrusele (EÜ) 785/2004</span></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+      <span data-et="Katusele ei astuta — katend ja kinnitused jäävad puutumata" data-en="Nobody stands on the roof — no cracked tiles, no damaged coating">Katusele ei astuta — katend ja kinnitused jäävad puutumata</span></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/></svg>
+      <span data-et="Teenindame kogu Eestit" data-en="We serve the whole of Estonia">Teenindame kogu Eestit</span></div>
+  </div>
+</div>
+
+<section id="teenused">
+  <div class="wrap">
+    <h2 data-et="Teenused ja hinnad" data-en="Services and prices">Teenused ja hinnad</h2>
+    <p class="lead" style="margin-bottom:34px" data-et="Avaldame hinnad, sest te ei peaks helistama selleks, et teada saada, kas see on teile taskukohane."
+       data-en="We publish our prices, because you shouldn't have to call to find out whether you can afford it.">
+      Avaldame hinnad, sest te ei peaks helistama selleks, et teada saada, kas see on teile taskukohane.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div>
+        <h3 data-et="Katusepesu" data-en="Roof cleaning">Katusepesu</h3>
+        <p data-et="Sambla, vetika ja mustuse eemaldamine. Plekk-, kivi-, eterniit- ja kivikatused. Vajadusel järeltöötlus, et sammal tagasi ei tuleks."
+           data-en="Removal of moss, algae and grime. Metal, tile, concrete and fibre-cement roofs. Optional aftertreatment so the moss stays away.">
+          Sambla, vetika ja mustuse eemaldamine. Plekk-, kivi-, eterniit- ja kivikatused. Vajadusel järeltöötlus, et sammal tagasi ei tuleks.</p>
+        <div class="price" data-et="Alates 3 €/m²" data-en="From €3/m²">Alates 3 €/m²</div>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M4 9h16M4 15h16M12 3v18"/></svg></div>
+        <h3 data-et="Fassaadipesu" data-en="Facade cleaning">Fassaadipesu</h3>
+        <p data-et="Krohv, puit, plaat, plekk ja klaaspinnad. Surve ja puhastusaine valitakse materjali järgi — mitte vastupidi."
+           data-en="Render, timber, panel, metal and glass. Pressure and detergent are chosen to suit the material, not the other way round.">
+          Krohv, puit, plaat, plekk ja klaaspinnad. Surve ja puhastusaine valitakse materjali järgi — mitte vastupidi.</p>
+        <div class="price" data-et="Alates 3 €/m²" data-en="From €3/m²">Alates 3 €/m²</div>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></div>
+        <h3 data-et="Päikesepaneelide pesu" data-en="Solar panel cleaning">Päikesepaneelide pesu</h3>
+        <p data-et="Tolm, õietolm ja linnumustus vähendavad toodangut. Pesu deioniseeritud veega, ilma kriimustusteta ja katusele astumata."
+           data-en="Dust, pollen and bird mess cut your yield. Cleaned with deionised water, no scratching and no walking on the array.">
+          Tolm, õietolm ja linnumustus vähendavad toodangut. Pesu deioniseeritud veega, ilma kriimustusteta ja katusele astumata.</p>
+        <div class="price" data-et="Küsi pakkumist" data-en="Ask for a quote">Küsi pakkumist</div>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h3 data-et="Aknad ja klaaspinnad" data-en="Windows and glass">Aknad ja klaaspinnad</h3>
+        <p data-et="Kõrged aknad, klaasfassaadid ja katuseaknad, kuhu redeliga ei ulatu."
+           data-en="High windows, glass facades and rooflights that a ladder cannot reach.">
+          Kõrged aknad, klaasfassaadid ja katuseaknad, kuhu redeliga ei ulatu.</p>
+        <div class="price" data-et="Küsi pakkumist" data-en="Ask for a quote">Küsi pakkumist</div>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V7z"/><path d="M12 14v6"/></svg></div>
+        <h3 data-et="Vihmaveesüsteemid" data-en="Gutters">Vihmaveesüsteemid</h3>
+        <p data-et="Renni ja torude puhastus lehtedest ja samblast. Tellitav koos katusepesuga sama käiguga."
+           data-en="Gutters and downpipes cleared of leaves and moss. Best booked together with a roof clean on the same visit.">
+          Renni ja torude puhastus lehtedest ja samblast. Tellitav koos katusepesuga sama käiguga.</p>
+        <div class="price" data-et="Lisateenusena" data-en="As an add-on">Lisateenusena</div>
+      </div>
+      <div class="card" style="background:var(--sky-soft);border-color:#BAE6FD">
+        <div class="icon" style="background:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h3 data-et="Korterühistud ja ärihooned" data-en="Housing associations and commercial">Korterühistud ja ärihooned</h3>
+        <p data-et="Suurematele objektidele teeme mahupõhise pakkumise. Esitame riskianalüüsi, kindlustustõendi ja käitamisloa koopia."
+           data-en="Volume pricing for larger sites. We supply a risk assessment, proof of insurance and a copy of our operational authorisation.">
+          Suurematele objektidele teeme mahupõhise pakkumise. Esitame riskianalüüsi, kindlustustõendi ja käitamisloa koopia.</p>
+        <div class="price" data-et="Võtke ühendust" data-en="Get in touch">Võtke ühendust</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="kuidas" class="alt">
+  <div class="wrap">
+    <h2 data-et="Kuidas see käib" data-en="How it works">Kuidas see käib</h2>
+    <div class="steps" style="margin-top:34px">
+      <div class="step">
+        <h3 data-et="Saatke päring" data-en="Send an enquiry">Saatke päring</h3>
+        <p data-et="Kirjeldage objekti ja lisage aadress. Foto majast aitab kõige rohkem." data-en="Describe the property and give us the address. A photo of the house helps most.">Kirjeldage objekti ja lisage aadress. Foto majast aitab kõige rohkem.</p>
+      </div>
+      <div class="step">
+        <h3 data-et="Pakkumine 24 tunniga" data-en="Quote within 24 hours">Pakkumine 24 tunniga</h3>
+        <p data-et="Mõõdame pinna kaardilt ja saadame kirjaliku hinna. Suuremad objektid vaatame kohapeal üle." data-en="We measure the area from the map and send a written price. Larger sites we survey on location.">Mõõdame pinna kaardilt ja saadame kirjaliku hinna. Suuremad objektid vaatame kohapeal üle.</p>
+      </div>
+      <div class="step">
+        <h3 data-et="Töö tehtud" data-en="The work">Töö tehtud</h3>
+        <p data-et="Enamik eramaju saab valmis ühe päevaga. Te ei pea kodus olema, kui ligipääs on olemas." data-en="Most detached houses are done in a day. You don't need to be home if we can get access.">Enamik eramaju saab valmis ühe päevaga. Te ei pea kodus olema, kui ligipääs on olemas.</p>
+      </div>
+      <div class="step">
+        <h3 data-et="Enne ja pärast" data-en="Before and after">Enne ja pärast</h3>
+        <p data-et="Saadame õhufotod enne ja pärast tööd. Arve tuleb e-postiga." data-en="We send aerial photos from before and after. The invoice arrives by email.">Saadame õhufotod enne ja pärast tööd. Arve tuleb e-postiga.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="miks">
+  <div class="wrap">
+    <h2 data-et="Miks droon, mitte tellingud" data-en="Why a drone instead of scaffolding">Miks droon, mitte tellingud</h2>
+    <p class="lead" style="margin-bottom:30px" data-et="Traditsiooniline katusepesu tähendab, et keegi kõnnib teie katusel ja te maksate tellingute või tõstuki eest."
+       data-en="Traditional roof cleaning means someone walks on your roof, and you pay for scaffolding or a lift.">
+      Traditsiooniline katusepesu tähendab, et keegi kõnnib teie katusel ja te maksate tellingute või tõstuki eest.</p>
+    <table class="cmp">
+      <thead><tr>
+        <th></th>
+        <th data-et="Droonipesu" data-en="Drone cleaning">Droonipesu</th>
+        <th data-et="Tellingud / tõstuk / redel" data-en="Scaffolding / lift / ladder">Tellingud / tõstuk / redel</th>
+      </tr></thead>
+      <tbody>
+        <tr><td data-et="Katusekattele astumine" data-en="Walking on the roof covering">Katusekattele astumine</td>
+            <td class="yes" data-et="Puudub" data-en="None">Puudub</td>
+            <td class="no" data-et="Vältimatu — kivid ja katend võivad puruneda" data-en="Unavoidable — tiles and coating can crack">Vältimatu — kivid ja katend võivad puruneda</td></tr>
+        <tr><td data-et="Tellingute kulu" data-en="Scaffolding cost">Tellingute kulu</td>
+            <td class="yes" data-et="0 €" data-en="€0">0 €</td>
+            <td class="no" data-et="Sadu eurosid, enne kui töö algab" data-en="Hundreds of euros before work even starts">Sadu eurosid, enne kui töö algab</td></tr>
+        <tr><td data-et="Ülesseadmine" data-en="Set-up">Ülesseadmine</td>
+            <td class="yes" data-et="Umbes tund" data-en="About an hour">Umbes tund</td>
+            <td class="no" data-et="Pool päeva kuni päev" data-en="Half a day to a day">Pool päeva kuni päev</td></tr>
+        <tr><td data-et="Kõrgtööde risk" data-en="Working-at-height risk">Kõrgtööde risk</td>
+            <td class="yes" data-et="Kogu meeskond jääb maapinnale" data-en="The whole crew stays on the ground">Kogu meeskond jääb maapinnale</td>
+            <td class="no" data-et="Inimene töötab kõrgusel" data-en="A person works at height">Inimene töötab kõrgusel</td></tr>
+        <tr><td data-et="Ligipääs keerulistele kohtadele" data-en="Access to awkward spots">Ligipääs keerulistele kohtadele</td>
+            <td class="yes" data-et="Järsud kalded, kõrged viilud, pehme pinnas" data-en="Steep pitches, tall gables, soft ground">Järsud kalded, kõrged viilud, pehme pinnas</td>
+            <td class="no" data-et="Sageli ei ole võimalik või läheb kalliks" data-en="Often impossible or expensive">Sageli ei ole võimalik või läheb kalliks</td></tr>
+        <tr><td data-et="Aiale ja haljastusele" data-en="Impact on the garden">Aiale ja haljastusele</td>
+            <td class="yes" data-et="Kerge maapealne varustus" data-en="Light ground equipment only">Kerge maapealne varustus</td>
+            <td class="no" data-et="Tellingujalad ja tõstuk muru peal" data-en="Scaffold feet and a lift on the lawn">Tellingujalad ja tõstuk muru peal</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2 data-et="Enne ja pärast" data-en="Before and after">Enne ja pärast</h2>
+    <p class="lead" style="margin-bottom:28px" data-et="Meie esimesed objektid on plaanis 2026. aasta septembris. Fotod lisame kohe, kui töö on tehtud — me ei kasuta stockfotosid."
+       data-en="Our first jobs are booked for September 2026. Photos go up as soon as the work is done — we don't use stock images.">
+      Meie esimesed objektid on plaanis 2026. aasta septembris. Fotod lisame kohe, kui töö on tehtud — me ei kasuta stockfotosid.</p>
+    <div class="shots">
+      <div class="shot" data-et="Foto lisatakse pärast esimest objekti" data-en="Photo added after the first job">Foto lisatakse pärast esimest objekti</div>
+      <div class="shot" data-et="Foto lisatakse pärast esimest objekti" data-en="Photo added after the first job">Foto lisatakse pärast esimest objekti</div>
+      <div class="shot" data-et="Foto lisatakse pärast esimest objekti" data-en="Photo added after the first job">Foto lisatakse pärast esimest objekti</div>
+    </div>
+  </div>
+</section>
+
+<section id="kkk">
+  <div class="wrap" style="max-width:820px">
+    <h2 data-et="Korduma kippuvad küsimused" data-en="Frequently asked questions">Korduma kippuvad küsimused</h2>
+    <div style="margin-top:28px">
+      <details open><summary data-et="Kas droon kahjustab katust?" data-en="Will the drone damage my roof?">Kas droon kahjustab katust?</summary>
+        <div class="body" data-et="Droon ei puutu katust. Survet ja otsakut reguleeritakse materjali järgi — eterniidile ja vanale katendile kasutame madalat survet. Suurim kahju katusele tekib tavaliselt siis, kui keegi selle peal kõnnib, ja seda me ei tee."
+             data-en="The drone never touches the roof. Pressure and nozzle are matched to the material — low pressure on fibre-cement and older coverings. Most roof damage during cleaning comes from someone walking on it, and we don't do that.">
+          Droon ei puutu katust. Survet ja otsakut reguleeritakse materjali järgi — eterniidile ja vanale katendile kasutame madalat survet. Suurim kahju katusele tekib tavaliselt siis, kui keegi selle peal kõnnib, ja seda me ei tee.</div></details>
+
+      <details><summary data-et="Milliseid puhastusaineid kasutate?" data-en="What cleaning products do you use?">Milliseid puhastusaineid kasutate?</summary>
+        <div class="body" data-et="[TÄIDA] Nimeta konkreetne toode, selle biotsiidiluba Eestis ja biolagunevus. Ära kirjuta siia üldsõnalist lubadust — kliendid küsivad ja ametiasutused kontrollivad."
+             data-en="[FILL IN] Name the actual product, its Estonian biocide authorisation and its biodegradability. Don't write a vague promise here — customers ask and regulators check.">
+          [TÄIDA] Nimeta konkreetne toode, selle biotsiidiluba Eestis ja biolagunevus. Ära kirjuta siia üldsõnalist lubadust — kliendid küsivad ja ametiasutused kontrollivad.</div></details>
+
+      <details><summary data-et="Kui kaua töö võtab?" data-en="How long does it take?">Kui kaua töö võtab?</summary>
+        <div class="body" data-et="Tavaline eramaja katus saab valmis ühe päevaga, koos ülesseadmise ja koristamisega. Suuremad objektid lepime eraldi kokku."
+             data-en="A typical detached house roof is finished in one day, including set-up and pack-down. Larger sites are scheduled separately.">
+          Tavaline eramaja katus saab valmis ühe päevaga, koos ülesseadmise ja koristamisega. Suuremad objektid lepime eraldi kokku.</div></details>
+
+      <details><summary data-et="Kas vajate vett ja elektrit?" data-en="Do you need water and power?">Kas vajate vett ja elektrit?</summary>
+        <div class="body" data-et="[TÄIDA] Kirjuta siia, kas tood vee ise kaasa või kasutad kliendi kraani, ja kas vajad 230 V ühendust. See on esimene küsimus, mille klient esitab."
+             data-en="[FILL IN] State whether you bring your own water or use the client's tap, and whether you need a 230 V supply. This is the first question a customer asks.">
+          [TÄIDA] Kirjuta siia, kas tood vee ise kaasa või kasutad kliendi kraani, ja kas vajad 230 V ühendust. See on esimene küsimus, mille klient esitab.</div></details>
+
+      <details><summary data-et="Mis ilmaga te ei tööta?" data-en="In what weather can't you work?">Mis ilmaga te ei tööta?</summary>
+        <div class="body" data-et="Tugeva tuulega, vihmaga ja miinuskraadidega me ei lenda. Hooaeg kestab aprillist oktoobrini. Kui ilm töö edasi lükkab, lepime uue aja kokku ilma lisatasuta."
+             data-en="We don't fly in strong wind, rain or sub-zero temperatures. The season runs April to October. If weather postpones a job we reschedule at no extra cost.">
+          Tugeva tuulega, vihmaga ja miinuskraadidega me ei lenda. Hooaeg kestab aprillist oktoobrini. Kui ilm töö edasi lükkab, lepime uue aja kokku ilma lisatasuta.</div></details>
+
+      <details><summary data-et="Kas teil on luba ja kindlustus?" data-en="Are you licensed and insured?">Kas teil on luba ja kindlustus?</summary>
+        <div class="body" data-et="Jah. Meil on Transpordiameti käitamisluba erikategooria lendudeks (SORA, SAIL II) ja vastutuskindlustus vastavalt määrusele (EÜ) 785/2004. Saadame dokumendid koos pakkumisega, kui soovite."
+             data-en="Yes. We hold an operational authorisation from the Estonian Transport Administration for specific-category flights (SORA, SAIL II) and third-party liability insurance under Regulation (EC) 785/2004. We'll send the documents with the quote on request.">
+          Jah. Meil on Transpordiameti käitamisluba erikategooria lendudeks (SORA, SAIL II) ja vastutuskindlustus vastavalt määrusele (EÜ) 785/2004. Saadame dokumendid koos pakkumisega, kui soovite.</div></details>
+
+      <details><summary data-et="Kui tihti tuleks katust pesta?" data-en="How often should a roof be cleaned?">Kui tihti tuleks katust pesta?</summary>
+        <div class="body" data-et="Eesti kliimas tavaliselt iga 3–5 aasta tagant, olenevalt varjust ja puude lähedusest. Põhjapoolsed kalded sammalduvad kiiremini."
+             data-en="In the Estonian climate, usually every 3–5 years, depending on shade and nearby trees. North-facing pitches grow moss faster.">
+          Eesti kliimas tavaliselt iga 3–5 aasta tagant, olenevalt varjust ja puude lähedusest. Põhjapoolsed kalded sammalduvad kiiremini.</div></details>
+    </div>
+  </div>
+</section>
+
+<section id="pakkumine" class="alt">
+  <div class="wrap">
+    <h2 data-et="Küsi tasuta pakkumist" data-en="Get a free quote">Küsi tasuta pakkumist</h2>
+    <p class="lead" style="margin-bottom:32px" data-et="Vastame tööpäeviti 24 tunni jooksul. Pakkumine on kirjalik ja siduv."
+       data-en="We reply within 24 hours on working days. The quote is written and binding.">
+      Vastame tööpäeviti 24 tunni jooksul. Pakkumine on kirjalik ja siduv.</p>
+    <div class="formwrap">
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <div class="two">
+          <div class="field"><label data-et="Nimi" data-en="Name">Nimi</label><input type="text" name="nimi" required></div>
+          <div class="field"><label data-et="Telefon" data-en="Phone">Telefon</label><input type="tel" name="telefon" required></div>
+        </div>
+        <div class="field"><label data-et="E-post" data-en="Email">E-post</label><input type="email" name="epost" required></div>
+        <div class="field"><label data-et="Objekti aadress" data-en="Property address">Objekti aadress</label><input type="text" name="aadress" required></div>
+        <div class="two">
+          <div class="field"><label data-et="Teenus" data-en="Service">Teenus</label>
+            <select name="teenus">
+              <option data-et="Katusepesu" data-en="Roof cleaning">Katusepesu</option>
+              <option data-et="Fassaadipesu" data-en="Facade cleaning">Fassaadipesu</option>
+              <option data-et="Päikesepaneelid" data-en="Solar panels">Päikesepaneelid</option>
+              <option data-et="Aknad / klaas" data-en="Windows / glass">Aknad / klaas</option>
+              <option data-et="Vihmaveesüsteemid" data-en="Gutters">Vihmaveesüsteemid</option>
+              <option data-et="Muu / mitu teenust" data-en="Other / several">Muu / mitu teenust</option>
+            </select></div>
+          <div class="field"><label data-et="Ligikaudne pindala (m²)" data-en="Approximate area (m²)">Ligikaudne pindala (m²)</label><input type="number" name="pindala" min="1" placeholder="200"></div>
+        </div>
+        <div class="field"><label data-et="Lisainfo" data-en="Anything else">Lisainfo</label>
+          <textarea name="sonum" data-et-ph="Katuse tüüp, kui vana, kui palju sammalt, ligipääs, soovitud aeg…" data-en-ph="Roof type, age, how much moss, access, preferred timing…" placeholder="Katuse tüüp, kui vana, kui palju sammalt, ligipääs, soovitud aeg…"></textarea></div>
+        <button class="btn btn-primary btn-lg" type="submit" style="width:100%" data-et="Saada päring" data-en="Send enquiry">Saada päring</button>
+        <p class="formnote" data-et="Kasutame teie andmeid ainult pakkumise koostamiseks. Me ei edasta neid kolmandatele isikutele."
+           data-en="We use your details only to prepare a quote. We do not pass them to third parties.">
+          Kasutame teie andmeid ainult pakkumise koostamiseks. Me ei edasta neid kolmandatele isikutele.</p>
+      </form>
+      <div class="contactbox">
+        <div class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+          <div><strong data-et="Telefon" data-en="Phone">Telefon</strong><br><a href="tel:+3720000000">+372 0000 0000</a></div></div>
+        <div class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+          <div><strong data-et="E-post" data-en="Email">E-post</strong><br><a href="mailto:info@lennupesu.ee">info@lennupesu.ee</a></div></div>
+        <div class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div><strong data-et="Teeninduspiirkond" data-en="Service area">Teeninduspiirkond</strong><br>
+            <span data-et="Baas Tallinnas ja Harjumaal. Sõidame üle Eesti — kaugemad objektid koondame ühte nädalasse." data-en="Based in Tallinn and Harju county. We travel across Estonia — distant jobs are grouped into one week.">Baas Tallinnas ja Harjumaal. Sõidame üle Eesti — kaugemad objektid koondame ühte nädalasse.</span></div></div>
+        <div class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <div><strong data-et="Hooaeg" data-en="Season">Hooaeg</strong><br>
+            <span data-et="Aprill–oktoober. Talvel teeme droonivaatlusi ja katuseülevaatusi." data-en="April to October. In winter we fly inspections and roof surveys.">Aprill–oktoober. Talvel teeme droonivaatlusi ja katuseülevaatusi.</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <strong>Lennupesu</strong>
+        <span data-et="Katuse-, fassaadi- ja päikesepaneelide pesu droonilt. Teenindame kogu Eestit." data-en="Roof, facade and solar panel cleaning by drone. Serving the whole of Estonia.">Katuse-, fassaadi- ja päikesepaneelide pesu droonilt. Teenindame kogu Eestit.</span>
+      </div>
+      <div>
+        <strong data-et="Kontakt" data-en="Contact">Kontakt</strong>
+        <a href="tel:+3720000000">+372 0000 0000</a><br>
+        <a href="mailto:info@lennupesu.ee">info@lennupesu.ee</a>
+      </div>
+      <div>
+        <strong data-et="Ettevõte" data-en="Company">Ettevõte</strong>
+        AIF Drone Services OÜ<br>
+        <span data-et="Registrikood: [TÄIDA]" data-en="Registry code: [FILL IN]">Registrikood: [TÄIDA]</span><br>
+        <span data-et="KMKR: [TÄIDA]" data-en="VAT no: [FILL IN]">KMKR: [TÄIDA]</span>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span data-et="© 2026 AIF Drone Services OÜ. Kaubamärk Lennupesu. Hinnad ei sisalda käibemaksu 24%." data-en="© 2026 AIF Drone Services OÜ, trading as Lennupesu. Prices exclude 24% VAT.">© 2026 AIF Drone Services OÜ. Kaubamärk Lennupesu. Hinnad ei sisalda käibemaksu 24%.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky-cta">
+  <a class="btn btn-ghost" href="tel:+3720000000" data-et="Helista" data-en="Call">Helista</a>
+  <a class="btn btn-primary" href="#pakkumine" data-et="Küsi pakkumist" data-en="Get a quote">Küsi pakkumist</a>
+</div>
+
+<script>
+function setLang(l){
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-'+l+']').forEach(function(el){
+    el.textContent = el.getAttribute('data-'+l);
+  });
+  document.querySelectorAll('[data-'+l+'-ph]').forEach(function(el){
+    el.placeholder = el.getAttribute('data-'+l+'-ph');
+  });
+  document.getElementById('btn-et').classList.toggle('on', l==='et');
+  document.getElementById('btn-en').classList.toggle('on', l==='en');
+}
+// Force a full pass on load so no element can drift out of sync with its data-et string.
+setLang('et');
+</script>
+</body>
+</html>
