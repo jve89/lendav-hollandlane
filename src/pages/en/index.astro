@@ -4,10 +4,12 @@
  * see the note there. Estonian is the source of truth; the English strings in
  * `i18n/home.ts` are a translation of it, not a parallel original.
  */
+import { getCollection } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Hero from '../../components/Hero.astro'
 import TrustBar from '../../components/TrustBar.astro'
 import ServiceCard from '../../components/ServiceCard.astro'
+import BeforeAfter from '../../components/BeforeAfter.astro'
 import CompareTable from '../../components/CompareTable.astro'
 import Faq from '../../components/Faq.astro'
 import Cta from '../../components/Cta.astro'
@@ -17,6 +19,10 @@ import { useTranslations } from '../../i18n/utils'
 const locale = 'en' as const
 const t = useTranslations(locale)
 const c = homeCopy[locale]
+
+/** The newest published job, or nothing. See the note in `index.astro`. */
+const publishedJobs = await getCollection('jobs', ({ data }) => data.published)
+const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0]
 ---
 <BaseLayout
   title={t('meta.home.title')}
@@ -45,6 +51,13 @@ const c = homeCopy[locale]
         ))}
       </ul>
       <p class="fineprint services__vat">{t('footer.vatNote')}</p>
+    </div>
+  </section>
+
+  <section class="section section--raised">
+    <div class="wrap">
+      <h2>{c.work.heading}</h2>
+      <BeforeAfter jobId={latestJob?.id} locale={locale} />
     </div>
   </section>
 

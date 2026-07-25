@@ -34,8 +34,15 @@ import { bcp47, useTranslations } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
 
 interface Props {
-  /** A `jobs` entry id, i.e. the job's filename without its extension. */
-  jobId: string
+  /**
+   * A `jobs` entry id, i.e. the job's filename without its extension.
+   *
+   * OPTIONAL, and undefined is a first-class value rather than a mistake: a
+   * caller that selects "the newest published job" has nothing to pass until a
+   * job exists, and must not have to invent an id that resolves to nothing. No
+   * id means the empty state, without a lookup.
+   */
+  jobId?: string
   /**
    * Added to ARCHITECTURE's `{ jobId }` contract: a bilingual empty state and
    * bilingual alt text cannot come from nowhere. Corrected in the doc.
@@ -46,7 +53,7 @@ interface Props {
 const { jobId, locale } = Astro.props
 const t = useTranslations(locale)
 
-const entry = await getEntry('jobs', jobId)
+const entry = jobId ? await getEntry('jobs', jobId) : undefined
 const job = entry?.data.published ? entry.data : undefined
 
 /** Town interpolation, the same `{token}` convention `Faq.astro` uses for `{season}`. */
@@ -178,7 +185,10 @@ const caption = job
        precisely the impression CLAUDE.md rules out. Sized to its own sentence
        instead, it reads as a note the operator wrote. */
     max-width: 34rem;
-    margin-inline: auto;
+    /* Left-anchored, NOT centred: every section on the home page hangs its
+       content off the left edge under a left-aligned h2, and a centred panel
+       under a left-aligned heading leaves a visible void between the two. */
+    margin-inline: 0;
   }
 
   .ba__mark {

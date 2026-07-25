@@ -103,6 +103,20 @@ export interface HomeCopy {
     priceAddon: string
     cards: readonly ServiceCardCopy[]
   }
+  /**
+   * The before/after evidence section. SPEC section 3 item 3.
+   *
+   * A HEADING AND NOTHING ELSE, deliberately. There is no lead: the only thing
+   * left to say at launch is why there are no photos yet, and `BeforeAfter`'s
+   * empty state already says it. A lead here would either duplicate that or
+   * start making claims about work that has not been done.
+   *
+   * "Enne ja pärast" describes what the section shows. A heading like "Tehtud
+   * tööd" would assert that completed work is on display, which is not true yet.
+   */
+  work: {
+    heading: string
+  }
   compare: {
     heading: string
     lead: string
@@ -194,6 +208,9 @@ export const homeCopy = {
           priceKind: 'addon',
         },
       ],
+    },
+    work: {
+      heading: 'Enne ja pärast',
     },
     compare: {
       heading: 'Miks droon, mitte tellingud',
@@ -328,6 +345,9 @@ export const homeCopy = {
           priceKind: 'addon',
         },
       ],
+    },
+    work: {
+      heading: 'Before and after',
     },
     compare: {
       heading: 'Why a drone instead of scaffolding',

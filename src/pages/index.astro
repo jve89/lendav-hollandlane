@@ -11,10 +11,12 @@
  * collection arrives in Phase 3 and replaces the array in `home.ts`; this file
  * changes only in where it maps from.
  */
+import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Hero from '../components/Hero.astro'
 import TrustBar from '../components/TrustBar.astro'
 import ServiceCard from '../components/ServiceCard.astro'
+import BeforeAfter from '../components/BeforeAfter.astro'
 import CompareTable from '../components/CompareTable.astro'
 import Faq from '../components/Faq.astro'
 import Cta from '../components/Cta.astro'
@@ -24,6 +26,15 @@ import { useTranslations } from '../i18n/utils'
 const locale = 'et' as const
 const t = useTranslations(locale)
 const c = homeCopy[locale]
+
+/**
+ * The newest published job, or nothing. Selected rather than hardcoded, so the
+ * home page starts showing real evidence the moment a job file lands — Phase 10
+ * needs no edit here. Until then this is `undefined` and `BeforeAfter` renders
+ * its empty state, which is the launch state.
+ */
+const publishedJobs = await getCollection('jobs', ({ data }) => data.published)
+const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0]
 ---
 <BaseLayout
   title={t('meta.home.title')}
@@ -52,6 +63,13 @@ const c = homeCopy[locale]
         ))}
       </ul>
       <p class="fineprint services__vat">{t('footer.vatNote')}</p>
+    </div>
+  </section>
+
+  <section class="section section--raised">
+    <div class="wrap">
+      <h2>{c.work.heading}</h2>
+      <BeforeAfter jobId={latestJob?.id} locale={locale} />
     </div>
   </section>
 
