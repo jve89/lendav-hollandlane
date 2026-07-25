@@ -28,9 +28,10 @@ Gutter clearing is booked as an add-on to a roof clean, on the same visit. We do
 not currently offer it as a visit of its own, because one short job does not
 cover the cost of the trip.
 
-TODO: the method used to clear the gutters is not described here, because it is
-not yet confirmed. We will write down exactly what is done, and with what, once
-it is settled.
+<!-- unconfirmed: the method used to clear the gutters is not settled. Do not
+     describe a method, a tool or an attachment here until it is. PLAN Phase 10. -->
+
+We describe how the work is done, and with what, in the roof cleaning quote.
 
 ## What gutter clearing does not cover
 
@@ -43,12 +44,18 @@ surface water gullies, or removing ice and snow in winter.
 
 ## Cleaning products
 
-TODO: the name of the cleaning product and its Estonian biocide authorisation are
-not yet confirmed. Until they are, we name no product here and make no claim
-about one.
+<!-- unconfirmed: the cleaning product and its Estonian biocide authorisation
+     are not confirmed. Do not name a product here, and do not make any claim
+     about one, until they are. PLAN Phase 10 replaces this section. -->
+
+We name the product we use on your property, and the Estonian biocide
+authorisation it is approved under, in your quote.
 
 ## How long the work takes
 
-TODO: job durations have not been measured yet, because the first jobs have not
-been done. We give the duration separately in the quote for your property, once
-it is known.
+<!-- unconfirmed: no job durations have been measured — the first jobs are not
+     done. Do not publish a figure here until there is one. PLAN Phase 10. -->
+
+We give the duration in your quote, for your property specifically. We publish
+no general figure: it depends on the property, and we have no measurements of
+our own to base one on yet.

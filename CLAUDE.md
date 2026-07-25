@@ -39,15 +39,28 @@ If you are about to type a phone number, an email address, a euro amount or a re
 - **No stock photography.** Every image is a photo of this operator's own work. If there are no photos, render the explicit empty state.
 - **No invented case studies, statistics, customer counts or "trusted by" claims.**
 - **No fabricated regulatory or technical claims.** Do not write that a product is biodegradable, that a chemical is approved, that a drone is certified, or that a process is guaranteed, unless the exact claim is already written in `SPEC.md` or `src/config/site.ts`.
-- **Where real copy does not yet exist, ship a visible `TODO:` marker instead of plausible filler.** Filler that reads like real copy is worse than an obvious gap, because it survives into production unnoticed.
+- **Where real copy does not yet exist, never write plausible filler.** Filler that reads like real copy is worse than an obvious gap, because it survives into production unnoticed.
 
-**What a `TODO:` marker is, and is not.** This has been settled — do not re-argue it:
+**How an unconfirmed fact is handled. Revised in Phase 4 — the earlier rule shipped the literal string `TODO:` onto the live page, and that is no longer what we do.**
 
-- A visible `TODO:` marker is for **an unverified claim or missing copy that a reader must not mistake for fact**. The chemicals answer and the biocide authorisation are the reference cases. There, an obvious gap on the page is the correct and intended outcome.
-- A `TODO:` marker is **never rendered in place of design**. A missing *asset* — a photo, a video, a logo — gets a **finished empty state**, not a marker. `BeforeAfter` and `Hero` are the reference implementations: both ship their no-asset state as the default path, and both must look finished, because that is the state the site launches in.
-- The marker for a missing asset lives **in the repo**, not on the page, so that a future session does not mistake a deliberate empty state for unfinished work.
+The marker lives **in the repo, never on the page**, as an HTML comment in the content file. It names what is unconfirmed and forbids the specific thing a future session would be tempted to write:
 
-The distinction is between a gap the visitor must see and a gap the visitor must not have to look at. Copy gaps are the first. Asset gaps are the second.
+```
+<!-- unconfirmed: the cleaning product and its Estonian biocide authorisation
+     are not confirmed. Do not name a product here, and do not make any claim
+     about one, until they are. PLAN Phase 10 replaces this section. -->
+```
+
+What the visitor reads in its place is **a finished sentence that states no unconfirmed fact**. Usually that means saying where the answer will come from, or saying plainly that we do not publish one and why:
+
+- *"Ütleme pakkumises, millist puhastusainet teie objektil kasutame ja millise Eesti biotsiidiloa alusel see on lubatud."* — a commitment about our own conduct, which is verifiable. It names no product.
+- *"Me ei avalda selle kohta arvu. Meie enda objektidel ei ole veel mõõtmisi tehtud."* — a refusal with its reason. It invents no figure.
+
+**The prohibition is unchanged and absolute: do not invent a fact to fill the gap.** Not a product name, not a percentage, not a duration, not a certification. The substance of the old rule was never the string `TODO:` — it was that the reader must not be misled. A sentence that promises an answer later misleads nobody; a sentence that guesses the answer does.
+
+This applies identically to a missing **asset** — a photo, a video, a logo — which gets a **finished empty state**, not a marker. `BeforeAfter` and `Hero` are the reference implementations: both ship their no-asset state as the default path, and both must look finished, because that is the state the site launches in.
+
+So there is now one rule, not two: **the gap is recorded in the repo and never rendered as a gap.** What ships is finished copy or a finished empty state, and in neither case does it assert something we cannot stand behind.
 
 **Claims that are permitted**, because they are verifiable:
 - Operational authorisation from Transpordiamet for specific-category operations (SORA, SAIL II)

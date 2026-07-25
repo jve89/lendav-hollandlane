@@ -28,8 +28,10 @@ odavam ära hoida kui hiljem parandada.
 Rennipuhastust tellitakse lisateenusena koos katusepesuga, sama käiguga. Eraldi
 käiguna me seda praegu ei paku, sest üksik lühike töö ei kata väljasõidu kulu.
 
-TODO: rennide puhastamise meetodit ei ole siin kirjeldatud, sest see ei ole veel
-kinnitatud. Kirjutame siia täpselt, mida ja millega tehakse, kui see on paigas.
+<!-- unconfirmed: the method used to clear the gutters is not settled. Do not
+     describe a method, a tool or an attachment here until it is. PLAN Phase 10. -->
+
+Töökäigu ja kasutatavad vahendid kirjeldame katusepesu pakkumises.
 
 ## Mida rennipuhastus ei hõlma
 
@@ -42,11 +44,17 @@ puhastus ega talvine jää- ja lumetõrje.
 
 ## Puhastusained
 
-TODO: kasutatava puhastusaine nimi ja selle Eesti biotsiidiluba ei ole veel
-kinnitatud. Kuni need on kinnitatud, me siin ainet ei nimeta ega väida selle
-kohta midagi.
+<!-- unconfirmed: the cleaning product and its Estonian biocide authorisation
+     are not confirmed. Do not name a product here, and do not make any claim
+     about one, until they are. PLAN Phase 10 replaces this section. -->
+
+Ütleme pakkumises, millist puhastusainet teie objektil kasutame ja millise
+Eesti biotsiidiloa alusel see on lubatud.
 
 ## Kui kaua töö võtab
 
-TODO: tööde kestust ei ole veel mõõdetud, sest esimesed objektid on tegemata.
-Kestuse ütleme pakkumises objekti kohta eraldi, kui see on teada.
+<!-- unconfirmed: no job durations have been measured — the first jobs are not
+     done. Do not publish a figure here until there is one. PLAN Phase 10. -->
+
+Ütleme kestuse pakkumises, teie objekti kohta eraldi. Üldist arvu me ei avalda:
+see sõltub objektist ja meil ei ole veel oma mõõtmisi, millele tugineda.

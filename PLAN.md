@@ -105,7 +105,7 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 - `teenused/index.astro` and `teenused/[slug].astro`, plus `en/services/`
 - `Service` JSON-LD per page
 - Each page: what it covers, what it costs, what it does not cover, how long it takes, quote CTA
-- Leave the chemicals section as a `TODO:` marker — the product and its Estonian biocide authorisation are not confirmed
+- Leave the chemicals section unconfirmed — the product and its Estonian biocide authorisation are not confirmed. Recorded as a repo comment, with a finished sentence on the page that names no product. See CLAUDE.md
 
 **Verify:** gate passes · every service reachable in both locales · hreflang pairs correct between localised slugs.
 
@@ -116,7 +116,7 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 ## Phase 5 — Pricing, FAQ, credentials
 
 - `hinnakiri.astro` — `PriceTable` from `site.ts`, ex-VAT labelling, what changes a price, minimum job value
-- `kkk.astro` — full FAQ with `FAQPage` JSON-LD; two answers ship as `TODO:` markers (chemicals, water and power)
+- `kkk.astro` — full FAQ with `FAQPage` JSON-LD; two answers are still unconfirmed (chemicals, water and power) and follow the repo-comment rule in CLAUDE.md rather than rendering a `TODO:` onto the page. Neither may be answered with a guess, and an unanswered question is better left out of the FAQ than answered vaguely
 - `meist.astro` — the operator, the authorisation, the insurance, the equipment. This is the page that beats the incumbent, so write it like it matters.
 
 **Verify:** gate passes · no price hardcoded outside `site.ts` · JSON-LD validates.
@@ -162,7 +162,7 @@ First posts, when there is time and something real to say, target informational 
 
 ## Phase 9 — SEO, performance, launch
 
-- Sitemap with hreflang; `robots.txt`
+- Sitemap with hreflang — **see the known limitation below, which is the real work in this line**
 - OG images per page type
 - Favicon and touch icons
 - Analytics decision and installation
@@ -170,7 +170,21 @@ First posts, when there is time and something real to say, target informational 
 - Link check across every page
 - Redirects: `www` → apex, `.com` → `.ee`
 
-**Verify:** gate passes · Lighthouse ≥95/95 on home, one service page and pricing · sitemap lists every page with correct alternates · zero broken links.
+### Known limitation: `@astrojs/sitemap` cannot pair localised slugs
+
+Found in Phase 4, recorded here because this is the phase that has to deal with it.
+
+The integration's `i18n` option groups URLs into alternate sets by **stripping the locale prefix and matching the remaining path**. That works when the two locales share a slug. Ours never do — CLAUDE.md forbids it, because an Estonian searcher must land on an Estonian URL. So `teenused/katusepesu` and `services/roof-cleaning` are two different keys and neither gets an `<xhtml:link>` at all.
+
+Confirmed in the built output: `/` and `/en` are paired correctly, because the Estonian home page's path after prefix-stripping is empty in both. **Every other page in the site has no alternates in the sitemap.** Ten service pages today; every location page and every post later.
+
+This does not affect the pages themselves. `BaseLayout` emits a correct, slug-paired `hreflang` set in the `<head>` of every page, and that is the signal search engines actually act on. The sitemap is the secondary channel.
+
+**Proposed fix, for this phase to implement — do not build it earlier.** Drop the integration's `i18n` option and build the alternate sets ourselves in `serialize`, from the same source the pages use. `src/i18n/collections.ts` already produces `{ locale, href }[]` for a content-derived route and `alternates()` does it for a static one; a small map from URL to alternate set, built once at config time, is all `serialize` needs. The `serialize` hook is already in `astro.config.mjs` for trailing-slash normalisation, so this extends a function that exists rather than adding a mechanism.
+
+Two things to check when doing it: `serialize` receives absolute URLs, and the `links` array wants `{ url, lang }` with `lang` as the BCP 47 tag — `bcp47()` in `i18n/utils.ts` already produces it. If that turns out not to work, the fallback is to write the sitemap ourselves from an endpoint, which is more code than this is worth; reconsider whether the sitemap needs alternates at all before going there, given the `<head>` already carries them.
+
+**Verify:** gate passes · Lighthouse ≥95/95 on home, one service page and pricing · sitemap lists every page, with correct alternates on every page **or** the limitation above resolved and the fix noted here · every page's `<head>` carries a slug-paired hreflang set — this is the one that must hold unconditionally · zero broken links.
 
 **Commit:** `feat: SEO, performance, launch readiness`
 

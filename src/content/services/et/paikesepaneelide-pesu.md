@@ -41,17 +41,26 @@ anname teile teada, aga ise seda ei paranda.
 
 ## Kui palju pesu tootlikkust muudab
 
-TODO: me ei avalda selle kohta arvu. Mõõtmisi meie enda objektidel ei ole veel
-tehtud, ja võõra mõõtmise number ei ütle teie katuse kohta midagi. Kui meil on
-oma andmed, kirjutame need siia.
+<!-- unconfirmed: no output measurements exist on our own jobs. Do not publish
+     a percentage or a multiple here, and do not borrow one from a third-party
+     study. PLAN Phase 10. -->
+
+Me ei avalda selle kohta arvu. Meie enda objektidel ei ole veel mõõtmisi tehtud
+ja võõras number ei ütle teie paneelide kohta midagi.
 
 ## Puhastusained
 
-TODO: kasutatava puhastusaine nimi ja selle Eesti biotsiidiluba ei ole veel
-kinnitatud. Kuni need on kinnitatud, me siin ainet ei nimeta ega väida selle
-kohta midagi.
+<!-- unconfirmed: the cleaning product and its Estonian biocide authorisation
+     are not confirmed. Do not name a product here, and do not make any claim
+     about one, until they are. PLAN Phase 10 replaces this section. -->
+
+Ütleme pakkumises, millist puhastusainet teie objektil kasutame ja millise
+Eesti biotsiidiloa alusel see on lubatud.
 
 ## Kui kaua töö võtab
 
-TODO: tööde kestust ei ole veel mõõdetud, sest esimesed objektid on tegemata.
-Kestuse ütleme pakkumises objekti kohta eraldi, kui see on teada.
+<!-- unconfirmed: no job durations have been measured — the first jobs are not
+     done. Do not publish a figure here until there is one. PLAN Phase 10. -->
+
+Ütleme kestuse pakkumises, teie objekti kohta eraldi. Üldist arvu me ei avalda:
+see sõltub objektist ja meil ei ole veel oma mõõtmisi, millele tugineda.

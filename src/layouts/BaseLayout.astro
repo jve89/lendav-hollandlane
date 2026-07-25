@@ -51,13 +51,30 @@ const {
   jsonLd: extraJsonLd = [],
 } = Astro.props
 const t = useTranslations(locale)
-const canonical = new URL(Astro.url.pathname, site.domain).href
 const alts = alternatesOverride ?? alternates(routeKey)
 
 /* Found by locale rather than taken as `alts[0]`, so an override that lists the
    locales in a different order cannot silently point x-default at English. */
 const xDefault = alts.find((a) => a.locale === defaultLocale) ?? alts[0]!
 const langHref = alts.find((a) => a.locale === otherLocale(locale))?.href
+
+/**
+ * CANONICAL COMES FROM THE SAME ARRAY AS HREFLANG, and this is the point.
+ *
+ * It used to be built from `Astro.url.pathname`, which under the directory
+ * build format ends in a slash — so a page advertised itself as
+ * `…/teenused/katusepesu/` in canonical and `…/teenused/katusepesu` in its own
+ * et-EE alternate. Two URLs for one page, from two sources that had no reason
+ * to agree. Taking the self-referencing alternate makes them the same string by
+ * construction rather than by discipline.
+ *
+ * The form is NO TRAILING SLASH, except the Estonian home page, which is `/`.
+ * That is what `routes.ts` declares, what every internal link emits, and what
+ * `serviceHref` builds, so it is the form the site already speaks. The sitemap
+ * is normalised to match in `astro.config.mjs`.
+ */
+const selfHref = alts.find((a) => a.locale === locale)?.href ?? Astro.url.pathname
+const canonical = new URL(selfHref, site.domain).href
 
 /**
  * Serialises structured data for a `<script>` body. `JSON.stringify` does not

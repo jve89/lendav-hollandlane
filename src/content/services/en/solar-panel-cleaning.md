@@ -41,18 +41,27 @@ tell you, but we do not fix it ourselves.
 
 ## How much cleaning changes output
 
-TODO: we publish no figure for this. No measurements have been taken on our own
-jobs, and someone else's number tells you nothing about your roof. When we have
-our own data, it goes here.
+<!-- unconfirmed: no output measurements exist on our own jobs. Do not publish
+     a percentage or a multiple here, and do not borrow one from a third-party
+     study. PLAN Phase 10. -->
+
+We publish no figure for this. No measurements have been taken on our own jobs,
+and someone else's number tells you nothing about your panels.
 
 ## Cleaning products
 
-TODO: the name of the cleaning product and its Estonian biocide authorisation are
-not yet confirmed. Until they are, we name no product here and make no claim
-about one.
+<!-- unconfirmed: the cleaning product and its Estonian biocide authorisation
+     are not confirmed. Do not name a product here, and do not make any claim
+     about one, until they are. PLAN Phase 10 replaces this section. -->
+
+We name the product we use on your property, and the Estonian biocide
+authorisation it is approved under, in your quote.
 
 ## How long the work takes
 
-TODO: job durations have not been measured yet, because the first jobs have not
-been done. We give the duration separately in the quote for your property, once
-it is known.
+<!-- unconfirmed: no job durations have been measured — the first jobs are not
+     done. Do not publish a figure here until there is one. PLAN Phase 10. -->
+
+We give the duration in your quote, for your property specifically. We publish
+no general figure: it depends on the property, and we have no measurements of
+our own to base one on yet.

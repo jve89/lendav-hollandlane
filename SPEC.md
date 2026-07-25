@@ -43,7 +43,7 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 - Every price shown is **excluding VAT**, and says so. Estonian VAT is 24%.
 - We do **not** claim to be the first or only drone cleaning operator in Estonia. Droonipesu OÜ (trading as Pesutech) already operates nationwide. Our differentiators are published pricing, the documented SORA SAIL II operational authorisation, and insurance — all of which are verifiable claims.
 - Regulatory claims must be exact: operational authorisation from the Estonian Transport Administration (Transpordiamet) for specific-category operations under SORA, SAIL II; third-party liability insurance under Regulation (EC) 785/2004.
-- Any statement about cleaning products must name the actual product and its Estonian biocide authorisation. Until that is confirmed, the page carries a visible TODO marker and ships blank rather than vague.
+- Any statement about cleaning products must name the actual product and its Estonian biocide authorisation. Until that is confirmed, **no product is named and no claim about one is made** — the page says that the product and its authorisation are given in the quote, and the unconfirmed fact is recorded as a comment in the content file. Revised in Phase 4: this previously required a visible `TODO:` marker on the live page. The constraint that matters is that nothing unverified is asserted, not that the gap is advertised to the customer. See CLAUDE.md.
 - Estonian is the source of truth. English is a translation of it, not a parallel original.
 
 ## 6. Success criteria
