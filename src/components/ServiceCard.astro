@@ -82,9 +82,25 @@ function priceLine(kind: PriceKind): string {
 </li>
 
 <style>
+  /* The card sets its own track width so a trailing row of two keeps exactly the
+     width of a full row of three, rather than stretching to fill. `--card-gap`
+     is inherited from the grid container, so the two never drift apart. */
   .service {
     display: flex;
     flex-direction: column;
+    flex: 1 1 100%;
+  }
+
+  @media (min-width: 760px) {
+    .service {
+      flex: 0 1 calc((100% - var(--card-gap, var(--sp-5))) / 2);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .service {
+      flex: 0 1 calc((100% - 2 * var(--card-gap, var(--sp-5))) / 3);
+    }
   }
 
   .service__icon {

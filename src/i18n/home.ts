@@ -27,7 +27,9 @@ import type { Locale } from './ui'
  * business has not completed a job yet — CLAUDE.md forbids a figure with no
  * measurement behind it. PLAN Phase 10 restores them once there are numbers.
  * Also dropped: the one-pager's "järeltöötlus, et sammal tagasi ei tuleks", which
- * is an outcome promise resting on an unconfirmed product.
+ * is an outcome promise resting on an unconfirmed product, and its "iga 3–5 aasta
+ * tagant" cleaning interval, which has no source. The FAQ answer now explains what
+ * drives the interval rather than asserting a number.
  */
 
 /** Which price a service card shows. A reference, never an amount. */
@@ -126,12 +128,12 @@ export const homeCopy = {
           rest: 'Vastutuskindlustuse tõendi saadame soovi korral.',
         },
         {
-          lead: 'Meil on ametlik luba',
-          rest: 'lendamiseks elamute kohal. Loa koopia esitame nõudmisel.',
+          lead: 'Meil on ametlik luba lendamiseks elamute kohal.',
+          rest: 'Loa koopia esitame nõudmisel.',
         },
         {
-          lead: 'Hind on kodulehel.',
-          rest: 'Te ei pea helistama, et teada saada, kas see on teile taskukohane.',
+          lead: 'Hinnad on avaldatud.',
+          rest: 'Pakkumine on kirjalik ja siduv.',
         },
       ],
       fineprint:
@@ -227,7 +229,10 @@ export const homeCopy = {
         },
         {
           q: 'Kui tihti tuleks katust pesta?',
-          a: 'Eesti kliimas tavaliselt iga 3–5 aasta tagant, olenevalt varjust ja puude lähedusest. Põhjapoolsed kalded sammalduvad kiiremini.',
+          // No interval is asserted here. The one-pager's "iga 3–5 aasta tagant"
+          // has no source behind it, so the answer explains what drives the
+          // interval instead. A number returns when there is something to cite.
+          a: 'Seda otsustab maja, mitte kalender. Kiiremini sammalduvad katused, mis jäävad varju, mille lähedal kasvavad puud ja mille kalded on põhja poole. Ka katusematerjal loeb. Kõige kindlam märk on katus ise: kui sammal on nähtav, on aeg pesta.',
         },
       ],
     },
@@ -257,12 +262,12 @@ export const homeCopy = {
           rest: 'We send proof of liability cover on request.',
         },
         {
-          lead: 'We hold an official authorisation',
-          rest: 'to fly over houses. A copy of it is available on request.',
+          lead: 'We hold an official authorisation to fly over houses.',
+          rest: 'A copy of it is available on request.',
         },
         {
-          lead: 'The price is on the website.',
-          rest: "You shouldn't have to call to find out whether you can afford it.",
+          lead: 'Our prices are published.',
+          rest: 'The quote you get is written and binding.',
         },
       ],
       fineprint:
@@ -355,7 +360,7 @@ export const homeCopy = {
         },
         {
           q: 'How often should a roof be cleaned?',
-          a: 'In the Estonian climate, usually every 3–5 years, depending on shade and how close the trees are. North-facing pitches grow moss faster.',
+          a: 'That depends on the house, not on the calendar. Moss comes back faster on roofs that sit in shade, have trees close by, or have north-facing pitches. The roofing material matters too. The surest sign is the roof itself: once you can see moss, it is time.',
         },
       ],
     },

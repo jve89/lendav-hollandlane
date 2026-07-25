@@ -60,18 +60,19 @@ const c = homeCopy[locale]
     margin-block: var(--sp-4) var(--sp-8);
   }
 
+  /* Flex, not grid: five cards in a three-up row leave a trailing row of two,
+     and a grid strands that pair at the left edge with a hole beside it. A
+     centred wrap reads as deliberate instead. `--card-gap` is inherited by
+     ServiceCard, which sizes its own track from it. */
   .services__grid {
-    display: grid;
-    gap: var(--sp-5);
+    --card-gap: var(--sp-5);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--card-gap);
   }
 
   .services__vat {
     margin-block-start: var(--sp-7);
-  }
-
-  @media (min-width: 760px) {
-    .services__grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
   }
 </style>
