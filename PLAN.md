@@ -84,7 +84,9 @@ Port the one-page site into components. This is the highest-traffic page; do it 
 
 Schemas before content. A bad frontmatter key must fail the build.
 
-- `src/content/config.ts` with zod schemas for `services`, `locations`, `jobs`, `posts`
+- `src/content.config.ts` with zod schemas for `services`, `locations`, `jobs`, `posts`
+  — note the path: **not** `src/content/config.ts`, which is the deprecated Astro 4
+  location. See ARCHITECTURE section 5.
 - One real service file in each locale (`katusepesu.md` / `roof-cleaning.md`) to prove the schema
 - `BeforeAfter.astro` with its empty state — build this now, before there are any photos, so the empty path is the default path
 
