@@ -39,7 +39,15 @@ If you are about to type a phone number, an email address, a euro amount or a re
 - **No stock photography.** Every image is a photo of this operator's own work. If there are no photos, render the explicit empty state.
 - **No invented case studies, statistics, customer counts or "trusted by" claims.**
 - **No fabricated regulatory or technical claims.** Do not write that a product is biodegradable, that a chemical is approved, that a drone is certified, or that a process is guaranteed, unless the exact claim is already written in `SPEC.md` or `src/config/site.ts`.
-- **Where real content does not yet exist, ship a visible `TODO:` marker instead of plausible filler.** Filler that reads like real copy is worse than an obvious gap, because it survives into production unnoticed.
+- **Where real copy does not yet exist, ship a visible `TODO:` marker instead of plausible filler.** Filler that reads like real copy is worse than an obvious gap, because it survives into production unnoticed.
+
+**What a `TODO:` marker is, and is not.** This has been settled — do not re-argue it:
+
+- A visible `TODO:` marker is for **an unverified claim or missing copy that a reader must not mistake for fact**. The chemicals answer and the biocide authorisation are the reference cases. There, an obvious gap on the page is the correct and intended outcome.
+- A `TODO:` marker is **never rendered in place of design**. A missing *asset* — a photo, a video, a logo — gets a **finished empty state**, not a marker. `BeforeAfter` and `Hero` are the reference implementations: both ship their no-asset state as the default path, and both must look finished, because that is the state the site launches in.
+- The marker for a missing asset lives **in the repo**, not on the page, so that a future session does not mistake a deliberate empty state for unfinished work.
+
+The distinction is between a gap the visitor must see and a gap the visitor must not have to look at. Copy gaps are the first. Asset gaps are the second.
 
 **Claims that are permitted**, because they are verifiable:
 - Operational authorisation from Transpordiamet for specific-category operations (SORA, SAIL II)

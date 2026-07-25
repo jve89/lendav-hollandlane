@@ -17,7 +17,14 @@ and the content source for Phases 1 and 3. It is not part of the build.
 
 ## Commands
 
+**Run `nvm use` in this repo before anything else, every session.** Astro 7 requires
+Node 22.12 or newer, and this machine does not reliably default to it: a clean login
+shell resolves to Homebrew's Node, and an inherited shell may still be on Node 20.
+`.nvmrc` pins 22, but only `nvm use` applies it. Check with `node -v` before you
+install or build — an install on the wrong Node writes the wrong lockfile.
+
 ```bash
+nvm use            # FIRST. reads .nvmrc → Node 22
 npm install
 npm run dev        # local dev server
 npm run verify     # check + build + output checks — THE GATE

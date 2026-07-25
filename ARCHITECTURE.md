@@ -31,6 +31,8 @@ No other runtime dependencies. Adding one requires explicit approval — see CLA
 
 Client-side JavaScript is permitted only for: the mobile navigation toggle, and FAQ disclosure (which uses native `<details>`, so in practice this is zero JS). The language switch is a link to a real URL, not a JS toggle — this matters for indexing.
 
+The hero video is deliberately inside that budget: `<video>` with `autoplay muted loop playsinline` needs no script, and `<source media="...">` can decide per-viewport and per-motion-preference which file is fetched, if any. A hero that needs JavaScript to decide what to load is a design that has gone wrong, and a third-party video player is a dependency decision, not an implementation detail. See the Hero contract in section 6.
+
 ## 3. Internationalisation
 
 ```js
@@ -70,8 +72,10 @@ lennupesu/
 ├── public/
 │   ├── favicon.svg
 │   ├── robots.txt
+│   ├── video/                      # hero loop, if self-hosted — see section 6
 │   └── images/
 │       ├── jobs/                   # real before/after photos, added after each job
+│       ├── hero/                   # hero poster still, from our own footage
 │       └── og/                     # social share images
 └── src/
     ├── content.config.ts           # zod schemas for every collection
@@ -193,8 +197,58 @@ Referenced by locations and service pages. `published: false` until the customer
 
 - **`BaseLayout`** — props `{ title, description, locale, path, ogImage? }`. Emits `<html lang>`, canonical, full `hreflang` set from `routes.ts`, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. No page writes its own `<head>`.
 - **`BeforeAfter`** — props `{ jobId }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result.
+- **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled. Note that `import.meta.env` values are inlined as strings and never coerced.
 - **`PriceTable`** — reads prices from `site.ts`. Always renders the ex-VAT note. Never takes prices as props.
+
+### `Hero` — the contract
+
+**Structure.** One `<section>` containing the media band, then the price and credentials block. Nothing sits between them and the block is not a separate component boundary — the pairing is the point. The block reads its price from `site.ts` via `PriceTable`'s rules (from-price, `alates` prefix, excluding VAT, labelled) and its credentials from `site.credentials`. The Hero never takes a price, a phone number or a credential as a prop.
+
+**Media, when footage exists.** Native `<video>`, no player library. No `controls`, no sound, no audio track in the file at all. `muted` and `playsinline` are both load-bearing: without them iOS refuses to autoplay and takes the video fullscreen. The element carries no `aria-label` and is `aria-hidden`, because it is decoration — every claim it makes visually is also made in text beneath it. A hero that only communicates through video fails for a screen reader and fails with the video blocked.
+
+**Two independent guards, both required.** Reduced motion is protected twice, and neither guard is a fallback for the other. They are built together or the component is not done.
+
+*Guard one — the fetch never happens.* `<source media="...">` gates which file is fetched on viewport and motion preference. When nothing matches, the browser fetches nothing and paints the poster:
+
+```html
+<video autoplay muted loop playsinline preload="none"
+       poster="/images/hero/poster.webp" aria-hidden="true">
+  <source src="/video/hero.webm" type="video/webm"
+          media="(min-width: 48em) and (prefers-reduced-motion: no-preference)">
+  <source src="/video/hero.mp4" type="video/mp4"
+          media="(min-width: 48em) and (prefers-reduced-motion: no-preference)">
+</video>
+```
+
+Media queries on `<source>` are evaluated once at page load and never re-evaluated on resize — correct for a landing page, and the reason no resize listener is needed.
+
+*Guard two — no motion is ever visible.* Independently of the above, CSS hides the video outright when the visitor has asked for reduced motion, revealing the poster beneath:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .hero__video { display: none; }
+  .hero__poster { display: block; }
+}
+```
+
+**Why both.** They fail differently. Guard one is the one that saves bandwidth, but it depends on `media` on `<source>` being honoured — support was removed from the spec in 2014 and only restored in Chrome 120 and Firefox 120, so a browser that ignores it silently fetches and plays the video. Guard two cannot prevent the download, but it is plain CSS that has worked for a decade and it guarantees the accessibility outcome regardless. One protects the budget, the other protects the visitor. Neither may be dropped on the grounds that the other exists.
+
+`TODO:` verify guard one on real iOS Safari and Android Chrome once footage exists, particularly `prefers-reduced-motion` inside the `media` attribute. If it turns out not to be honoured the design still holds — guard two carries the accessibility outcome and only the bandwidth saving is lost — but we should know rather than assume.
+
+**The fallback chain.** Three states, and the component must implement all three from the start:
+
+1. **Video** — poster paints immediately and is the LCP element; video replaces it when decoded.
+2. **Poster only** — a real still from our own footage. Served to phones, to reduced-motion visitors, and to anyone whose video fails.
+3. **No footage at all** — no video, no poster. Renders a designed, image-free hero: the headline, the sub, and the price and credentials block, carried by type and the tokens in `tokens.css`. Not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon".
+
+State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empty state does. It must look finished, because it is what the site launches with and may be what it runs on for months. A hero that looks broken without footage will ship looking broken.
+
+**What state 3 must not become.** It must not acquire a stock image, a stock video, an illustration of a drone we do not own, or a photograph of someone else's roof. SPEC section 4 and CLAUDE.md apply to the hero identically. The `TODO:` marker for missing footage lives in the repo, not rendered onto the production home page — the visitor sees a complete image-free hero, and the marker exists so a future session does not mistake the empty state for a finished one.
+
+**Budget.** The poster is the LCP element and is the only hero asset counted against the 500 KB first-load budget in SPEC section 6, which is binding on mobile. It is WebP or AVIF with explicit `width` and `height`, and no hero asset may introduce layout shift — the media band reserves its aspect ratio in CSS before anything loads. The video is capped at **2 MB on desktop**, measured as the single file the browser actually fetches rather than the sum of the encodings offered, with a **maximum loop length of 12 seconds**. On mobile the video budget is zero bytes, because no video is fetched. Footage that cannot meet the caps is re-cut or re-encoded, not exempted.
+
+**Hosting.** Self-hosted in `public/video/`, served as a static asset by the same CDN as the rest of the site. No video CDN, no HLS, no player library — see SPEC section 9 for the reasoning. This is a closed decision; adding a video host is a dependency change and needs approval like any other.
 
 ## 7. SEO
 
