@@ -1,0 +1,112 @@
+/*
+ * tokens.css — the design system's only source of raw values.
+ *
+ * Ported from reference/direction-d.html, the approved design direction.
+ * Custom properties only: no selectors beyond :root, no component styling.
+ *
+ * If you are about to type a hex value, a clamp() or a px radius into any other
+ * file, it belongs here instead. A raw #22D3EE outside this file is a bug.
+ *
+ * DEVIATION FROM DIRECTION D, deliberate and approved (Phase 1):
+ * D's three dimmest on-dark greys fail WCAG AA against the #07090D base —
+ * #5A6675 (3.3:1), #5F6B7B (3.7:1) and #4A5464 (2.8:1), all under the 4.5:1
+ * normal-text threshold and all flagged by Lighthouse, which SPEC section 6
+ * gates at >=95. They are dropped. Fine print and section labels use --muted
+ * (#8A95A5, 6.6:1) and carry their hierarchy through size and weight instead.
+ */
+:root {
+  /* ---- base: near-black, four steps ---- */
+  --bg: #07090d;      /* page */
+  --bg-2: #0c1017;    /* raised band */
+  --panel: #11161f;   /* panel, mobile nav drop */
+  --line: #1b222d;    /* hairline on dark */
+
+  /* ---- text on dark. Contrast against --bg noted; all pass AA. ---- */
+  --ink: #f2f5f8;     /* headings, primary            15.9:1 */
+  --ink-2: #c7d2e0;   /* secondary body, nav links    10.6:1 */
+  --ink-3: #9daaba;   /* sub, lead                     7.4:1 */
+  --muted: #8a95a5;   /* fine print, section labels    6.6:1 */
+
+  /* ---- accent: cyan on dark ink ---- */
+  --accent: #22d3ee;
+  --accent-ink: #04222b;         /* text on an --accent fill */
+  --accent-on-paper: #0e7490;    /* accent as text on --paper; 5.9:1 */
+  --accent-wash: #ecfeff;        /* icon chip fill on paper */
+  --accent-wash-line: #cffafe;
+
+  /* ---- paper: the one deliberate inversion, for the services section ---- */
+  --paper: #ffffff;
+  --paper-ink: #0b1220;
+  --paper-muted: #5a6675;        /* 5.8:1 on white — passes */
+  --paper-line: #e4e8ee;
+
+  /* ---- glass: the floating pill navigation ---- */
+  --glass: rgba(12, 16, 23, 0.55);
+  --glass-line: rgba(255, 255, 255, 0.09);
+  --pill-fill: rgba(255, 255, 255, 0.07);
+  --pill-line: rgba(255, 255, 255, 0.13);
+  --ghost-line: rgba(255, 255, 255, 0.28);   /* outlined button on dark */
+
+  /* ---- type ---- */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --step-h1: clamp(2.3rem, 6vw, 4.4rem);
+  --step-h2: clamp(1.7rem, 3.4vw, 2.5rem);
+  --step-h3: 1.1rem;
+  --step-sub: clamp(1rem, 1.6vw, 1.2rem);
+  --step-lead: 1.06rem;
+  --step-body: 1rem;
+  --step-sm: 0.88rem;
+  --step-xs: 0.79rem;
+  --step-micro: 0.71rem;
+
+  --lh-display: 1.03;
+  --lh-heading: 1.2;
+  --lh-body: 1.6;
+  --lh-tight: 1.45;
+
+  --ls-h1: -0.035em;
+  --ls-h2: -0.025em;
+  --ls-h3: -0.01em;
+  --ls-caps: 0.16em;      /* uppercase section labels */
+
+  --fw-display: 800;
+  --fw-strong: 700;
+  --fw-medium: 500;
+
+  /* ---- space: 8-based ---- */
+  --sp-1: 0.25rem;   /* 4  */
+  --sp-2: 0.5rem;    /* 8  */
+  --sp-3: 0.75rem;   /* 12 */
+  --sp-4: 1rem;      /* 16 */
+  --sp-5: 1.25rem;   /* 20 */
+  --sp-6: 1.5rem;    /* 24 */
+  --sp-7: 2rem;      /* 32 */
+  --sp-8: 2.5rem;    /* 40 */
+  --sp-9: 3rem;      /* 48 */
+  --sp-10: 4rem;     /* 64 */
+  --sp-11: 5rem;     /* 80 */
+  --sp-12: 6rem;     /* 96 */
+
+  --wrap: 1120px;
+  --gutter: var(--sp-6);
+
+  /* ---- radii ---- */
+  --r-pill: 999px;
+  --r-card: 16px;
+  --r-chip: 11px;
+  --r-xs: 4px;
+
+  /* ---- elevation: one rung ---- */
+  --shadow-1: 0 18px 40px rgba(0, 0, 0, 0.45);
+
+  /* ---- measure ---- */
+  --measure: 60ch;
+  --measure-narrow: 52ch;
+  --measure-wide: 78ch;
+
+  /* ---- breakpoint reference (documentation only; @media cannot read vars) ----
+   * --bp-md: 760px   two-column grids
+   * --bp-lg: 1000px  desktop navigation appears
+   */
+}

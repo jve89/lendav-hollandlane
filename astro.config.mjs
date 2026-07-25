@@ -15,5 +15,11 @@ export default defineConfig({
     locales: ['et', 'en'],
     routing: { prefixDefaultLocale: false },
   },
-  integrations: [sitemap({ i18n: { defaultLocale: 'et', locales: { et: 'et-EE', en: 'en-GB' } } })],
+  integrations: [
+    sitemap({
+      i18n: { defaultLocale: 'et', locales: { et: 'et-EE', en: 'en-GB' } },
+      // The 404 pages are real routes but must never be submitted for indexing.
+      filter: (page) => !/\/404\/?$/.test(page),
+    }),
+  ],
 })

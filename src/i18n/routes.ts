@@ -16,6 +16,38 @@ export const routes = {
   contact:  { et: '/kontakt',     en: '/en/contact' },
   areas:    { et: '/piirkonnad',  en: '/en/areas' },
   blog:     { et: '/blogi',       en: '/en/blog' },
+  notFound: { et: '/404',         en: '/en/404' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type RouteKey = keyof typeof routes
+
+/**
+ * The navigation, in order. Header and footer both read this, so the two can
+ * never drift apart.
+ */
+export const navOrder = [
+  'services',
+  'pricing',
+  'about',
+  'faq',
+  'contact',
+] as const satisfies readonly RouteKey[]
+
+/**
+ * Routes that have a built page RIGHT NOW.
+ *
+ * Navigation renders only these. A link to a page that does not exist yet fails
+ * `npm run links`, which is the gate — so rather than weakening the gate or
+ * shipping empty placeholder pages, each phase adds its own routes here as they
+ * land: Phase 4 adds `services`, Phase 5 `pricing`/`about`/`faq`, Phase 6
+ * `contact`, Phase 7 `areas`, Phase 8 `blog`.
+ *
+ * This is also why a future session cannot accidentally ship a nav link to a 404.
+ */
+export const builtRoutes: ReadonlySet<RouteKey> = new Set<RouteKey>([
+  'home',
+  'notFound',
+])
+
+/** The navigation entries that currently resolve to a real page. */
+export const liveNav = navOrder.filter((key) => builtRoutes.has(key))

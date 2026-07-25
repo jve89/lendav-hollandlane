@@ -1,0 +1,276 @@
+/*
+ * global.css — element defaults and layout primitives.
+ *
+ * Reads every value from tokens.css. No raw hexes, no magic numbers.
+ * Component-specific styling lives in the component's own <style> block;
+ * this file holds only what more than one component needs.
+ */
+
+/* ---------- reset (as in direction D) ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The shell is header / main / footer; main takes the slack so a short page
+   still pins the footer to the bottom of the viewport. */
+main {
+  flex: 1 0 auto;
+}
+
+img,
+picture,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* ---------- headings ---------- */
+h1 {
+  font-size: var(--step-h1);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-h1);
+  font-weight: var(--fw-display);
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: var(--step-h2);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-h2);
+  font-weight: var(--fw-display);
+  text-wrap: balance;
+}
+
+h3 {
+  font-size: var(--step-h3);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-h3);
+  font-weight: var(--fw-strong);
+}
+
+/* ---------- focus ----------
+   Direction D defines no focus style at all. One is required: SPEC section 6
+   gates accessibility at >=95 and a keyboard user must be able to see where
+   they are. Never remove this without replacing it. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+:target {
+  scroll-margin-top: var(--sp-12);
+}
+
+/* ---------- layout primitives ---------- */
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  width: 100%;
+}
+
+.section {
+  padding-block: var(--sp-11);
+}
+
+.section--tight {
+  padding-block: var(--sp-8);
+}
+
+/* Raised band on the near-black base, bounded by hairlines. */
+.section--raised {
+  background: var(--bg-2);
+  border-block: 1px solid var(--line);
+}
+
+/* The one deliberate inversion in the page. Re-maps the on-dark tokens to
+   their paper equivalents, so anything nested inside inverts without needing
+   a light-mode variant of its own. */
+.section--paper {
+  background: var(--paper);
+  color: var(--paper-ink);
+
+  --ink: var(--paper-ink);
+  --ink-2: var(--paper-ink);
+  --ink-3: var(--paper-muted);
+  --muted: var(--paper-muted);
+  --line: var(--paper-line);
+  --accent-text: var(--accent-on-paper);
+}
+
+/* Accent as *text* differs by surface: cyan on dark, deep teal on paper. */
+:root {
+  --accent-text: var(--accent);
+}
+
+/* ---------- text helpers ---------- */
+.lead {
+  color: var(--ink-3);
+  font-size: var(--step-lead);
+  max-width: var(--measure);
+}
+
+.fineprint {
+  color: var(--muted);
+  font-size: var(--step-xs);
+  line-height: var(--lh-tight);
+  max-width: var(--measure-wide);
+}
+
+.label {
+  font-size: var(--step-micro);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-7);
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  font-weight: var(--fw-strong);
+  font-size: var(--step-body);
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn--accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn--accent:hover {
+  opacity: 0.9;
+}
+
+.btn--ghost {
+  border-color: var(--ghost-line);
+  color: var(--ink);
+}
+
+.btn--ghost:hover {
+  border-color: var(--ink);
+}
+
+.btn--sm {
+  padding: var(--sp-3) var(--sp-5);
+  font-size: var(--step-sm);
+}
+
+/* ---------- pill ---------- */
+.pill {
+  display: inline-block;
+  background: var(--pill-fill);
+  border: 1px solid var(--pill-line);
+  color: var(--ink-2);
+  font-size: var(--step-xs);
+  font-weight: var(--fw-strong);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-pill);
+}
+
+/* ---------- card, on paper ---------- */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: var(--r-card);
+  padding: var(--sp-7);
+}
+
+/* ---------- accessibility ---------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--sp-2);
+  left: var(--sp-2);
+  z-index: 200;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: var(--fw-strong);
+  font-size: var(--step-sm);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-pill);
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--sp-4)));
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ---------- reduced motion ----------
+   Global guard. Phase 3's hero carries a slow background drift and its own
+   second guard; this one covers everything else, now and later. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

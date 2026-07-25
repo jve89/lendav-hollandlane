@@ -1,0 +1,31 @@
+---
+import PageLayout from '../layouts/PageLayout.astro'
+import { site } from '../config/site'
+import { useTranslations, path } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+---
+<PageLayout
+  title={t('meta.notFound.title')}
+  description={t('meta.notFound.description')}
+  locale={locale}
+  routeKey="notFound"
+  heading={t('notFound.heading')}
+  lead={t('notFound.body')}
+  noindex
+>
+  <div class="wrap not-found__actions">
+    <a class="btn btn--accent" href={path('home', locale)}>{t('notFound.backHome')}</a>
+    <a class="btn btn--ghost" href={site.phoneHref}>{site.phone}</a>
+  </div>
+</PageLayout>
+
+<style>
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    padding-block-end: var(--sp-12);
+  }
+</style>

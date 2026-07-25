@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { site } from '../config/site'
-import { useTranslations, path } from '../i18n/utils'
+import { useTranslations } from '../i18n/utils'
 
 const locale = 'et' as const
 const t = useTranslations(locale)
@@ -12,11 +12,25 @@ const t = useTranslations(locale)
   locale={locale}
   routeKey="home"
 >
-  <main>
-    <h1>{site.brand}</h1>
+  <div class="wrap">
+    <h1>{site.brandText}</h1>
     <p>Katuse- ja fassaadipesu droonilt. Kogu Eesti.</p>
-    <p><a href={site.phoneHref}>{site.phone}</a></p>
-    <p><a href={path('home', 'en')}>{t('lang.switch')}</a></p>
-    <!-- Phase 0 walking skeleton. Real content arrives in Phase 3. -->
-  </main>
+  </div>
+  <!--
+    Phase 1 shell only. The hero, the proof strip and the services section
+    arrive in Phase 3, and the header switches to variant="overlay" then.
+  -->
 </BaseLayout>
+
+<style>
+  .wrap {
+    padding-block: var(--sp-10) var(--sp-12);
+  }
+
+  p {
+    color: var(--ink-3);
+    font-size: var(--step-sub);
+    margin-block-start: var(--sp-5);
+    max-width: var(--measure-narrow);
+  }
+</style>

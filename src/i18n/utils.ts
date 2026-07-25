@@ -23,3 +23,49 @@ export function path(key: RouteKey, locale: Locale): string {
 export function alternates(key: RouteKey): { locale: Locale; href: string }[] {
   return locales.map((l) => ({ locale: l, href: routes[key][l] }))
 }
+
+/** The locale to switch to. With two locales this is "the other one". */
+export function otherLocale(locale: Locale): Locale {
+  return locales.find((l) => l !== locale) ?? defaultLocale
+}
+
+/** BCP 47 tag for `lang`, `hreflang` and `Intl`. Written once, not per template. */
+const bcp47Tags = {
+  et: 'et-EE',
+  en: 'en-GB',
+} as const satisfies Record<Locale, string>
+
+export function bcp47(locale: Locale): string {
+  return bcp47Tags[locale]
+}
+
+/**
+ * The navigation label for a route. Declared as a total map, so adding a route
+ * without giving it a label is a compile-time error rather than a blank link.
+ */
+const navLabelKeys = {
+  home: 'nav.home',
+  services: 'nav.services',
+  pricing: 'nav.pricing',
+  about: 'nav.about',
+  faq: 'nav.faq',
+  contact: 'nav.contact',
+  areas: 'nav.areas',
+  blog: 'nav.blog',
+  notFound: 'nav.notFound',
+} as const satisfies Record<RouteKey, UIKey>
+
+export function navLabel(key: RouteKey, locale: Locale): string {
+  return ui[locale][navLabelKeys[key]]
+}
+
+/**
+ * Format a month range in the reader's language — "aprill–oktoober", "April–October".
+ * Month numbers are 1-based and come from `site.ts`; no month name is ever typed
+ * into this repository, which is also what makes Russian a drop-in.
+ */
+export function monthRange(fromMonth: number, toMonth: number, locale: Locale): string {
+  const format = new Intl.DateTimeFormat(bcp47(locale), { month: 'long' })
+  const name = (m: number) => format.format(new Date(Date.UTC(2000, m - 1, 1)))
+  return `${name(fromMonth)}–${name(toMonth)}`
+}

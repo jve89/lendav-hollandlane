@@ -1,0 +1,205 @@
+---
+/**
+ * Footer. Every fact on it is read from site.ts — no phone number, email,
+ * registry code or price is typed here. See CLAUDE.md, "The single-source rule".
+ *
+ * The claims are deliberately in customer language. `SORA`, `SAIL II` and the
+ * insurance regulation number belong on the credentials page (Phase 5) and in
+ * KÜ small print, not in a footer a homeowner reads.
+ *
+ * `regCode` and `vatNumber` are still the literal string TODO in site.ts, and
+ * they render as TODO. That is the intended behaviour: an unverified fact shows
+ * as a visible gap rather than as plausible filler.
+ */
+import { site } from '../config/site'
+import { navLabel, path, useTranslations, monthRange } from '../i18n/utils'
+import { liveNav, type RouteKey } from '../i18n/routes'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+  routeKey: RouteKey
+}
+
+const { locale, routeKey } = Astro.props
+const t = useTranslations(locale)
+
+const items = liveNav.map((key) => ({
+  key,
+  href: path(key, locale),
+  label: navLabel(key, locale),
+}))
+
+const serviceBase = locale === 'et' ? site.serviceArea.baseEt : site.serviceArea.baseEn
+const season = monthRange(site.season.fromMonth, site.season.toMonth, locale)
+const year = new Date().getFullYear()
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <p class="site-footer__wordmark">{site.brand}</p>
+        <ul class="site-footer__claims">
+          <li>{t('footer.claimNoRoofWalk')}</li>
+          <li>{t('footer.claimInsured')}</li>
+          <li>{t('footer.claimPermitted')}</li>
+        </ul>
+      </div>
+
+      <div class="site-footer__col">
+        <h2 class="label">{t('footer.contactTitle')}</h2>
+        <dl class="site-footer__list">
+          <dt class="visually-hidden">{t('cta.call')}</dt>
+          <dd><a href={site.phoneHref}>{site.phone}</a></dd>
+          <dt class="visually-hidden">E-mail</dt>
+          <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+          <dt>{t('footer.areaTitle')}</dt>
+          <dd>{serviceBase} · {t('footer.areaAll')}</dd>
+          <dt>{t('footer.seasonTitle')}</dt>
+          <dd>{season}</dd>
+        </dl>
+      </div>
+
+      <div class="site-footer__col">
+        <h2 class="label">{t('footer.companyTitle')}</h2>
+        <dl class="site-footer__list">
+          <dt class="visually-hidden">{t('footer.companyTitle')}</dt>
+          <dd>{site.legalName}</dd>
+          <dt>{t('footer.regCode')}</dt>
+          <dd>{site.regCode}</dd>
+          <dt>{t('footer.vatNumber')}</dt>
+          <dd>{site.vatNumber}</dd>
+        </dl>
+      </div>
+
+      {items.length > 0 && (
+        <nav class="site-footer__col" aria-label={t('footer.label')}>
+          <h2 class="label">{t('footer.navTitle')}</h2>
+          <ul class="site-footer__nav">
+            {items.map((item) => (
+              <li>
+                <a href={item.href} aria-current={item.key === routeKey ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>© {year} {site.legalName}</p>
+      <p>{t('footer.vatNote')}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--bg-2);
+    border-block-start: 1px solid var(--line);
+    padding-block: var(--sp-10) var(--sp-7);
+  }
+
+  /* Flex rather than a fixed column count: the Pages column only appears once
+     there are pages to list, and the row must look right with three columns or
+     with four. */
+  .site-footer__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-8);
+  }
+
+  .site-footer__brand,
+  .site-footer__col {
+    flex: 1 1 100%;
+  }
+
+  .site-footer__wordmark {
+    font-weight: var(--fw-display);
+    letter-spacing: -0.03em;
+    font-size: 1.12rem;
+    color: var(--ink);
+  }
+
+  .site-footer__claims {
+    display: grid;
+    gap: var(--sp-2);
+    margin-block-start: var(--sp-4);
+    color: var(--ink-3);
+    font-size: var(--step-sm);
+    line-height: var(--lh-tight);
+    max-width: var(--measure-narrow);
+  }
+
+  .label {
+    margin-block-end: var(--sp-4);
+  }
+
+  .site-footer__list {
+    display: grid;
+    gap: var(--sp-1);
+    font-size: var(--step-sm);
+    color: var(--ink-2);
+  }
+
+  .site-footer__list dt {
+    color: var(--muted);
+    font-size: var(--step-xs);
+  }
+
+  .site-footer__list dt:not(.visually-hidden) {
+    margin-block-start: var(--sp-3);
+  }
+
+  .site-footer__list a {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: var(--fw-strong);
+  }
+
+  .site-footer__list a:hover {
+    text-decoration: underline;
+  }
+
+  .site-footer__nav {
+    display: grid;
+    gap: var(--sp-2);
+    font-size: var(--step-sm);
+  }
+
+  .site-footer__nav a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .site-footer__nav a:hover,
+  .site-footer__nav a[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-6);
+    justify-content: space-between;
+    margin-block-start: var(--sp-9);
+    padding-block-start: var(--sp-5);
+    border-block-start: 1px solid var(--line);
+    color: var(--muted);
+    font-size: var(--step-xs);
+  }
+
+  @media (min-width: 560px) {
+    .site-footer__col {
+      flex: 1 1 180px;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .site-footer__brand {
+      flex: 1 1 260px;
+    }
+  }
+</style>
