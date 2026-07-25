@@ -1,0 +1,122 @@
+---
+/**
+ * Hero — SPEC section 9, ARCHITECTURE section 6.
+ *
+ * THIS SHIPS IN THE NO-FOOTAGE STATE, AND THAT IS THE DEFAULT PATH, NOT A
+ * DEGRADED ONE. There is deliberately no <video>, no <source>, no poster, no
+ * reserved media band and no aspect-ratio box in this file. The section is
+ * carried by type and the tokens alone. It is a type-led hero that will later
+ * gain a video — not a video hero with a hole in it.
+ *
+ * TODO(footage): the first job footage is expected September 2026. When it
+ * exists, this component GAINS a media band ABOVE the price and credentials
+ * block, with both guards from ARCHITECTURE section 6 built together: the
+ * `media` attribute on <source> so a phone or a reduced-motion visitor never
+ * fetches the file, AND the CSS rule that hides the video outright under
+ * `prefers-reduced-motion: reduce`. Neither guard substitutes for the other.
+ * This marker lives in the repo, never on the page — a visitor sees a finished
+ * hero, and a future session does not mistake that for unfinished work.
+ *
+ * What this must never acquire: stock footage, a stock photograph, an
+ * illustration of a drone we do not own, a grey box, or the words "video
+ * coming soon". SPEC section 4 and CLAUDE.md apply to the hero identically.
+ *
+ * The price and the credentials are read here, never passed in — the pairing of
+ * the headline with the published price is the whole point of the section.
+ */
+import { site } from '../config/site'
+import { homeCopy } from '../i18n/home'
+import { builtRoutes } from '../i18n/routes'
+import { formatPrice, path, useTranslations } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+  headline: string
+  sub: string
+}
+
+const { locale, headline, sub } = Astro.props
+const t = useTranslations(locale)
+const c = homeCopy[locale].hero
+
+/**
+ * Until the quote form exists (Phase 6) the written channel is email, and SPEC
+ * section 3 wants a WRITTEN enquiry. Same conditional as `Header.astro`; both
+ * flip to the form the moment `contact` joins `builtRoutes`.
+ */
+const quoteHref = builtRoutes.has('contact') ? path('contact', locale) : `mailto:${site.email}`
+---
+<section class="hero">
+  <div class="hero__inner">
+    <ul class="hero__pills">
+      {c.pills.map((claim) => <li class="pill">{claim}</li>)}
+    </ul>
+
+    <h1>{headline}</h1>
+    <p class="hero__sub">{sub}</p>
+
+    <div class="hero__actions">
+      <a class="btn btn--accent" href={quoteHref}>{t('cta.quote')}</a>
+      <a class="btn btn--ghost" href={site.phoneHref}>{site.phone}</a>
+    </div>
+
+    <p class="hero__price">
+      {c.priceLead} <b>{formatPrice(site.prices.roofFrom, locale)}{c.priceUnit}</b> · {c.vatNote}
+    </p>
+  </div>
+</section>
+
+<style>
+  /* A static radial wash behind the type. Not animated, not an image, and it
+     reserves no space of its own — nothing here can shift when the page loads. */
+  .hero {
+    background:
+      radial-gradient(90% 70% at 50% 0%, var(--hero-glow) 0%, transparent 60%),
+      var(--bg);
+    text-align: center;
+    /* Clears the absolutely positioned header pill in its overlay variant. */
+    padding-block: calc(var(--sp-12) + var(--sp-7)) var(--sp-11);
+  }
+
+  .hero__inner {
+    max-width: 920px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .hero__pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-2);
+    margin-block-end: var(--sp-6);
+  }
+
+  .hero__sub {
+    max-width: var(--measure);
+    margin: var(--sp-5) auto 0;
+    color: var(--ink-3);
+    font-size: var(--step-sub);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-3);
+    margin-block-start: var(--sp-8);
+  }
+
+  .hero__price {
+    margin-block-start: var(--sp-7);
+    color: var(--muted);
+    font-size: var(--step-sm);
+  }
+
+  .hero__price b {
+    color: var(--ink);
+    font-size: var(--step-sub);
+    letter-spacing: -0.01em;
+  }
+</style>

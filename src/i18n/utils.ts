@@ -60,6 +60,24 @@ export function navLabel(key: RouteKey, locale: Locale): string {
 }
 
 /**
+ * Format a euro amount in the reader's language — "3 €" in Estonian, "€3" in English.
+ *
+ * The AMOUNT always comes from `site.ts`; this only decides how it is written. The
+ * euro symbol and its placement come from `Intl`, so neither is typed anywhere in
+ * the repository. Trailing zeroes are dropped: a from-price reads "3 €", not
+ * "3,00 €". `PriceTable` reuses this in Phase 5, which is why it lives here rather
+ * than inside a component.
+ */
+export function formatPrice(amount: number, locale: Locale): string {
+  return new Intl.NumberFormat(bcp47(locale), {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(amount)
+}
+
+/**
  * Format a month range in the reader's language — "aprill–oktoober", "April–October".
  * Month numbers are 1-based and come from `site.ts`; no month name is ever typed
  * into this repository, which is also what makes Russian a drop-in.

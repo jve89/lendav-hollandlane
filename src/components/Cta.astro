@@ -1,0 +1,54 @@
+---
+/**
+ * Cta — direction D's closing band. The last thing on the page is the ask.
+ *
+ * Same target resolution as `Hero`: email until the quote form exists in
+ * Phase 6, at which point `contact` joins `builtRoutes` and both components
+ * point at the form without either being edited.
+ */
+import { site } from '../config/site'
+import { homeCopy } from '../i18n/home'
+import { builtRoutes } from '../i18n/routes'
+import { path, useTranslations } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const t = useTranslations(locale)
+const c = homeCopy[locale].cta
+const quoteHref = builtRoutes.has('contact') ? path('contact', locale) : `mailto:${site.email}`
+---
+<section class="section cta">
+  <div class="wrap">
+    <h2>{c.heading}</h2>
+    <p class="cta__body">{c.body}</p>
+    <div class="cta__actions">
+      <a class="btn btn--accent" href={quoteHref}>{t('cta.quote')}</a>
+      <a class="btn btn--ghost" href={site.phoneHref}>{site.phone}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    text-align: center;
+  }
+
+  .cta__body {
+    max-width: var(--measure-narrow);
+    margin: var(--sp-4) auto 0;
+    color: var(--ink-3);
+    font-size: var(--step-lead);
+  }
+
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-3);
+    margin-block-start: var(--sp-8);
+  }
+</style>

@@ -21,6 +21,11 @@
   --panel: #11161f;   /* panel, mobile nav drop */
   --line: #1b222d;    /* hairline on dark */
 
+  /* Direction D's launch-state hero wash: a static radial glow behind the type,
+     never an image, never animated. See SPEC section 9 — the no-footage hero
+     must not acquire anything that reads as a stand-in for a photograph. */
+  --hero-glow: #14202e;
+
   /* ---- text on dark. Contrast against --bg noted; all pass AA. ---- */
   --ink: #f2f5f8;     /* headings, primary            15.9:1 */
   --ink-2: #c7d2e0;   /* secondary body, nav links    10.6:1 */

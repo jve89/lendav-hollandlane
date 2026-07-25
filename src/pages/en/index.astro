@@ -1,36 +1,77 @@
 ---
+/**
+ * English home page. Identical composition to `index.astro`, different locale —
+ * see the note there. Estonian is the source of truth; the English strings in
+ * `i18n/home.ts` are a translation of it, not a parallel original.
+ */
 import BaseLayout from '../../layouts/BaseLayout.astro'
-import { site } from '../../config/site'
+import Hero from '../../components/Hero.astro'
+import TrustBar from '../../components/TrustBar.astro'
+import ServiceCard from '../../components/ServiceCard.astro'
+import CompareTable from '../../components/CompareTable.astro'
+import Faq from '../../components/Faq.astro'
+import Cta from '../../components/Cta.astro'
+import { homeCopy } from '../../i18n/home'
 import { useTranslations } from '../../i18n/utils'
 
 const locale = 'en' as const
 const t = useTranslations(locale)
+const c = homeCopy[locale]
 ---
 <BaseLayout
   title={t('meta.home.title')}
   description={t('meta.home.description')}
   locale={locale}
   routeKey="home"
+  headerVariant="overlay"
 >
-  <div class="wrap">
-    <h1>{site.brandText}</h1>
-    <p>Roof and facade cleaning by drone. Across Estonia.</p>
-  </div>
-  <!--
-    Phase 1 shell only. The hero, the proof strip and the services section
-    arrive in Phase 2, and the header switches to variant="overlay" then.
-  -->
+  <Hero locale={locale} headline={c.hero.headline} sub={c.hero.sub} />
+
+  <TrustBar locale={locale} />
+
+  <section class="section section--paper services">
+    <div class="wrap">
+      <h2>{c.services.heading}</h2>
+      <p class="lead services__lead">{c.services.lead}</p>
+      <ul class="services__grid">
+        {c.services.cards.map((card) => (
+          <ServiceCard
+            locale={locale}
+            title={card.title}
+            body={card.body}
+            icon={card.icon}
+            priceKind={card.priceKind}
+          />
+        ))}
+      </ul>
+      <p class="fineprint services__vat">{t('footer.vatNote')}</p>
+    </div>
+  </section>
+
+  <CompareTable locale={locale} />
+
+  <Faq locale={locale} />
+
+  <Cta locale={locale} />
 </BaseLayout>
 
 <style>
-  .wrap {
-    padding-block: var(--sp-10) var(--sp-12);
+  .services__lead {
+    margin-block: var(--sp-4) var(--sp-8);
   }
 
-  p {
-    color: var(--ink-3);
-    font-size: var(--step-sub);
-    margin-block-start: var(--sp-5);
-    max-width: var(--measure-narrow);
+  .services__grid {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .services__vat {
+    margin-block-start: var(--sp-7);
+  }
+
+  @media (min-width: 760px) {
+    .services__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 </style>

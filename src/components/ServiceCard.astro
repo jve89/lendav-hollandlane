@@ -1,0 +1,123 @@
+---
+/**
+ * ServiceCard — one card in the home page's services grid, on the paper section.
+ *
+ * In Phase 2 the grid is authored inline from the array in `i18n/home.ts`; the
+ * `services` content collection does not exist until Phase 3. When it does, only
+ * the source of `title`, `body` and `priceKind` changes — this component does not.
+ *
+ * It never receives a price. It receives a `priceKind` and resolves it against
+ * `site.prices`, so no euro amount is typed into a copy file or a page. The
+ * "alates" / "From" prefix is mandatory on per-m² prices — CLAUDE.md, pricing
+ * rules — and the ex-VAT label sits once per section rather than once per card.
+ */
+import { site } from '../config/site'
+import { homeCopy, type PriceKind, type ServiceIcon } from '../i18n/home'
+import { formatPrice, useTranslations } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+  title: string
+  body: string
+  icon: ServiceIcon
+  priceKind: PriceKind
+}
+
+const { locale, title, body, icon, priceKind } = Astro.props
+const t = useTranslations(locale)
+const c = homeCopy[locale].services
+
+/** A from-price, or the copy that stands in its place. Never a total. */
+function priceLine(kind: PriceKind): string {
+  switch (kind) {
+    case 'roof':
+      return `${c.priceFrom} ${formatPrice(site.prices.roofFrom, locale)}${c.priceUnit}`
+    case 'facade':
+      return `${c.priceFrom} ${formatPrice(site.prices.facadeFrom, locale)}${c.priceUnit}`
+    case 'quote':
+      return t('cta.quote')
+    case 'addon':
+      return c.priceAddon
+  }
+}
+---
+<li class="card service">
+  <span class="service__icon" aria-hidden="true">
+    {icon === 'roof' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
+        <path d="M3 11l9-8 9 8" />
+        <path d="M5 10v10h14V10" />
+      </svg>
+    )}
+    {icon === 'facade' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
+        <rect x="4" y="3" width="16" height="18" rx="1" />
+        <path d="M4 9h16M4 15h16M12 3v18" />
+      </svg>
+    )}
+    {icon === 'solar' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" />
+      </svg>
+    )}
+    {icon === 'glass' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18M9 21V9" />
+      </svg>
+    )}
+    {icon === 'gutter' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
+        <path d="M4 7h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V7z" />
+        <path d="M12 14v6" />
+      </svg>
+    )}
+  </span>
+
+  <h3>{title}</h3>
+  <p class="service__body">{body}</p>
+  <p class="service__price">{priceLine(priceKind)}</p>
+</li>
+
+<style>
+  .service {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .service__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--r-chip);
+    background: var(--accent-wash);
+    border: 1px solid var(--accent-wash-line);
+    color: var(--accent-on-paper);
+    margin-block-end: var(--sp-4);
+  }
+
+  .service__icon svg {
+    inline-size: 20px;
+    block-size: 20px;
+  }
+
+  .service__body {
+    margin-block-start: var(--sp-2);
+    color: var(--paper-muted);
+    font-size: var(--step-sm);
+    /* Pushes the price to the foot of the card, so a short body and a long one
+       still line their prices up across the row. */
+    flex: 1 0 auto;
+  }
+
+  .service__price {
+    margin-block-start: var(--sp-5);
+    padding-block-start: var(--sp-4);
+    border-block-start: 1px dashed var(--paper-line);
+    color: var(--accent-on-paper);
+    font-weight: var(--fw-display);
+  }
+</style>

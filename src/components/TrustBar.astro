@@ -1,0 +1,127 @@
+---
+/**
+ * TrustBar — direction D's proof strip, which replaces the logo wall a business
+ * with no customers yet cannot honestly build.
+ *
+ * Every claim on it is on CLAUDE.md's permitted list: nobody walks on the roof,
+ * the work is insured, we are permitted to fly over houses, the price is
+ * published. Nothing here needs a measurement to defend.
+ *
+ * Direction D's own strip names SORA, SAIL II and the insurance regulation in
+ * its fineprint. Those strings do NOT come across — CLAUDE.md is explicit about
+ * this file: port its layout, not those strings. The exact references live on
+ * the credentials page (Phase 5), where the reader has come looking for
+ * documents. The fineprint below says what a KÜ gets, in a homeowner's language,
+ * and links nowhere until that page exists.
+ *
+ * The icons are decoration: every claim they sit beside is also made in text,
+ * so they are aria-hidden and carry no alt equivalent.
+ */
+import { homeCopy } from '../i18n/home'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const c = homeCopy[locale].trust
+const [noWalk, insured, authorised, published] = c.items
+---
+<section class="trust section--raised">
+  <div class="wrap">
+    <p class="label trust__label">{c.label}</p>
+
+    <ul class="trust__grid">
+      <li class="trust__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <span><b>{noWalk.lead}</b> {noWalk.rest}</span>
+      </li>
+
+      <li class="trust__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+        <span><b>{insured.lead}</b> {insured.rest}</span>
+      </li>
+
+      <li class="trust__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+          <path d="M3 12l9-9 9 9" />
+          <path d="M5 10v10h14V10" />
+        </svg>
+        <span><b>{authorised.lead}</b> {authorised.rest}</span>
+      </li>
+
+      <li class="trust__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18" />
+        </svg>
+        <span><b>{published.lead}</b> {published.rest}</span>
+      </li>
+    </ul>
+
+    <p class="fineprint trust__fineprint">{c.fineprint}</p>
+  </div>
+</section>
+
+<style>
+  .trust {
+    padding-block: var(--sp-7);
+  }
+
+  .trust__label {
+    text-align: center;
+    margin-block-end: var(--sp-6);
+  }
+
+  .trust__grid {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .trust__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    color: var(--ink-2);
+    font-size: var(--step-sm);
+    line-height: var(--lh-tight);
+  }
+
+  .trust__item svg {
+    inline-size: 17px;
+    block-size: 17px;
+    flex: none;
+    margin-block-start: 3px;
+    color: var(--accent);
+  }
+
+  .trust__item b {
+    color: var(--ink);
+    font-weight: var(--fw-strong);
+  }
+
+  .trust__fineprint {
+    margin-block-start: var(--sp-6);
+    padding-block-start: var(--sp-5);
+    border-block-start: 1px solid var(--line);
+  }
+
+  @media (min-width: 760px) {
+    .trust__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-5);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .trust__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

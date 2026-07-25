@@ -1,0 +1,122 @@
+---
+/**
+ * CompareTable — drone versus scaffolding, from reference/one-pager-v1.html.
+ *
+ * A real <table>: this is tabular data and a screen reader user needs the row
+ * and column headers to make sense of a cell. The meaning is carried by the
+ * column header, never by colour alone — the accent is emphasis, not
+ * information.
+ *
+ * Five rows, not the one-pager's six. "Ülesseadmine — umbes tund" is a duration
+ * nobody has measured yet and does not ship; PLAN Phase 10 restores it once
+ * there are job figures. The scaffolding cost cell says "eraldi kulu" rather
+ * than naming a euro figure — partly because no euro amount may be typed
+ * outside site.ts, partly because quoting someone else's pricing is a claim we
+ * cannot stand behind.
+ */
+import { homeCopy } from '../i18n/home'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const c = homeCopy[locale].compare
+---
+<section class="section compare">
+  <div class="wrap">
+    <h2>{c.heading}</h2>
+    <p class="lead compare__lead">{c.lead}</p>
+
+    <div class="compare__scroll">
+      <table class="compare__table">
+        <caption class="visually-hidden">{c.caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{c.rowHeader}</th>
+            <th scope="col" class="compare__col-drone">{c.columnDrone}</th>
+            <th scope="col">{c.columnAlt}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {c.rows.map((row) => (
+            <tr>
+              <th scope="row">{row.label}</th>
+              <td class="compare__drone">{row.drone}</td>
+              <td class="compare__alt">{row.alt}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .compare__lead {
+    margin-block: var(--sp-4) var(--sp-8);
+  }
+
+  /* The table keeps its own scrollbar rather than pushing the page sideways. */
+  .compare__scroll {
+    overflow-x: auto;
+  }
+
+  /* Wide enough to stay legible, narrow enough that all three columns are
+     visible at 390px — the third column must not be hidden off-screen, because
+     it carries half the argument. */
+  .compare__table {
+    inline-size: 100%;
+    min-inline-size: 24rem;
+    border-collapse: collapse;
+    font-size: var(--step-sm);
+    text-align: start;
+  }
+
+  .compare__table th,
+  .compare__table td {
+    padding: var(--sp-3);
+    text-align: start;
+    vertical-align: top;
+    border-block-end: 1px solid var(--line);
+    line-height: var(--lh-tight);
+  }
+
+  .compare__table thead th {
+    color: var(--ink);
+    font-weight: var(--fw-strong);
+    border-block-end-color: var(--ink-3);
+  }
+
+  .compare__col-drone {
+    color: var(--accent-text);
+  }
+
+  .compare__table tbody th {
+    inline-size: 30%;
+    color: var(--ink-2);
+    font-weight: var(--fw-strong);
+  }
+
+  @media (min-width: 760px) {
+    .compare__table th,
+    .compare__table td {
+      padding: var(--sp-4);
+    }
+  }
+
+  .compare__drone {
+    color: var(--ink);
+    font-weight: var(--fw-medium);
+  }
+
+  .compare__alt {
+    color: var(--muted);
+  }
+
+  .compare__table tbody tr:last-child th,
+  .compare__table tbody tr:last-child td {
+    border-block-end: 0;
+  }
+</style>
