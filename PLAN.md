@@ -32,7 +32,7 @@ The thinnest possible end-to-end slice: one route in two locales, rendered from 
 
 **Design source: `reference/direction-d.html`** — the approved direction. *Not*
 `reference/one-pager-v1.html`, which is superseded for design and kept only for its
-Estonian copy in Phase 3.
+Estonian copy in Phase 2.
 
 Port direction D's tokens and layout. No page content yet.
 
@@ -66,21 +66,7 @@ and prices are placeholders and come from `site.ts`.
 
 ---
 
-## Phase 2 — Content collections
-
-Schemas before content. A bad frontmatter key must fail the build.
-
-- `src/content/config.ts` with zod schemas for `services`, `locations`, `jobs`, `posts`
-- One real service file in each locale (`katusepesu.md` / `roof-cleaning.md`) to prove the schema
-- `BeforeAfter.astro` with its empty state — build this now, before there are any photos, so the empty path is the default path
-
-**Verify:** gate passes · deliberately breaking a frontmatter field fails `npm run check` · `BeforeAfter` renders the empty state without any job files present.
-
-**Commit:** `feat: content collections and schemas`
-
----
-
-## Phase 3 — Home page
+## Phase 2 — Home page
 
 Port the one-page site into components. This is the highest-traffic page; do it properly.
 
@@ -91,6 +77,20 @@ Port the one-page site into components. This is the highest-traffic page; do it 
 **Verify:** gate passes · Lighthouse mobile ≥95 performance and ≥95 accessibility on `/` · one `<h1>` · no layout shift.
 
 **Commit:** `feat: home page`
+
+---
+
+## Phase 3 — Content collections
+
+Schemas before content. A bad frontmatter key must fail the build.
+
+- `src/content/config.ts` with zod schemas for `services`, `locations`, `jobs`, `posts`
+- One real service file in each locale (`katusepesu.md` / `roof-cleaning.md`) to prove the schema
+- `BeforeAfter.astro` with its empty state — build this now, before there are any photos, so the empty path is the default path
+
+**Verify:** gate passes · deliberately breaking a frontmatter field fails `npm run check` · `BeforeAfter` renders the empty state without any job files present.
+
+**Commit:** `feat: content collections and schemas`
 
 ---
 

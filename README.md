@@ -19,7 +19,7 @@ two hero states — see SPEC section 9. It is not part of the build.
 
 `reference/one-pager-v1.html` is the original single-file site. It is **superseded as the
 design source** by `reference/direction-d.html` and is kept for reference only. It remains
-a *content* source for Phase 3, where its Estonian copy is still the draft to work from.
+a *content* source for Phase 2, where its Estonian copy is still the draft to work from.
 Do not take colour, type or layout decisions from it.
 
 ## Commands

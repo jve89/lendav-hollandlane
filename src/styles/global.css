@@ -258,7 +258,7 @@ h3 {
 }
 
 /* ---------- reduced motion ----------
-   Global guard. Phase 3's hero carries a slow background drift and its own
+   Global guard. Phase 2's hero carries a slow background drift and its own
    second guard; this one covers everything else, now and later. */
 @media (prefers-reduced-motion: reduce) {
   html {
