@@ -289,10 +289,27 @@ State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empt
 "preview": "astro preview",
 "check":   "astro check",
 "links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta
-"verify":  "npm run check && npm run build && npm run links"
+"sync":    "astro sync --force",            // evict the content cache; see below
+"verify":  "npm run sync && npm run check && npm run build && npm run links"
 ```
 
 `npm run verify` exiting 0 is the technical definition of done for every phase. It is a floor, not proof the site works — see SPEC section 6.
+
+### Why `verify` starts with `sync --force`
+
+Astro's content layer keeps a persistent store at `node_modules/.astro/data-store.json`. **Deleting a content file does not evict its entry from that store.** The glob loader reports `No files found matching …` for the now-empty directory and the stale entry survives regardless, so `getCollection` keeps returning content that is no longer in the repository.
+
+This was not theoretical. It was found in Phase 3 and it fails in both directions:
+
+- **Silently, which is the dangerous one.** A deleted job kept rendering on the home page — town, area and photos — while `npm run verify` exited 0 and the `BeforeAfter` empty state disappeared. A gate that passes on content the repository does not contain is not a gate.
+- **Loudly.** A deleted job whose photos went with it failed the build on an unresolvable `image()` path, from an entry no file on disk declares.
+
+`astro sync --force` clears the content layer and repopulates it from disk, which fixes both. It runs **first**, before `check`, for two reasons:
+
+1. `astro check` has no `--force` of its own, so whatever store exists when it runs is what it validates. Forcing at the head of the chain is the only way to give every later step the truth. Putting `--force` on `astro build` instead would correct `dist/` but still let `check` — the step that runs first and can abort the gate — pass or fail on content that is not there.
+2. It is a supported flag rather than a hand-rolled `rm -rf` of an Astro internal path. That path has already moved once, from `.astro/` to `node_modules/.astro/`, and a stale `.astro/data-store.json` left behind by the old location is exactly what made this bug hard to read.
+
+**Cost: about +0.85 s, roughly +23%** — `npm run verify` goes from ~3.8 s to ~4.6 s on this machine. Most of that is a fourth Node process starting, not the eviction itself; the store holds two files today. Correctness of the gate is worth a second, and this is the cheapest place in the project to buy it.
 
 ## 9. Deployment
 

@@ -12,7 +12,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "links": "node scripts/check-html.mjs",
-    "verify": "npm run check && npm run build && npm run links"
+    "sync": "astro sync --force",
+    "verify": "npm run sync && npm run check && npm run build && npm run links"
   },
   "dependencies": {
     "astro": "^7.1.3",
