@@ -12,12 +12,24 @@
 | Language | `typescript` (dev) | `^5.9.0` | Content collection schemas are typed; a bad frontmatter key fails the build instead of the page. Held at 5.x: `@astrojs/check` peers `^5 \|\| ^6`, so TypeScript 7 is not yet available to us. |
 | Type checking | `@astrojs/check` (dev) | `^0.9.4` | Powers `npm run check`. Astro-aware diagnostics for `.astro` files; a plain `tsc` cannot read them. |
 | Styling | Plain CSS with custom properties | — | No Tailwind. The design tokens already exist from the one-pager, and this removes a build dependency and a class-name vocabulary from every future session. |
+| Markdown | `@astrojs/markdown-satteri` | `0.3.4` | Astro 7's own Markdown processor, named explicitly so we can add a hast plugin. Astro already depends on it at this exact version, so declaring it installs nothing — see below. |
 | Sitemap | `@astrojs/sitemap` | `^3.7.3` | Generates sitemap with hreflang alternates. |
 | Forms | Formspree (external) | — | No backend, no database, free tier. Endpoint lives in one env var. |
 | Hosting | Vercel or Netlify, static | — | Free, atomic deploys, instant rollback. Nothing to patch. |
 | Analytics | Plausible or Vercel Analytics | — | Decided at Phase 9. No Google Analytics — cookie banner cost outweighs the benefit at this scale. |
 
-That table is the whole dependency list. `package.json` carries `astro` and `@astrojs/sitemap` as dependencies, `typescript` and `@astrojs/check` as devDependencies, and nothing else.
+That table is the whole dependency list. `package.json` carries `astro`,
+`@astrojs/sitemap` and `@astrojs/markdown-satteri` as dependencies, `typescript` and
+`@astrojs/check` as devDependencies, and nothing else.
+
+**`@astrojs/markdown-satteri` is the one line on that list that cost nothing**, and
+the reasoning is worth keeping because the next session will meet the same question.
+Astro 7.1.3 depends on it at the exact version `0.3.4`, so it was already in
+`node_modules` before we named it; `npm install` after adding it reported *"up to
+date"* and installed zero packages. Declaring it does not add a dependency so much as
+stop an import relying on npm hoisting. The alternative — `@astrojs/markdown-remark`,
+which Astro 7 no longer installs — is a real tree of unified, remark and rehype
+packages, and it was rejected. See section 5.
 
 **Node 22.12 or newer.** Astro 7 requires it and will refuse to run below it. Declared in three places so it cannot drift: `.nvmrc` (`22`), the `engines.node` field in `package.json`, and the Node version configured on the deploy host. Package manager: npm.
 
@@ -221,7 +233,29 @@ Nothing else in the codebase hardcodes a phone number, an email address or a pri
 
 Schemas live at `src/content.config.ts`, not inside `src/content/`. Every collection declares a loader — `glob({ pattern, base })` — and the schema `z` is imported from `astro/zod`, not from `astro:content`. Both are Astro 6/7 requirements, not preferences.
 
-Markdown bodies render through Astro's own Markdown pipeline. Remark or rehype plugins are not available without adding the optional `@astrojs/markdown-remark` peer, which is a new dependency and therefore needs approval before anyone reaches for it.
+**Markdown bodies render through Sätteri, and `rehypePlugins` is a trap.** Astro 7
+replaced unified/remark/rehype with the Sätteri processor. `markdown.rehypePlugins`
+and `markdown.remarkPlugins` still appear in the config types, but they are
+deprecated shims that **throw at config validation** unless `@astrojs/markdown-remark`
+is installed — and Astro 7 does not install it. The check is in
+`astro/dist/core/config/validate.js`, in `coerceLegacyMarkdownPlugins`. An earlier
+version of this document said rehype plugins merely needed that package added, which
+was true of Astro 6 and is now stale in the direction that wastes a session.
+
+The supported extension point is `markdown.processor: satteri({ hastPlugins, mdastPlugins, features })`.
+`astro.config.mjs` uses it for exactly one plugin, `lennupesu-strip-html-comments`,
+which removes HTML comments from rendered markdown so the `<!-- unconfirmed: ... -->`
+and `<!-- needs-native-review -->` markers required by CLAUDE.md stay in the repo
+instead of shipping. Setting `processor` explicitly costs nothing: Astro appends its
+own hast plugins — syntax highlighting, image marking, heading ids — around the
+user's inside `createSatteriMarkdownProcessor`.
+
+The plugin operates on the hast tree rather than on serialized HTML, and that is
+load-bearing rather than incidental. A fenced code block is a `<pre>` of escaped text
+nodes, never a comment node, so a post that *displays* HTML source is unreachable
+from the plugin. A regex over `dist/` could not draw that line, which is why the
+post-build alternative was rejected — Phase 8 is blog infrastructure and the planned
+posts are technical.
 
 Every schema is a `z.strictObject`, not a `z.object`. `z.object` strips an unknown
 key silently, so a misspelled optional field would validate and the page would
@@ -348,7 +382,7 @@ State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empt
 "build":   "astro build",
 "preview": "astro preview",
 "check":   "astro check",
-"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta
+"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments
 "sync":    "astro sync --force",            // evict the content cache; see below
 "verify":  "npm run sync && npm run check && npm run build && npm run links"
 ```
@@ -370,6 +404,31 @@ This was not theoretical. It was found in Phase 3 and it fails in both direction
 2. It is a supported flag rather than a hand-rolled `rm -rf` of an Astro internal path. That path has already moved once, from `.astro/` to `node_modules/.astro/`, and a stale `.astro/data-store.json` left behind by the old location is exactly what made this bug hard to read.
 
 **Cost: about +0.85 s, roughly +23%** — `npm run verify` goes from ~3.8 s to ~4.6 s on this machine. Most of that is a fourth Node process starting, not the eviction itself; the store holds two files today. Correctness of the gate is worth a second, and this is the cheapest place in the project to buy it.
+
+### Why `check-html` fails on any HTML comment
+
+Check 4 in `scripts/check-html.mjs`. Every `<!-- unconfirmed: ... -->` and
+`<!-- needs-native-review -->` marker written into a markdown content file in Phase 4
+was in production: **37 comments across 10 service pages**, internal English
+engineering notes citing PLAN by phase number, sitting on Estonian customer pages.
+The convention in CLAUDE.md says the marker lives in the repo and never on the page;
+nothing was enforcing the second half. `meist.astro` was unaffected only by luck —
+its markers are JS comments in frontmatter, which the compiler discards.
+
+The guard is on **the whole class, not on the words in use today**. A grep for
+`unconfirmed` would have caught this leak and missed the next convention word, which
+is the same failure repeated. Any HTML comment in any built page fails the build.
+
+Two deliberate details:
+
+- **`<pre>` and `<code>` are exempt.** A post that displays HTML source must not fail
+  the build for the markup it is teaching. Phase 8 is blog infrastructure and the
+  planned posts are technical, so this is a real case. Those regions are masked with
+  equal-length filler before scanning, so everything outside them still fails and the
+  reported offsets stay true.
+- **Astro preserves `<!-- -->` in `.astro` templates and strips `{/* */}`.** A comment
+  in a template is therefore a build failure now. Use `{/* */}` or a frontmatter
+  comment. Three templates already do; none used the HTML form.
 
 ## 9. Deployment
 

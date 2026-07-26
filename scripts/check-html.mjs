@@ -4,9 +4,17 @@
  *  1. every internal href resolves to a built file
  *  2. every application/ld+json block parses AND is not an unevaluated template literal
  *  3. every page has exactly one <h1>, a <title> and a meta description
+ *  4. no HTML comment survives into any built page
  *
  * Check 2 exists because a build can pass while emitting structured data as literal
  * text. It did, once. See the Phase 0 notes.
+ *
+ * Check 4 exists because every `<!-- unconfirmed: ... -->` and
+ * `<!-- needs-native-review -->` marker written into a markdown content file in
+ * Phase 4 shipped to production — 37 of them, internal English engineering notes on
+ * Estonian customer pages. The markers are a repo convention (CLAUDE.md) and belong
+ * in the repo only. This guards the whole class rather than the words in use today,
+ * so the next convention marker cannot leak the same way.
  */
 import { readdir, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
@@ -29,6 +37,24 @@ function resolves(href) {
   if (!clean || clean === '/') return existsSync(join(DIST, 'index.html'))
   const base = join(DIST, clean)
   return existsSync(base) || existsSync(base + '.html') || existsSync(join(base, 'index.html'))
+}
+
+/**
+ * Blank out <pre> and <code> regions, preserving length so offsets stay true.
+ *
+ * A post that *displays* HTML source must not fail check 4 for the markup it is
+ * teaching. Phase 8 is blog infrastructure and the planned posts are technical, so
+ * this is a real case rather than a hypothetical one. Everything outside these two
+ * elements is markup, not content, and a comment there is a leak.
+ */
+function maskCodeRegions(html) {
+  return html.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi, (m) => ' '.repeat(m.length))
+}
+
+/** A one-line, 80-character excerpt of a comment, for the error message. */
+function excerpt(text) {
+  const flat = text.replace(/\s+/g, ' ').trim()
+  return flat.length > 80 ? `${flat.slice(0, 80)}…` : flat
 }
 
 if (!existsSync(DIST)) {
@@ -68,6 +94,15 @@ for (const f of files) {
   if (h1s !== 1) errors.push(`${f}: expected exactly one <h1>, found ${h1s}`)
   if (!/<title>[^<]+<\/title>/.test(html)) errors.push(`${f}: missing or empty <title>`)
   if (!/<meta name="description" content="[^"]+"/.test(html)) errors.push(`${f}: missing meta description`)
+
+  // 4. no HTML comment in the markup
+  const markup = maskCodeRegions(html)
+  for (const c of markup.matchAll(/<!--([\s\S]*?)-->/g)) {
+    errors.push(`${f}: HTML comment in output -> <!-- ${excerpt(c[1])} -->`)
+  }
+  if (/<!--(?![\s\S]*?-->)/.test(markup)) {
+    errors.push(`${f}: unterminated HTML comment in output`)
+  }
 }
 
 if (errors.length) {
@@ -75,4 +110,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  ${e}`)
   process.exit(1)
 }
-console.log(`check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta`)
+console.log(`check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta, no comments`)

@@ -95,6 +95,24 @@ This applies identically to a missing **asset** — a photo, a video, a logo —
 
 So there is now one rule, not two: **the gap is recorded in the repo and never rendered as a gap.** What ships is finished copy or a finished empty state, and in neither case does it assert something we cannot stand behind.
 
+**"In the repo, never on the page" is now enforced, because for a while it was not.**
+Every marker above shipped: 37 HTML comments across the ten service pages, in
+production, naming what the business does not know and citing PLAN by phase number.
+Markdown comments are content and rendered; the `.astro` files escaped only because
+their markers are JS comments in frontmatter, which the compiler throws away. Two
+things hold the line now, and neither replaces the other:
+
+- `astro.config.mjs` strips HTML comments out of rendered markdown, in the AST.
+- `scripts/check-html.mjs` check 4 **fails the build** if any HTML comment reaches any
+  built page — the whole class, not a word list, so the next convention marker cannot
+  leak the way `unconfirmed:` did. Comments inside `<pre>` and `<code>` are exempt, so
+  a post that displays HTML source still builds.
+
+Two consequences for how you write. In a **markdown** content file, keep using
+`<!-- ... -->`; it is stripped at build and the guard confirms it. In an **`.astro`**
+template, do not — Astro preserves `<!-- -->` and it will fail the build. Use
+`{/* ... */}` or a frontmatter comment.
+
 **Claims that are permitted**, because they are verifiable:
 - Operational authorisation from Transpordiamet for specific-category operations (SORA, SAIL II)
 - Third-party liability insurance under Regulation (EC) 785/2004
