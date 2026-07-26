@@ -80,6 +80,33 @@ export function formatPrice(amount: number, locale: Locale): string {
 }
 
 /**
+ * The ex-VAT note, with the RATE READ FROM `site.ts` rather than typed into the
+ * string.
+ *
+ * Until Phase 5 the note was `t('footer.vatNote')` and the string itself said
+ * "24%", while `site.vatRate` sat in the single source unread by anything. That
+ * is worse than not having `site.vatRate` at all: the next session reads the
+ * config, assumes it is the source, changes it, and nothing on the site moves.
+ * It is the same failure as the brand name authored in sixteen places.
+ *
+ * The rate is formatted by `Intl`, so neither the symbol nor its placement is
+ * typed here — the same reasoning as `formatPrice` and `monthRange`, and the
+ * same thing that keeps Russian a translation drop. `maximumFractionDigits: 2`
+ * so a future rate of 24.5% survives; the current 24% is unchanged in both
+ * locales.
+ *
+ * The key is `price.vatNote` and it is called through here, never through
+ * `t()`, which would render the raw `{vat}` token onto the page.
+ */
+export function vatNote(locale: Locale): string {
+  const rate = new Intl.NumberFormat(bcp47(locale), {
+    style: 'percent',
+    maximumFractionDigits: 2,
+  }).format(site.vatRate)
+  return ui[locale]['price.vatNote'].replace('{vat}', rate)
+}
+
+/**
  * A from-price, or the copy that stands in its place. Never a total.
  *
  * Takes a `priceKind` — a REFERENCE — and resolves it against `site.prices`, so

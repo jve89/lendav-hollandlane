@@ -13,7 +13,7 @@
  * working contact route anywhere.
  */
 import { site } from '../config/site'
-import { navLabel, path, useTranslations, monthRange } from '../i18n/utils'
+import { navLabel, path, useTranslations, monthRange, vatNote } from '../i18n/utils'
 import { liveNav, type RouteKey } from '../i18n/routes'
 import type { Locale } from '../i18n/ui'
 
@@ -91,7 +91,7 @@ const year = new Date().getFullYear()
 
     <div class="site-footer__bottom">
       <p>© {year} {site.legalName}</p>
-      <p>{t('footer.vatNote')}</p>
+      <p>{vatNote(locale)}</p>
     </div>
   </div>
 </footer>

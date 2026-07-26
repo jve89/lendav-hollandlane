@@ -9,7 +9,7 @@ import PageLayout from '../../../layouts/PageLayout.astro'
 import Cta from '../../../components/Cta.astro'
 import { site } from '../../../config/site'
 import { serviceAlternates, serviceHref, servicePairs } from '../../../i18n/services'
-import { path, priceLine, useTranslations } from '../../../i18n/utils'
+import { path, priceLine, useTranslations, vatNote } from '../../../i18n/utils'
 
 export async function getStaticPaths() {
   const pairs = await servicePairs()
@@ -55,7 +55,7 @@ const serviceJsonLd = {
     <div class="wrap">
       <p class="service-page__price">{priceLine(entry.data.priceKind, locale)}</p>
       {entry.data.priceNote && <p class="service-page__note">{entry.data.priceNote}</p>}
-      <p class="fineprint service-page__vat">{t('footer.vatNote')}</p>
+      <p class="fineprint service-page__vat">{vatNote(locale)}</p>
 
       <div class="prose service-page__body"><Content /></div>
     </div>

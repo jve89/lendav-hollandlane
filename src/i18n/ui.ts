@@ -9,7 +9,7 @@ export const defaultLocale: Locale = 'et'
  * every key present.
  *
  * needs-native-review — every Estonian string added in Phase 1 (nav.home through
- * notFound.*, and all footer.* keys except footer.vatNote) and in Phase 3 (every
+ * notFound.*, and all footer.* keys except price.vatNote) and in Phase 3 (every
  * beforeAfter.* key) is AI-drafted and has NOT been read by a native speaker.
  * CLAUDE.md's `<!-- needs-native-review -->` marker is for content files; this is
  * TypeScript, so the marker is this comment. Phase 10 clears it. The Phase 4
@@ -71,6 +71,17 @@ export const ui = {
     'price.from': 'Alates',
     'price.unit': '/m²',
     'price.addon': 'Lisateenusena',
+    /**
+     * `{vat}` is replaced by `vatNote()` in `utils.ts` from `site.vatRate`. Do
+     * not write the rate into this string: it was typed here until Phase 5
+     * while `site.vatRate` sat unread, which is the shape of every drift this
+     * repository has already paid for. Estonian VAT has moved once and will
+     * move again — when it does, it moves in one line, in `site.ts`.
+     *
+     * Called through `vatNote(locale)`, never `t('price.vatNote')`, which would
+     * render the token.
+     */
+    'price.vatNote': 'Hinnad ei sisalda käibemaksu {vat}.',
 
     // 404
     'notFound.heading': 'Lehte ei leitud',
@@ -88,7 +99,6 @@ export const ui = {
     'footer.areaTitle': 'Teeninduspiirkond',
     'footer.areaAll': 'Kogu Eesti',
     'footer.seasonTitle': 'Hooaeg',
-    'footer.vatNote': 'Hinnad ei sisalda käibemaksu 24%.',
     'footer.claimNoRoofWalk': 'Katusele ei astuta.',
     'footer.claimInsured': 'Töö on kindlustatud.',
     'footer.claimPermitted': 'Meil on ametlik luba lendamiseks elamute kohal.',
@@ -151,6 +161,8 @@ export const ui = {
     'price.from': 'From',
     'price.unit': '/m²',
     'price.addon': 'As an add-on',
+    /** `{vat}` comes from `site.vatRate` via `vatNote()`. See the Estonian block. */
+    'price.vatNote': 'Prices exclude {vat} VAT.',
 
     // 404
     'notFound.heading': 'Page not found',
@@ -168,7 +180,6 @@ export const ui = {
     'footer.areaTitle': 'Service area',
     'footer.areaAll': 'Across Estonia',
     'footer.seasonTitle': 'Season',
-    'footer.vatNote': 'Prices exclude 24% VAT.',
     'footer.claimNoRoofWalk': 'Nobody walks on your roof.',
     'footer.claimInsured': 'The work is insured.',
     'footer.claimPermitted': 'We hold an official authorisation to fly over houses.',

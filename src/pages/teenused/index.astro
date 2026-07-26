@@ -9,7 +9,7 @@ import PageLayout from '../../layouts/PageLayout.astro'
 import ServiceGrid from '../../components/ServiceGrid.astro'
 import Cta from '../../components/Cta.astro'
 import { servicesFor } from '../../i18n/services'
-import { useTranslations } from '../../i18n/utils'
+import { useTranslations, vatNote } from '../../i18n/utils'
 
 const locale = 'et' as const
 const t = useTranslations(locale)
@@ -26,7 +26,7 @@ const services = await servicesFor(locale)
   <section class="section section--paper section--tight">
     <div class="wrap">
       <ServiceGrid locale={locale} entries={services} headingLevel={2} />
-      <p class="fineprint services__vat">{t('footer.vatNote')}</p>
+      <p class="fineprint services__vat">{vatNote(locale)}</p>
     </div>
   </section>
 

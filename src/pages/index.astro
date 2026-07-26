@@ -22,7 +22,7 @@ import Faq from '../components/Faq.astro'
 import Cta from '../components/Cta.astro'
 import { homeCopy } from '../i18n/home'
 import { servicesFor } from '../i18n/services'
-import { useTranslations } from '../i18n/utils'
+import { useTranslations, vatNote } from '../i18n/utils'
 
 const locale = 'et' as const
 const t = useTranslations(locale)
@@ -61,7 +61,7 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
       <h2>{c.services.heading}</h2>
       <p class="lead services__lead">{c.services.lead}</p>
       <ServiceGrid locale={locale} entries={services} />
-      <p class="fineprint services__vat">{t('footer.vatNote')}</p>
+      <p class="fineprint services__vat">{vatNote(locale)}</p>
     </div>
   </section>
 
