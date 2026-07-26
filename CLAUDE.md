@@ -93,6 +93,37 @@ import it today. Folding the unspaced form into this grep would make it fire on
 every run, which is the cry-wolf failure described above. Those copies are
 tracked as PLAN Phase 11 instead.
 
+**The old name survives in exactly two files, and both are frozen.** README and
+ARCHITECTURE section 4 said until 26 July 2026 that the repository, the git
+remote, the local folder and `package.json`'s `name` would keep the old name
+because they name the repository rather than the business. They did not keep it —
+all four are now `lendav-hollandlane` — so that note is retired rather than
+qualified, and this is the criterion that replaces it:
+
+```
+grep -rni "lennupesu" . --exclude-dir=node_modules --exclude-dir=.git \
+  --exclude-dir=dist --exclude-dir=.astro --exclude=CLAUDE.md
+```
+
+returns **exactly `reference/one-pager-v1.html` and `reference/direction-d.html`**.
+Anything else is a leak. Note the shape: unlike the two guards above, a clean run
+here is not an empty one, so the test is *which* files, not *whether any*.
+
+**Those two files are frozen design artefacts and are not to be corrected.** They
+are the design history — `one-pager-v1.html` is the original single-file site,
+`direction-d.html` the approved direction — and they carry the old name, the old
+`.ee` domain and the old legal name because that is what was true when they were
+written. Editing them to say `Lendav Hollandlane` would falsify what they are, and
+it is the same mistake as porting `direction-d.html`'s `SAIL II` hero pill on the
+grounds that it is in the file. Read them, port from them, leave them alone.
+
+`--exclude=CLAUDE.md` is on that grep because this paragraph spells the old name
+out, so without it the guard reports itself and the criterion could never read
+"exactly two" — the same reason the brand guard above excludes `site.ts`. The cost
+is that a leak *into this file* is invisible to it, which is acceptable: this file
+is rules, it never ships, and the only reason it holds the string is to define the
+test. The bare filename is the correct form here, per the caveat above.
+
 ## Content rules — these are the important ones
 
 **Never invent content.** This site belongs to a real business with a real reputation and real regulatory obligations. Specifically:

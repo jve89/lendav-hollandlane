@@ -3,12 +3,8 @@
 Marketing website for Lendav Hollandlane — drone roof, facade and solar panel cleaning
 in Estonia. Trading name of AIF OÜ.
 
-**The repository, the git remote, the local folder and `package.json`'s `name` field
-all keep their original name, which predates the rename.** They name the repository,
-not the business; none of them reaches the build or is seen by a visitor, and renaming
-them would risk a broken remote for nothing. The rule is: anything naming the repo
-stays, anything naming the business changes. **The business name lives in
-`src/config/site.ts` and nowhere else** — see CLAUDE.md, "The brand name".
+**The business name lives in `src/config/site.ts` and nowhere else** — see CLAUDE.md,
+"The brand name".
 
 ## Read these before doing anything
 

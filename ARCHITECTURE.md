@@ -148,12 +148,9 @@ Pairing across locales therefore needs a key the entries share. For `services` t
 
 ## 4. File tree
 
-The root is written `<repo root>/` rather than named. The repository, the git
-remote, the local folder and `package.json`'s `name` field all keep their
-original name, which predates the rename — they name the repository, not the
-business, and renaming them would buy nothing and risk a broken remote. None of
-them reaches the build. Writing the root neutrally here is what keeps a copy of
-either name out of a diagram that does not need one.
+The root is written `<repo root>/` rather than named. Nothing that names the root
+reaches the build, so a neutral label costs nothing — and it keeps a copy of a
+name out of a diagram that does not need one.
 
 ```
 <repo root>/
