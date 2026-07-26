@@ -58,8 +58,11 @@ Fresh Claude Code session per phase:
 
 Commit on every green phase.
 
-**Phase 9 — SEO, performance and launch readiness — is next.** Then Phase 10, then launch.
-Phases 7 and 8 are post-launch.
+**Phase 10 — the real content drop — is next.** Then launch. Phases 7, 8 and 11 are
+post-launch. Phase 9 is done.
+
+Take the next phase from the order table at the top of PLAN, not from this line and not
+from the integers — the phases do not run in numerical order.
 
 ## Before launch — needs the operator, not code
 

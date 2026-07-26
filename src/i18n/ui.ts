@@ -14,7 +14,12 @@ export const defaultLocale: Locale = 'et'
  * CLAUDE.md's `<!-- needs-native-review -->` marker is for content files; this is
  * TypeScript, so the marker is this comment. Phase 10 clears it. The Phase 4
  * additions — every price.* and services.* key, and meta.services.* — are
- * AI-drafted on the same terms.
+ * AI-drafted on the same terms. So is `cta.quoteShort`, added with the rename —
+ * and it is the one most worth a native speaker's attention, because it is a
+ * terse label on the highest-value button on the site and it was chosen under a
+ * width constraint. `Päring` is a noun where `cta.quote` is an imperative; if a
+ * native speaker has a better six-character answer, take it, but re-measure at
+ * 320px before committing it.
  */
 export const ui = {
   et: {
@@ -37,6 +42,13 @@ export const ui = {
 
     // calls to action
     'cta.quote': 'Küsi pakkumist',
+    /**
+     * The header pill below 48em, and NOTHING ELSE. `cta.quote` is the label
+     * everywhere the width allows it — this exists because the pill does not.
+     * Chosen by measurement at 320px, not by eye: see the note on
+     * `.nav__brand` in `Header.astro`.
+     */
+    'cta.quoteShort': 'Päring',
     'cta.call': 'Helista',
 
     // accessibility
@@ -181,6 +193,13 @@ export const ui = {
 
     // calls to action
     'cta.quote': 'Get a quote',
+    /**
+     * Translates the Estonian `Päring`, noun for noun. "Quote me" measured
+     * 3px wider and still fitted, but it is not what the Estonian says, and
+     * English here is a translation rather than a parallel original —
+     * CLAUDE.md, language rules. See `cta.quoteShort` in the `et` block.
+     */
+    'cta.quoteShort': 'Enquiry',
     'cta.call': 'Call',
 
     // accessibility

@@ -44,7 +44,13 @@ const items = liveNav.map((key) => ({
  * landed: the branch could no longer be taken, and a dead branch is a route
  * back to a state we deliberately left.
  */
-const cta = { href: path('contact', locale), short: t('cta.quote'), full: t('cta.quote') }
+/*
+ * `short` and `full` differ from here on. They were the same string until the
+ * rename, which is why the split looked decorative — it is not. Below 48em the
+ * pill cannot hold the wordmark and `cta.quote` at 320px; `short` is the label
+ * measured to fit. See the note on `.nav__brand` below.
+ */
+const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t('cta.quote') }
 ---
 <header class:list={['site-header', `site-header--${variant}`]}>
   <div class="wrap">
@@ -139,13 +145,36 @@ const cta = { href: path('contact', locale), short: t('cta.quote'), full: t('cta
     padding: 9px 9px 9px 22px;
   }
 
+  /**
+   * THE WORDMARK WRAPS BELOW 48em, AND THIS RULE IS NOT ABOUT THE BRAND NAME
+   * BEING LONG. Do not delete it if the name ever gets shorter.
+   *
+   * The pill has never fitted at 320px. Measured against the built site: with
+   * the OLD nine-character name it already overflowed the viewport by 21px,
+   * from Phase 1 to the rename, unnoticed — nothing in `npm run verify` can
+   * see a horizontal scrollbar. The rename deepened it to 91px, which is what
+   * finally made it visible.
+   *
+   * 320px is the width that matters, not 390px: it is still live on small
+   * Androids and older iPhones, which is exactly the homeowner this site is
+   * for. Numbers at 320px, as document overflow past the viewport:
+   *
+   *     old name, nowrap ............ +21  (broken, pre-existing)
+   *     new name, nowrap ............ +91
+   *     new name, wrap only ......... +28  (still broken)
+   *     new name, short CTA only .... +16  (still broken)
+   *     new name, wrap + short CTA .. -15  (fixed; 15px of headroom)
+   *
+   * Neither half is sufficient alone — both are required, and -15px is the
+   * structural maximum for this page, not a value tuned to scrape past. If you
+   * change either the wordmark or `cta.quoteShort`, re-measure at 320px.
+   */
   .nav__brand {
     font-weight: var(--fw-display);
     letter-spacing: -0.03em;
     font-size: 1.12rem;
     color: var(--ink);
     text-decoration: none;
-    white-space: nowrap;
   }
 
   /* ---- desktop links: shown from 1000px, as in direction D ---- */
@@ -290,6 +319,12 @@ const cta = { href: path('contact', locale), short: t('cta.quote'), full: t('cta
   }
 
   @media (min-width: 48em) {
+    /* Above 48em there is room for the wordmark on one line, and wrapping it
+       would be a worse result than the constraint that forces it below. */
+    .nav__brand {
+      white-space: nowrap;
+    }
+
     .nav__lang {
       display: block;
     }
