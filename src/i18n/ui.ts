@@ -27,6 +27,8 @@ export const ui = {
     'nav.contact': 'Kontakt',
     /** Never in the menu. See the note on `thanks` in `utils.ts`. */
     'nav.thanks': 'Aitäh',
+    /** Footer only, not in the menu. See the note on `privacy` in `routes.ts`. */
+    'nav.privacy': 'Privaatsus',
     'nav.areas': 'Piirkonnad',
     'nav.blog': 'Blogi',
     'nav.notFound': 'Lehte ei leitud',
@@ -72,6 +74,9 @@ export const ui = {
       'Saada objekti aadress ja teenus, mida vajad. Vastame kirjalikult. Katuse- ja fassaadipesu kogu Eestis.',
     'meta.thanks.title': 'Päring saadetud',
     'meta.thanks.description': 'Sinu päring jõudis kohale.',
+    'meta.privacy.title': 'Privaatsus ja andmekaitse',
+    'meta.privacy.description':
+      'Mida päringuvorm küsib, milleks me seda kasutame ja kui kaua hoiame. Küpsiseid ega analüütikat me ei kasuta.',
 
     // services index
     'services.heading': 'Teenused',
@@ -121,6 +126,7 @@ export const ui = {
     // contact and thank-you page headings
     'contact.heading': 'Küsi pakkumist',
     'thanks.heading': 'Aitäh, päring on saadetud',
+    'privacy.heading': 'Privaatsus ja andmekaitse',
 
     // 404
     'notFound.heading': 'Lehte ei leitud',
@@ -165,6 +171,8 @@ export const ui = {
     'nav.contact': 'Contact',
     /** Never in the menu. See the note on `thanks` in `utils.ts`. */
     'nav.thanks': 'Thank you',
+    /** Footer only, not in the menu. See the note on `privacy` in `routes.ts`. */
+    'nav.privacy': 'Privacy',
     'nav.areas': 'Areas',
     'nav.blog': 'Blog',
     'nav.notFound': 'Page not found',
@@ -206,6 +214,9 @@ export const ui = {
       'Send us the address and the service you need. We reply in writing. Roof and facade cleaning across Estonia.',
     'meta.thanks.title': 'Enquiry sent',
     'meta.thanks.description': 'Your enquiry has reached us.',
+    'meta.privacy.title': 'Privacy and data protection',
+    'meta.privacy.description':
+      'What the quote form asks for, what we use it for, and how long we keep it. We set no cookies and run no analytics.',
 
     // services index
     'services.heading': 'Services',
@@ -235,6 +246,7 @@ export const ui = {
     // contact and thank-you page headings
     'contact.heading': 'Get a quote',
     'thanks.heading': 'Thank you — your enquiry is on its way',
+    'privacy.heading': 'Privacy and data protection',
 
     // 404
     'notFound.heading': 'Page not found',

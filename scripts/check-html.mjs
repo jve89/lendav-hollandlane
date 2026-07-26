@@ -6,6 +6,7 @@
  *  3. every page has exactly one <h1>, a <title> and a meta description
  *  4. no HTML comment survives into any built page
  *  5. no <form> posts to nowhere
+ *  6. the sitemap lists every indexable page, with the same hreflang set the page carries
  *
  * Check 2 exists because a build can pass while emitting structured data as literal
  * text. It did, once. See the Phase 0 notes.
@@ -30,6 +31,17 @@
  * action some other way. It guards the class — a form that posts nowhere — not the
  * name of one environment variable, which is the same reasoning that made check 4
  * catch every comment rather than the word `unconfirmed`.
+ *
+ * Check 6 exists because the sitemap shipped for four phases with the hreflang
+ * alternates missing from TWENTY OF ITS TWENTY-TWO URLS, and nothing noticed. The
+ * integration's `i18n` option pairs URLs by stripping the locale prefix and matching
+ * the rest of the path, which cannot work on localised slugs — and its failure mode
+ * is silence, not an error. `astro.config.mjs` now lifts each page's alternate set
+ * out of its own built `<head>`; this asserts on the finished XML that it did.
+ *
+ * The page's own `<link rel="canonical">` is used as its identity, because BaseLayout
+ * builds the canonical and the self-referencing alternate from the same array — so if
+ * this check can find the page in the sitemap at all, those two already agree.
  */
 import { readdir, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
@@ -77,8 +89,28 @@ if (!existsSync(DIST)) {
   process.exit(1)
 }
 
+/** `{ 'et-EE': 'https://…', … }` -> a stable string, so two sets compare by value. */
+const fingerprint = (alts) =>
+  Object.entries(alts)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([lang, href]) => `${lang}=${href}`)
+    .join(' ')
+
+/** Every `<link rel="alternate" hreflang=… href=…>` in a page's head, as lang -> href. */
+function headAlternates(html) {
+  const alts = {}
+  for (const tag of html.matchAll(/<link\b[^>]*\brel="alternate"[^>]*>/gi)) {
+    const lang = /\bhreflang="([^"]+)"/i.exec(tag[0])?.[1]
+    const href = /\bhref="([^"]+)"/i.exec(tag[0])?.[1]
+    if (lang && href) alts[lang] = href
+  }
+  return alts
+}
+
 const files = await walk(DIST)
 const errors = []
+/** Collected during the walk; check 6 compares them against the sitemap afterwards. */
+const pages = []
 
 for (const f of files) {
   const html = await readFile(f, 'utf8')
@@ -145,6 +177,76 @@ for (const f of files) {
       errors.push(`${f}: _next must be an absolute https URL -> "${value ?? 'unset'}"`)
     }
   }
+
+  // 6a. gather what the page says about itself, for the sitemap comparison below
+  const canonical = /<link\b[^>]*\brel="canonical"[^>]*\bhref="([^"]+)"/i.exec(html)?.[1]
+  if (!canonical) errors.push(`${f}: no canonical URL`)
+  else {
+    pages.push({
+      file: f,
+      canonical,
+      noindex: /<meta\b[^>]*\bname="robots"[^>]*\bcontent="[^"]*noindex/i.test(html),
+      alternates: headAlternates(html),
+    })
+  }
+}
+
+/*
+ * 6. the sitemap agrees with the pages
+ *
+ * Two directions, and both matter. An indexable page missing from the sitemap is
+ * not submitted; a noindexed page present in it tells a crawler two contradictory
+ * things about the same URL. The alternate sets are compared by value rather than
+ * merely counted, because the failure being guarded against — twenty pages with an
+ * EMPTY set — would pass any check that only asked whether the entry existed.
+ */
+const SITEMAP = join(DIST, 'sitemap-0.xml')
+
+if (!existsSync(SITEMAP)) {
+  errors.push(`${SITEMAP}: not found — the sitemap integration did not run`)
+} else {
+  const xml = await readFile(SITEMAP, 'utf8')
+  const listed = new Map()
+
+  for (const entry of xml.matchAll(/<url>([\s\S]*?)<\/url>/g)) {
+    const loc = /<loc>([^<]+)<\/loc>/.exec(entry[1])?.[1]
+    if (!loc) continue
+    const alts = {}
+    for (const link of entry[1].matchAll(/<xhtml:link\b[^>]*\/>/g)) {
+      const lang = /\bhreflang="([^"]+)"/.exec(link[0])?.[1]
+      const href = /\bhref="([^"]+)"/.exec(link[0])?.[1]
+      if (lang && href) alts[lang] = href
+    }
+    listed.set(loc, alts)
+  }
+
+  for (const page of pages) {
+    const inSitemap = listed.has(page.canonical)
+
+    if (page.noindex) {
+      if (inSitemap) {
+        errors.push(
+          `${page.file}: noindex page is listed in the sitemap -> ${page.canonical}`,
+        )
+      }
+      continue
+    }
+
+    if (!inSitemap) {
+      errors.push(`${page.file}: indexable page missing from the sitemap -> ${page.canonical}`)
+      continue
+    }
+
+    const want = fingerprint(page.alternates)
+    const got = fingerprint(listed.get(page.canonical))
+    if (want !== got) {
+      errors.push(
+        `${page.file}: sitemap hreflang set disagrees with the page's own <head>\n` +
+          `      head:    ${want || '(none)'}\n` +
+          `      sitemap: ${got || '(none)'}`,
+      )
+    }
+  }
 }
 
 if (errors.length) {
@@ -153,5 +255,6 @@ if (errors.length) {
   process.exit(1)
 }
 console.log(
-  `check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta, no comments, forms post somewhere`,
+  `check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta, no comments, ` +
+    `forms post somewhere, sitemap hreflang matches every page`,
 )

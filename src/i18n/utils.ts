@@ -61,6 +61,8 @@ const navLabelKeys = {
    * breadcrumb trail on the thank-you page itself.
    */
   thanks: 'nav.thanks',
+  /** Rendered in the footer's bottom row, not in the menu. See `routes.ts`. */
+  privacy: 'nav.privacy',
   areas: 'nav.areas',
   blog: 'nav.blog',
   notFound: 'nav.notFound',

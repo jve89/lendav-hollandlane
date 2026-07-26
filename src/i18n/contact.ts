@@ -64,6 +64,18 @@ export interface ContactCopy {
     privacyLead: string
     /** The GDPR notice, one sentence per entry. `{company}` resolves from site.ts. */
     privacy: readonly string[]
+    /**
+     * Link text to the full policy, rendered after the notice.
+     *
+     * The notice covers THIS FORM and is deliberately short; `/privaatsus` covers
+     * the site. PLAN put that page in Phase 9 precisely so this could defer to it.
+     *
+     * The retention sentence added to `privacy` above is the one PLAN said this
+     * notice gains once the answer exists. It states a CRITERION, not a number,
+     * because nobody has chosen a number and CLAUDE.md forbids inventing one — see
+     * the header of `i18n/privacy.ts`. Do not replace it with a figure.
+     */
+    privacyLink: string
   }
   aside: {
     heading: string
@@ -112,7 +124,9 @@ const copy = {
         'Kasutame neid andmeid ainult pakkumise koostamiseks ja sinuga selle asjus ühenduse võtmiseks. Muuks me neid ei kasuta.',
         'Andmeid hoiab {company}. Me ei müü neid ega anna edasi kolmandatele isikutele.',
         'Vormi saadetisi vahendab väline teenusepakkuja Formspree, mis on Ameerika Ühendriikide ettevõte.',
+        'Hoiame päringut nii kaua, kui kulub sellele vastamiseks ja töö lõpetamiseks. Kui soovid, et kustutaksime selle varem, ütle seda.',
       ],
+      privacyLink: 'Privaatsus ja andmekaitse',
     },
     aside: {
       heading: 'Kontakt ja piirkond',
@@ -163,7 +177,9 @@ const copy = {
         'We use this only to prepare a quote and to contact you about it. Nothing else.',
         'The data is held by {company}. We do not sell it and we do not pass it on to anyone.',
         'Submissions are handled by an external form service, Formspree, which is a United States company.',
+        'We keep an enquiry for as long as it takes to answer it and to finish the job. If you would rather we deleted it sooner, say so.',
       ],
+      privacyLink: 'Privacy and data protection',
     },
     aside: {
       heading: 'Contact and area',

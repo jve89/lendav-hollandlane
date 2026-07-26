@@ -13,13 +13,14 @@ work *after* it.
 | Order | Phase | |
 |---|---|---|
 | — | Phases 0–6 | ✅ complete and committed |
-| 1 | **Phase 9 — SEO, performance, launch readiness** | **next** · launch-blocking |
-| 2 | Phase 10 — real content drop | launch-blocking |
+| — | Phase 9 — SEO, performance, launch readiness | ✅ complete and committed |
+| 1 | **Phase 10 — real content drop** | **next** · launch-blocking · blocked on the operator |
 | — | **LAUNCH** | |
-| 3 | Phase 7 — regional pages | post-launch |
-| 4 | Phase 8 — blog infrastructure | post-launch |
+| 2 | Phase 7 — regional pages | post-launch |
+| 3 | Phase 8 — blog infrastructure | post-launch |
 
-**Phase 9 is next.** Then Phase 10, then launch. Phases 7 and 8 come after it.
+**Phase 10 is next, and it is blocked on equipment rather than on code** — see the
+blocked list. Then launch. Phases 7 and 8 come after it.
 
 The integers are kept only because `src/` cites them: **37 comments reference `Phase 10` by
 number across twenty files** — 24 of them in the ten service markdown files, 13 in ten
@@ -178,37 +179,48 @@ and drops every enquiry: `env.schema` in `astro.config.mjs` fails the build, and
 
 ---
 
-## Phase 9 — SEO, performance, launch readiness *(next · launch-blocking)*
+## Phase 9 — SEO, performance, launch readiness ✅ *(launch-blocking · done)*
 
-Follows Phase 6. Readiness, not the launch event itself — launch is after Phase 10.
+Readiness, not the launch event itself — launch is after Phase 10.
 
-Add to this phase's scope: the **privacy policy page**, which the GDPR notice on
-`/kontakt` deliberately keeps short by deferring to. It needs the retention period from
-the blocked list below.
+- **Sitemap hreflang — fixed.** All 24 URLs now carry slug-paired alternates; two
+  did before. See below.
+- **OG image, favicon and touch icons** — one sitewide OG image carrying no text,
+  and the icon set built from the droplet mark already in the repo. ARCHITECTURE
+  section 7 has the reasoning and lists the token hexes the rasters unavoidably bake.
+- **Analytics — DECIDED AS NONE.** Not deferred. ARCHITECTURE section 1.
+- **Hosting — DECIDED AS CLOUDFLARE PAGES.** ARCHITECTURE sections 1 and 9.
+- **Privacy policy page**, both locales, with retention stated as a criterion.
+- **Full-site Lighthouse pass** — 100/100/100/100 on all four pages, both form
+  factors, localhost. Numbers in the phase report; the run that counts is post-deploy
+  and is on the launch checklist below.
+- **Link check** — clean. Every external URL in the built output is our own domain.
+- **Redirects — NOT DONE, blocked on DNS.** Deliberately not half-built; see below.
 
-- Sitemap with hreflang — **see the known limitation below, which is the real work in this line**
-- OG images per page type
-- Favicon and touch icons
-- Analytics decision and installation
-- Full-site Lighthouse pass
-- Link check across every page
-- Redirects: `www` → apex, `.com` → `.ee`
+### The sitemap limitation, and how it was actually resolved
 
-### Known limitation: `@astrojs/sitemap` cannot pair localised slugs
+`@astrojs/sitemap`'s `i18n` option pairs URLs by stripping the locale prefix and
+matching the remaining path, which cannot work on localised slugs. `/` and `/en`
+paired; **the other twenty pages had no `<xhtml:link>` at all.**
 
-Found in Phase 4, recorded here because this is the phase that has to deal with it.
+**PLAN's proposed fix could not be built as written, and this is why.** It said to
+rebuild the alternate map at config time from `i18n/collections.ts`. Those helpers
+are pure and importable, but the *service slugs* are not: they live in collection
+frontmatter and reach code only through `astro:content`, a virtual module that does
+not exist while `astro.config.mjs` is evaluated — and the content-layer store is not
+populated that early even if it did.
 
-The integration's `i18n` option groups URLs into alternate sets by **stripping the locale prefix and matching the remaining path**. That works when the two locales share a slug. Ours never do — CLAUDE.md forbids it, because an Estonian searcher must land on an Estonian URL. So `teenused/katusepesu` and `services/roof-cleaning` are two different keys and neither gets an `<xhtml:link>` at all.
+**What was built instead, in the same `serialize` hook:** the alternates are read
+back out of each page's own built `<head>`, which `BaseLayout` already gets right.
+The sitemap and the page are then the same bytes and cannot drift — a stronger
+guarantee than sharing a function would have given. `scripts/check-html.mjs` check 6
+asserts on the finished XML that it worked, and was confirmed to fail on the old
+behaviour. Detail in `astro.config.mjs` and ARCHITECTURE sections 7 and 8.
 
-Confirmed in the built output: `/` and `/en` are paired correctly, because the Estonian home page's path after prefix-stripping is empty in both. **Every other page in the site has no alternates in the sitemap.** Ten service pages today; every location page and every post later.
-
-This does not affect the pages themselves. `BaseLayout` emits a correct, slug-paired `hreflang` set in the `<head>` of every page, and that is the signal search engines actually act on. The sitemap is the secondary channel.
-
-**Proposed fix, for this phase to implement — do not build it earlier.** Drop the integration's `i18n` option and build the alternate sets ourselves in `serialize`, from the same source the pages use. `src/i18n/collections.ts` already produces `{ locale, href }[]` for a content-derived route and `alternates()` does it for a static one; a small map from URL to alternate set, built once at config time, is all `serialize` needs. The `serialize` hook is already in `astro.config.mjs` for trailing-slash normalisation, so this extends a function that exists rather than adding a mechanism.
-
-Two things to check when doing it: `serialize` receives absolute URLs, and the `links` array wants `{ url, lang }` with `lang` as the BCP 47 tag — `bcp47()` in `i18n/utils.ts` already produces it. If that turns out not to work, the fallback is to write the sitemap ourselves from an endpoint, which is more code than this is worth; reconsider whether the sitemap needs alternates at all before going there, given the `<head>` already carries them.
-
-**Verify:** gate passes · Lighthouse ≥95/95 on home, one service page and pricing · sitemap lists every page, with correct alternates on every page **or** the limitation above resolved and the fix noted here · every page's `<head>` carries a slug-paired hreflang set — this is the one that must hold unconditionally · zero broken links.
+**Verified:** gate passes · Lighthouse ≥95/95 on home, a service page, pricing and
+contact, mobile and desktop · sitemap lists every indexable page with correct
+alternates on every one · every page's `<head>` carries a slug-paired hreflang set ·
+zero broken links.
 
 **Commit:** `feat: SEO, performance, launch readiness`
 
@@ -259,6 +271,24 @@ Everything above ships.
 **The gate here is not `npm run verify`.** That has been green since Phase 0 and proves only
 that the site is not broken — see SPEC section 6. The gate is the list below being empty.
 
+**Do at deploy, in this order:**
+
+1. Cloudflare Pages project: build `npm run build`, output `dist`, Node 22,
+   `PUBLIC_FORMSPREE_ID` set as a build variable. **The build failing on a missing
+   `PUBLIC_FORMSPREE_ID` is the guard working, not a misconfiguration** —
+   ARCHITECTURE section 9.
+2. DNS and the two redirects (`www` → apex, `.com` → `.ee`) — dashboard work, see
+   ARCHITECTURE section 9.
+3. **Re-run Lighthouse against the deployed site.** The Phase 9 pass was 100 across
+   the board but it was localhost, with no CDN, no TLS handshake and no real
+   latency. Those are not the numbers SPEC section 6 gates on.
+4. Search Console: verify the property, submit `/sitemap-index.xml`.
+5. Send one real enquiry through the deployed form and confirm it arrives.
+6. **Confirm Cloudflare Web Analytics is OFF** and that no beacon is injected.
+   `/privaatsus` states that the site runs no analytics; a dashboard toggle can make
+   that false with no commit and nothing in the repo can detect it. See
+   `src/i18n/privacy.ts`.
+
 ---
 
 ## Phase 7 — Regional pages *(post-launch)*
@@ -286,8 +316,9 @@ First posts, when there is time and something real to say, target informational 
 
 ## Blocked on the operator, not on code
 
-**Every item here blocks launch.** None of them blocks Phase 6 or Phase 9. The first three
-block Phase 10.
+**Every item here blocks launch.** Phases 6 and 9 are done and none of these blocked
+them. The first three block Phase 10, which is now the next phase — so this list is
+no longer background reading.
 
 **Equipment, and the first flight.** Ordered within the week; delivered roughly a week after
 that; flown on family property as soon as it arrives. Phase 10 has no input at all until
@@ -321,6 +352,9 @@ that has the answer.
 whole reason the name is written in one file and nowhere else in `src/`.
 
 **`lennupesu.ee` registered and DNS pointed.** Blocked in turn on the name being settled.
+**`.ee` is not a TLD Cloudflare Registrar sells** — register at an Estonian registrar and
+point the nameservers at Cloudflare. The `www` → apex and `.com` → `.ee` redirects hang off
+this and are dashboard work, not repository files. ARCHITECTURE section 9.
 
 **A working email address.** Blocked on the domain, which is blocked on the name.
 `site.email` is unconfirmed and `Credentials` deliberately does not print it.
@@ -335,14 +369,28 @@ over the dashboard's redirect setting, which is one URL per form and would send 
 English visitors to the same page. **Decide before launch:** upgrade, or accept that the
 visitor's last impression of the enquiry is a Formspree-branded page.
 
-**A data retention period for form submissions.** The GDPR notice on `/kontakt` says what
-is collected, what it is used for, who holds it, that an external form service handles it
-and that it is not passed on — but it does not say for how long the enquiry is kept,
-because nobody has decided. Not invented, per CLAUDE.md. Phase 9's privacy policy needs the
-answer and the inline notice gains a sentence when it exists.
+**A data retention period for form submissions — NO LONGER BLOCKING, and here is what
+was done instead.** Phase 9 stated a **criterion** rather than a number, on both
+`/privaatsus` and the inline notice: the enquiry is kept for as long as it takes to
+answer it and finish the job, and is deleted on request. GDPR permits that, it is
+true today, it invents nothing, and it survives a real policy being written later.
+**If the operator ever chooses an actual period, it replaces the criterion in
+`src/i18n/privacy.ts` and `src/i18n/contact.ts`** — but nothing is waiting on it, and
+a future session must not substitute a guessed number for the criterion.
+
+**A legal read of the privacy policy.** The page is drafted by an AI. Every sentence
+is a statement about our own conduct that is true as far as this repository can tell,
+and it claims no certification, no audit and no DPO — but that is not the same as a
+lawyer having read it. Cheap to fix, and it is the one page on the site with
+consequences outside the repository.
+
+**Google Search Console verification.** Blocked on the domain, like everything else
+in that chain. It is the ranking half of the analytics decision (ARCHITECTURE section
+1), so the site has no answer to "which searches find us" until it is done. Submit
+`/sitemap-index.xml` at the same time.
 
 **Google Business Profile verified.** One of the two discovery channels named in SPEC
-section 2.
+section 2, and the local-discovery half of the same analytics decision.
 
 **Native-speaker Estonian review.** All Estonian copy in this repo is AI-drafted and
 unverified. Twelve `needs-native-review` markers; each is cleared by a native speaker

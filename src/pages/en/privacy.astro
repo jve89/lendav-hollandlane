@@ -1,0 +1,57 @@
+---
+/**
+ * Privacy policy, English. `privaatsus.astro` is its pair — see the note there,
+ * and the header of `i18n/privacy.ts`, which is where every sentence on both
+ * pages lives.
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import { privacyContent } from '../../i18n/privacy'
+import { useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const c = privacyContent(locale)
+---
+<PageLayout
+  title={t('meta.privacy.title')}
+  description={t('meta.privacy.description')}
+  locale={locale}
+  routeKey="privacy"
+  heading={t('privacy.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="policy">
+        {c.sections.map((section) => (
+          <section class="policy__section">
+            <h2>{section.heading}</h2>
+            {section.body.map((paragraph) => <p>{paragraph}</p>)}
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .policy {
+    display: grid;
+    gap: var(--sp-8);
+    max-width: var(--measure);
+  }
+
+  .policy__section h2 {
+    font-size: var(--step-prose-h2);
+    letter-spacing: var(--ls-h3);
+    margin-block-end: var(--sp-3);
+  }
+
+  .policy__section p + p {
+    margin-block-start: var(--sp-3);
+  }
+
+  .policy__section p {
+    color: var(--ink-2);
+  }
+</style>

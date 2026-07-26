@@ -4,10 +4,21 @@
  *
  * Every page that is not the home page goes through this, so that the single
  * <h1> and the heading order are structural rather than something each page
- * has to remember. Breadcrumbs are visual only; BreadcrumbList JSON-LD is
- * Phase 9.
+ * has to remember.
+ *
+ * Phase 9 added the `BreadcrumbList` JSON-LD, and it is built from `trail` — the
+ * SAME array the visible breadcrumb renders from — so the two cannot describe
+ * different paths. It is emitted only when that breadcrumb is actually on the
+ * page: structured data that describes a trail the reader cannot see is exactly
+ * the mismatch Google's guidance warns about, and it would be the only piece of
+ * structured data on this site not backed by something visible. `FaqGroups`
+ * follows the same rule for `FAQPage`.
+ *
+ * The last item deliberately carries no `item` URL. It is the current page, and
+ * Google's own examples end the list that way.
  */
 import BaseLayout from './BaseLayout.astro'
+import { site } from '../config/site'
 import { path, useTranslations } from '../i18n/utils'
 import type { RouteKey } from '../i18n/routes'
 import type { Locale } from '../i18n/ui'
@@ -56,6 +67,25 @@ const t = useTranslations(locale)
 
 const showCrumbs = routeKey !== 'home'
 const trail: Crumb[] = [{ label: t('nav.home'), href: path('home', locale) }, ...crumbs]
+
+const breadcrumbVisible = showCrumbs && crumbs.length > 0
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    ...trail.map((crumb, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: crumb.label,
+      item: new URL(crumb.href, site.domain).href,
+    })),
+    { '@type': 'ListItem', position: trail.length + 1, name: heading },
+  ],
+}
+
+/* Prepended, so a page's own structured data still follows it in the head. */
+const allJsonLd = breadcrumbVisible ? [breadcrumbLd, ...(jsonLd ?? [])] : jsonLd
 ---
 <BaseLayout
   title={title}
@@ -66,7 +96,7 @@ const trail: Crumb[] = [{ label: t('nav.home'), href: path('home', locale) }, ..
   ogImage={ogImage}
   noindex={noindex}
   alternates={alternates}
-  jsonLd={jsonLd}
+  jsonLd={allJsonLd}
 >
   <div class="page">
     <div class="wrap">

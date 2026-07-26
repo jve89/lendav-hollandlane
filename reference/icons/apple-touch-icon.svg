@@ -1,0 +1,30 @@
+<!--
+  Source for public/apple-touch-icon.png and public/favicon-32.png. Rasterise with
+  Chrome, then downscale the 32px one from the 180px raster rather than rendering it
+  twice, so the two cannot differ. See og-default.svg for why not ImageMagick alone.
+
+    CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    "$CHROME" --headless --disable-gpu --hide-scrollbars \
+      --force-device-scale-factor=1 --window-size=180,180 \
+      --screenshot=/tmp/touch.png "file://$PWD/reference/icons/apple-touch-icon.svg"
+    magick /tmp/touch.png -strip -define png:compression-level=9 public/apple-touch-icon.png
+    magick /tmp/touch.png -resize 32x32 -strip -define png:compression-level=9 public/favicon-32.png
+
+  The width and height attributes below are load-bearing for that command: without
+  them Chrome lays the SVG out at the default 300x150 and the screenshot captures
+  the wrong region — which it did, silently, producing a black and white image.
+
+  FULL BLEED, NO CORNER RADIUS, deliberately. iOS applies its own rounded mask to
+  a touch icon; a source that is already rounded gets masked twice and shows dark
+  corners inside the rounding. public/favicon.svg keeps its radius because nothing
+  masks that one.
+
+  The two hexes are the bg and accent custom properties in src/styles/tokens.css.
+  A raster cannot read a CSS custom property, so this file and the PNGs built from
+  it are the known copies. ARCHITECTURE section 7 lists them; change them when the
+  tokens change.
+
+  (No double hyphen appears in this comment on purpose: it is illegal inside an XML
+  comment and ImageMagick refuses to parse the file.)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="180" height="180"><rect width="32" height="32" fill="#07090D"/><path transform="translate(16 16) scale(1.15) translate(-12 -11)" d="M12 2.5C12 2.5 6 9.2 6 13.4a6 6 0 0 0 12 0C18 9.2 12 2.5 12 2.5z" fill="#22D3EE"/></svg>

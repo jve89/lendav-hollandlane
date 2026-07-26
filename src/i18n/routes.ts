@@ -29,6 +29,12 @@ export const routes = {
    * this map like every other, rather than typed into a component.
    */
   thanks:   { et: '/aitah',       en: '/en/thank-you' },
+  /**
+   * The privacy policy. Deliberately NOT in `navOrder`: it belongs in the footer,
+   * where a reader looks for it, and putting it in the main menu would spend one
+   * of five nav slots on the page nobody arrives wanting.
+   */
+  privacy:  { et: '/privaatsus',  en: '/en/privacy' },
   areas:    { et: '/piirkonnad',  en: '/en/areas' },
   blog:     { et: '/blogi',       en: '/en/blog' },
   notFound: { et: '/404',         en: '/en/404' },
@@ -78,6 +84,8 @@ export const builtRoutes: ReadonlySet<RouteKey> = new Set<RouteKey>([
    */
   'contact',
   'thanks',
+  /** Phase 9. Linked from the footer's bottom row, on every page. */
+  'privacy',
   'notFound',
 ])
 

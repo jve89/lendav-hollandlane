@@ -1,0 +1,53 @@
+<!--
+  Source for public/images/og/default.png — the one Open Graph image for the whole
+  site.
+
+  RASTERISE WITH CHROME, NOT WITH IMAGEMAGICK ALONE. Both are system tools, neither
+  is a project dependency, and the distinction is not fussiness: ImageMagick's
+  built-in MSVG renderer ignored the radial gradient entirely and approximated the
+  droplet's curves as visible straight-edged facets at this size. Chrome renders it
+  with Blink, correctly. ImageMagick is still used, but only to quantise the result.
+
+    CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    "$CHROME" --headless --disable-gpu --hide-scrollbars \
+      --force-device-scale-factor=1 --window-size=1200,630 \
+      --screenshot=/tmp/og.png "file://$PWD/reference/icons/og-default.svg"
+    magick /tmp/og.png -strip -dither None -colors 256 \
+      -define png:compression-level=9 public/images/og/default.png
+
+  The width and height attributes below are load-bearing for that command: an SVG
+  without them is a replaced element and Chrome lays it out at the default 300x150,
+  so the screenshot captures the wrong region. Do not remove them.
+
+  NO TEXT IN IT, AND THAT IS THE DECISION, NOT AN OMISSION.
+
+  A baked wordmark would put a copy of site.brandText into a binary that no grep
+  can reach, and the business name is not settled — CLAUDE.md's whole reason for
+  writing it in one file. A baked price would do the same to site.prices. The words
+  a social card shows come from og:title and og:description, which BaseLayout
+  composes from the single source, so the image does not need to carry any.
+
+  ONE IMAGE, NOT ONE PER PAGE TYPE. PLAN asked for per-type images; there is no
+  photography yet — SPEC section 4 and CLAUDE.md forbid stock — so variants would
+  differ by a word, which is exactly what must not be baked in. Phase 10's real
+  before/after photography is what makes per-service OG images possible and honest.
+
+  Every value here is from src/styles/tokens.css: the bg, hero glow and accent
+  custom properties. The glow is direction D's launch-state hero wash, the same
+  static radial used behind the type on the no-footage hero. A raster cannot read a
+  custom property, so this file is a known copy; ARCHITECTURE section 7 lists them.
+
+  (No double hyphen appears in this comment on purpose: it is illegal inside an XML
+  comment and ImageMagick refuses to parse the file.)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="46%" r="62%">
+      <stop offset="0%" stop-color="#14202E"/>
+      <stop offset="100%" stop-color="#07090D"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#07090D"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <path transform="translate(600 315) scale(19) translate(-12 -11)" d="M12 2.5C12 2.5 6 9.2 6 13.4a6 6 0 0 0 12 0C18 9.2 12 2.5 12 2.5z" fill="#22D3EE"/>
+</svg>

@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import { defineConfig, envField } from 'astro/config'
 import sitemap from '@astrojs/sitemap'
 import { satteri } from '@astrojs/markdown-satteri'
@@ -15,6 +16,95 @@ const stripTrailingSlash = (url) =>
  * standalone value in results — it is only meaningful directly after a POST.
  */
 const noIndexPaths = /\/(404|aitah|thank-you)\/?$/
+
+/**
+ * THE SITEMAP'S hreflang ALTERNATES ARE READ BACK OUT OF THE BUILT PAGES.
+ *
+ * The integration's own `i18n` option cannot do this for us. It groups URLs into
+ * alternate sets by STRIPPING THE LOCALE PREFIX AND MATCHING THE REMAINING PATH,
+ * which only works when the two locales share a slug. Ours never do — CLAUDE.md
+ * forbids it, because an Estonian searcher must land on an Estonian URL. So
+ * `teenused/katusepesu` and `services/roof-cleaning` were two different keys and
+ * NEITHER GOT AN `<xhtml:link>` AT ALL. Only `/` and `/en` paired, because the
+ * Estonian home page's path after prefix-stripping is empty in both. Twenty
+ * pages shipped with no alternates; the option is dropped below.
+ *
+ * PLAN proposed rebuilding the map here from `i18n/collections.ts`. That cannot
+ * be done, and the reason is worth keeping so the next session does not try it:
+ * those helpers are pure and importable, but the SERVICE SLUGS are not. They live
+ * in collection frontmatter and reach code only through `astro:content`, a virtual
+ * module that does not exist while this config is being evaluated — and the
+ * content-layer store is not populated that early even if it did. Re-parsing the
+ * markdown with `fs` at config time would be a second parser for data the content
+ * layer already owns, and a second parser is a second answer.
+ *
+ * So the alternates come from the one place that already has them right:
+ * `BaseLayout` emits a correct, slug-paired hreflang set into the `<head>` of
+ * every page, including `x-default`. This lifts that set back out of the built
+ * HTML. The sitemap and the `<head>` are then THE SAME BYTES, so they cannot
+ * drift — which is a stronger guarantee than rebuilding them from a shared
+ * function would have given.
+ *
+ * Three facts make it safe, all verified against the installed source rather
+ * than assumed:
+ *
+ *  - `astro:build:done` fires AFTER `viteBuild()` has written `dist/`
+ *    (`astro/dist/core/build/index.js`), which is the same window Pagefind and
+ *    the HTML-compression integrations read the output in.
+ *  - `serialize` is awaited per item — `await Promise.resolve(serialize(item))`
+ *    in `@astrojs/sitemap/dist/index.js` — so it may be async and do file I/O.
+ *  - The `xhtml` namespace is declared unconditionally, from
+ *    `SITEMAP_CONFIG_DEFAULTS.namespaces`, NOT from the `i18n` option. Dropping
+ *    `i18n` therefore does not invalidate the XML.
+ *
+ * `scripts/check-html.mjs` check 6 is the second, independent guard: it asserts
+ * on the finished sitemap that every indexable page is listed and that its
+ * alternate set matches its own `<head>`.
+ */
+const DIST = 'dist'
+
+/** Astro emits `<link rel="alternate" hreflang="et-EE" href="...">`. Attribute order is not assumed. */
+const ALTERNATE_LINK = /<link\b[^>]*\brel="alternate"[^>]*>/gi
+
+async function alternatesFromBuiltPage(url) {
+  const { pathname } = new URL(url)
+
+  /* Directory build format, so every page is `<path>/index.html`. The flat
+     `404.html` form is never reached: `noIndexPaths` filters it out first. */
+  const file = `${DIST}${pathname.endsWith('/') ? pathname : `${pathname}/`}index.html`
+
+  let html
+  try {
+    html = await readFile(file, 'utf8')
+  } catch (cause) {
+    throw new Error(
+      `sitemap: could not read ${file} to recover the hreflang set for ${url}. The sitemap's ` +
+        `alternates are lifted out of the built pages; if the output layout has changed, this ` +
+        `function must change with it rather than silently emitting a sitemap without them.`,
+      { cause },
+    )
+  }
+
+  const links = []
+  for (const tag of html.matchAll(ALTERNATE_LINK)) {
+    const lang = /\bhreflang="([^"]+)"/i.exec(tag[0])?.[1]
+    const href = /\bhref="([^"]+)"/i.exec(tag[0])?.[1]
+    if (lang && href) links.push({ lang, url: stripTrailingSlash(href) })
+  }
+
+  /* Loudly, not quietly. Shipping a sitemap whose alternate sets have silently
+     vanished is the exact failure this replaces, and it was invisible for four
+     phases. A page that cannot produce its own hreflang set fails the build. */
+  if (links.length === 0) {
+    throw new Error(
+      `sitemap: ${file} carries no <link rel="alternate"> tags, so ${url} would be listed with ` +
+        `no hreflang alternates. Every page goes through BaseLayout, which emits them — if this ` +
+        `fires, either that changed or this parser did.`,
+    )
+  }
+
+  return links
+}
 
 /**
  * Strip HTML comments out of rendered markdown.
@@ -104,7 +194,18 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      i18n: { defaultLocale: 'et', locales: { et: 'et-EE', en: 'en-GB' } },
+      /**
+       * NO `i18n` OPTION, DELIBERATELY. It cannot pair localised slugs — see
+       * `alternatesFromBuiltPage` above, which replaces it. Do not restore it:
+       * it would overwrite the correct alternate sets with the empty ones that
+       * shipped for four phases.
+       *
+       * Dropping it also drops the integration's own status-code-page
+       * exclusion, which derived its locale list from this option. Nothing is
+       * lost — `noIndexPaths` in the filter below already covers `/404`,
+       * `/en/404`, `/aitah` and `/en/thank-you`, and covers them by intent
+       * rather than by filename convention.
+       */
       filter: (page) => !noIndexPaths.test(page),
       /**
        * One URL form for the whole site: NO TRAILING SLASH, except the root.
@@ -114,11 +215,14 @@ export default defineConfig({
        * the site publishes — `routes.ts`, canonical, hreflang, every internal
        * link — has no trailing slash, so without this the sitemap submitted a
        * second spelling of every page.
+       *
+       * The alternates are resolved BEFORE the URL is stripped, because the
+       * lookup needs the directory path that names the file on disk.
        */
-      serialize: (item) => ({
+      serialize: async (item) => ({
         ...item,
+        links: await alternatesFromBuiltPage(item.url),
         url: stripTrailingSlash(item.url),
-        links: item.links?.map((link) => ({ ...link, url: stripTrailingSlash(link.url) })),
       }),
     }),
   ],

@@ -154,10 +154,12 @@ const locations = defineCollection({
  * from this collection being empty, and CLAUDE.md forbids inventing an entry
  * here to fill a page.
  *
- * TODO(photos): the first real before/after pairs are expected after the first
- * jobs, ~September 2026 — PLAN Phase 10. This marker lives in the repo and never
- * on a page, so a future session does not mistake the empty state for unfinished
- * work.
+ * unconfirmed(photos): the first real before/after pairs come out of the FIRST
+ * CONTROLLED FLIGHT on family property, flown as soon as the ordered kit arrives
+ * — PLAN Phase 10. A SEQUENCE, not a date, and not to be rewritten as one: this
+ * comment carried a date for three phases after SPEC section 9 had retracted it.
+ * This marker lives in the repo and never on a page, so a future session does
+ * not mistake the empty state for unfinished work.
  *
  * There is NO `id` field. ARCHITECTURE section 5 listed one, but the glob loader
  * derives the id from the file path; declaring it in frontmatter would collide

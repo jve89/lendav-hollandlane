@@ -157,7 +157,8 @@ const selected = defaultService ?? services[0]?.data.slug
     <button class="btn btn--accent" type="submit">{f.submit}</button>
     <p class="fineprint quote__privacy">
       <strong>{f.privacyLead}</strong>{' '}
-      {f.privacy.join(' ')}
+      {f.privacy.join(' ')}{' '}
+      <a href={path('privacy', locale)}>{f.privacyLink}</a>
     </p>
   </div>
 </form>

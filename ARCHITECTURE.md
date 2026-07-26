@@ -1,6 +1,7 @@
 # ARCHITECTURE.md — LennuPesu website
 
-**Version 1.1 · 25 July 2026**
+**Version 1.2 · 26 July 2026** — Phase 9 settled hosting and analytics (section 1),
+the sitemap's hreflang and the OG/icon set (section 7), and check 6 (section 8).
 
 ---
 
@@ -15,8 +16,8 @@
 | Markdown | `@astrojs/markdown-satteri` | `0.3.4` | Astro 7's own Markdown processor, named explicitly so we can add a hast plugin. Astro already depends on it at this exact version, so declaring it installs nothing — see below. |
 | Sitemap | `@astrojs/sitemap` | `^3.7.3` | Generates sitemap with hreflang alternates. |
 | Forms | Formspree (external) | — | No backend, no database, free tier. Endpoint lives in one env var. |
-| Hosting | Vercel or Netlify, static | — | Free, atomic deploys, instant rollback. Nothing to patch. |
-| Analytics | Plausible or Vercel Analytics | — | Decided at Phase 9. No Google Analytics — cookie banner cost outweighs the benefit at this scale. |
+| Hosting | Cloudflare Pages, static | — | **Decided Phase 9.** Free tier permits commercial use, unlimited bandwidth, 500 builds/month. See below. |
+| Analytics | **None, deliberately** | — | **Decided Phase 9 — this is a decision, not a deferral.** See below. |
 
 That table is the whole dependency list. `package.json` carries `astro`,
 `@astrojs/sitemap` and `@astrojs/markdown-satteri` as dependencies, `typescript` and
@@ -30,6 +31,68 @@ date"* and installed zero packages. Declaring it does not add a dependency so mu
 stop an import relying on npm hoisting. The alternative — `@astrojs/markdown-remark`,
 which Astro 7 no longer installs — is a real tree of unified, remark and rehype
 packages, and it was rejected. See section 5.
+
+### Hosting — why Cloudflare Pages, and why not the other two
+
+Decided in Phase 9, which is where this table stopped saying "Vercel or Netlify".
+Recorded so it is not relitigated.
+
+**Vercel is out on its own terms.** The Hobby plan forbids commercial use, and this
+is the marketing site of a business that takes money. That leaves Vercel Pro at
+$20/month, which fails SPEC section 7 — "hosting must be free or near-free". The
+prohibition is the decisive fact here, not the price.
+
+**Cloudflare Pages over Netlify** on the metering. Netlify's free tier permits
+commercial use too, so the choice came down to what happens when the site starts
+working: Netlify now bills against a 300-credit monthly allowance, at 15 credits per
+production deploy and 20 credits per GB served — *as researched on 26 July 2026;
+hosting pricing moves and this figure should be re-checked, not trusted.* That is
+roughly 20 deploys a month at zero traffic, and a site that ships a 2 MB desktop
+hero video at Phase 10 spends the rest on bandwidth. Cloudflare's unlimited
+bandwidth and 500 builds/month have no such failure mode. **The video is the reason**
+— on a text-only site the two were interchangeable.
+
+**Netlify Forms was the argument for Netlify, and it was rejected.** It would have
+retired the Formspree paid-redirect item from PLAN's blocked list, because its
+custom success page is free and per-form. But that item is a *thank-you page*: the
+enquiry itself already arrives on Formspree's free tier. A hosting platform is not
+chosen to fix the last screen a converted visitor sees. **Formspree stays**, and the
+plan-upgrade question stays an independent, deferrable decision.
+
+### Analytics — none, and that is the decision
+
+**This slot is empty on purpose. Do not read it as an oversight and install
+something.** This table named "Plausible or Vercel Analytics" until Phase 9; both
+were rejected, and so was Cloudflare's own Web Analytics.
+
+The reasoning that ruled out Google Analytics — a cookie banner costs more than the
+data is worth at this scale — turns out to rule out the alternatives too, one step
+further on. Plausible and Cloudflare are both cookieless and need no banner, but
+both are a client-side beacon on a site whose architecture is zero JavaScript
+(section 2) and whose Lighthouse gate is ≥95 (SPEC section 6). Plausible also costs
+€9/month against a site expecting a few hundred visits.
+
+More to the point, **a pageview counter does not answer either question this
+business actually has.** Three sources do, all free and none of them a script:
+
+- **Google Search Console** — which queries the site ranks for, which is the entire
+  point of SPEC section 3 item 6. It answers this better than any analytics tool.
+- **The Google Business Profile dashboard** — local discovery, the other channel
+  named in SPEC section 2.
+- **The Formspree dashboard** — enquiries received, which *is* the success metric in
+  SPEC section 6. Not a proxy for it.
+
+Reversible in one line the day a real question arrives that these three cannot
+answer. Until then the site sets no cookies, needs no consent UI, and can say so on
+`/privaatsus` truthfully.
+
+**A trap, in the same class as the Formspree dashboard settings in section 6:
+Cloudflare can inject its Web Analytics beacon into a Pages project from the
+dashboard, with no repository change and no build.** If anyone switches that on, the
+no-analytics and no-cookies claims on `/privaatsus` become false silently, and
+nothing in this repository can detect it. The warning is duplicated at the top of
+`src/i18n/privacy.ts`, next to the copy it would falsify, because that is where
+somebody will be standing when it matters.
 
 **Node 22.12 or newer.** Astro 7 requires it and will refuse to run below it. Declared in three places so it cannot drift: `.nvmrc` (`22`), the `engines.node` field in `package.json`, and the Node version configured on the deploy host. Package manager: npm.
 
@@ -94,13 +157,17 @@ lennupesu/
 ├── .nvmrc                          # 22
 ├── .env.example                    # PUBLIC_FORMSPREE_ID
 ├── .gitignore
+├── reference/
+│   └── icons/                      # SVG sources for the rasters below; not served
 ├── public/
 │   ├── favicon.svg
+│   ├── favicon-32.png
+│   ├── apple-touch-icon.png        # 180×180, full bleed — iOS masks it itself
 │   ├── robots.txt
 │   ├── video/                      # hero loop, if self-hosted — see section 6
 │   └── images/
 │       ├── hero/                   # hero poster still, from our own footage
-│       └── og/                     # social share images
+│       └── og/                     # default.png — one image, no text. See section 7
 └── src/
     ├── content.config.ts           # zod schemas for every collection
     ├── config/
@@ -116,7 +183,8 @@ lennupesu/
     │   ├── pricing.ts              # pricing page copy; contains no figure at all
     │   ├── faq.ts                  # the FAQ, its id space, and the token resolver
     │   ├── about.ts                # credentials page copy; the one place SORA/SAIL II render
-    │   └── contact.ts              # contact + form copy, the GDPR notice, which fields are required
+    │   ├── contact.ts              # contact + form copy, the GDPR notice, which fields are required
+    │   └── privacy.ts              # the privacy policy; retention as a criterion, not a number
     ├── styles/
     │   ├── tokens.css              # colours, spacing, type scale, radii
     │   └── global.css              # element defaults, layout primitives
@@ -159,6 +227,7 @@ lennupesu/
         ├── meist.astro
         ├── kkk.astro
         ├── kontakt.astro
+        ├── privaatsus.astro
         ├── aitah.astro                        # Formspree `_next` target; noindex, not in sitemap
         ├── teenused/
         │   ├── index.astro
@@ -175,6 +244,7 @@ lennupesu/
             ├── about.astro
             ├── faq.astro
             ├── contact.astro
+            ├── privacy.astro
             ├── thank-you.astro
             ├── services/{index,[slug]}.astro
             ├── areas/[slug].astro
@@ -312,7 +382,7 @@ unattributed review must not be publishable.
 
 ## 6. Component contracts
 
-- **`BaseLayout`** — props `{ title, description, locale, routeKey, brandSuffix?, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. **It also owns the `<title>` brand suffix**: `title` is the page-specific part only, and ` | ${site.brandText}` is composed here, in the one expression every page title passes through — `PageLayout` forwards and composes nothing. `<title>` and `og:title` are both built from that string so they cannot drift apart. `brandSuffix={false}` suppresses the suffix for a page whose title already carries the brand; it does not license authoring the name, which still comes from `site.brandText`. No page sets it today. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
+- **`BaseLayout`** — props `{ title, description, locale, routeKey, brandSuffix?, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, the icon and `theme-color` tags, Open Graph and Twitter card, and `LocalBusiness` JSON-LD built from `site.ts`. **`ogImage` now has a default** — the one sitewide image, section 7 — so a page that passes nothing still emits a card; no page overrides it today. `theme-color` is resolved from `tokens.css` rather than typed, and throws if the token is gone. Every page goes through it. **It also owns the `<title>` brand suffix**: `title` is the page-specific part only, and ` | ${site.brandText}` is composed here, in the one expression every page title passes through — `PageLayout` forwards and composes nothing. `<title>` and `og:title` are both built from that string so they cannot drift apart. `brandSuffix={false}` suppresses the suffix for a page whose title already carries the brand; it does not license authoring the name, which still comes from `site.brandText`. No page sets it today. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
 - **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. A native `<form action method="POST">` posting straight to Formspree. **Zero client JavaScript**, which is the requirement and not an optimisation: it works with JavaScript disabled because there is no script to disable. `@formspree/ajax` and `@formspree/react` are both rejected — they are dependencies, and the list in section 1 is closed. Native HTML validation only: `required`, `type="email"`, `inputmode`, `autocomplete`, no scripted checks and no `novalidate`. **Required: name, email, address. Optional: phone, area, message** — the reasoning is in `src/i18n/contact.ts` and is deliberate; a required area field a homeowner cannot answer is a field they abandon. The service options come from `servicesFor()`, never from a list in the component, so they cannot drift from the service pages. Spam is Formspree's `_gotcha` honeypot only — no CAPTCHA, no third-party script — hidden from sight, from the tab order and from assistive tech. `_next` must be an **absolute** URL, built from `site.domain` and the route map.
@@ -385,6 +455,67 @@ State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empt
 - `LocalBusiness` JSON-LD sitewide; `Service` JSON-LD on service pages; `FAQPage` JSON-LD on the FAQ page only.
 - Sitemap generated at build; `robots.txt` in `public/`. Link to it as `/sitemap-index.xml` — since Astro 6, endpoints with a file extension are only reachable without a trailing slash.
 - Images: Astro's `<Image>`, WebP, explicit width and height, `loading="lazy"` below the fold. Alt text is required — a missing alt fails the build check.
+- `BreadcrumbList` JSON-LD on any page that renders a visible breadcrumb, built by `PageLayout` from the same `trail` array the breadcrumb renders. It is **not** emitted on pages whose breadcrumb is not shown: structured data describing a trail the reader cannot see is the mismatch Google's guidance warns about, and every other piece of structured data on this site is backed by something visible.
+
+### The sitemap's hreflang, and why it is not the integration's
+
+`@astrojs/sitemap`'s `i18n` option pairs URLs by **stripping the locale prefix and
+matching the rest of the path**. Our slugs are localised and never shared, so it
+paired nothing: `/` and `/en` had alternates, and **the other twenty pages had none
+at all**, silently, from Phase 0 to Phase 9.
+
+The option is dropped. `astro.config.mjs` now builds the alternate sets in
+`serialize` by reading each page's own `<head>` back out of the built HTML, so the
+sitemap and the page are the same bytes and cannot drift. The reasoning, and the
+three facts about Astro's and the integration's internals that make it safe, are
+written at the top of that file. `scripts/check-html.mjs` check 6 asserts on the
+finished XML that it worked — see section 8.
+
+PLAN proposed rebuilding the sets at config time from `i18n/collections.ts` instead.
+That is not possible: the service slugs live in collection frontmatter and reach
+code only through `astro:content`, which does not exist while the config is being
+evaluated. Recorded here and in the config so it is not attempted again.
+
+### Open Graph, favicon and touch icons
+
+**One OG image for the whole site, and it carries no text.** PLAN asked for one per
+page type; that collapsed to one deliberately. There is no photography — SPEC
+section 4 and CLAUDE.md forbid stock and Phase 10 has not happened — so per-type
+variants would differ only by a word, and a baked word is the problem: a wordmark
+or a price rendered into a PNG is a copy of an unsettled `site.ts` value that no
+grep can reach. `og:title` and `og:description` already carry the words from the
+single source, and every social card renders them beside the image. **Phase 10's
+real before/after photography is the trigger for revisiting this**, not a spare
+afternoon.
+
+`BaseLayout` owns the tags, as it owns the rest of the head: `og:image` with its
+width, height and alt, `og:site_name` and `og:locale`/`og:locale:alternate` from
+`site.brandText` and `bcp47()`, and `twitter:card=summary_large_image`.
+
+**`theme-color` reads `--bg` out of `tokens.css` at build time** via Vite's `?raw`,
+and throws if the token cannot be found. This tag was held back until Phase 9 on the
+grounds that it would mean typing a token hex outside `tokens.css`; resolving it is
+the answer to that objection rather than a way around it. **No web manifest** — it
+would exist only to hold a second copy of two hexes, and nobody adds a cleaning
+company to a home screen.
+
+**The known, unreachable copies of token hexes.** A raster cannot read a CSS custom
+property, so these files bake `--bg` (`#07090D`) and `--accent` (`#22D3EE`), and
+`og-default.svg` also bakes `--hero-glow`. **When a token changes, these change by
+hand:**
+
+| File | Holds |
+|---|---|
+| `public/favicon.svg` | bg, accent |
+| `reference/icons/apple-touch-icon.svg` | bg, accent |
+| `reference/icons/og-default.svg` | bg, hero glow, accent |
+| `public/favicon-32.png`, `public/apple-touch-icon.png`, `public/images/og/default.png` | rebuilt from the SVGs above |
+
+The mark is the droplet that was already in `public/favicon.svg`; nothing was
+invented for it, and it is not wordmark-derived, so the unsettled business name does
+not reach any of these. **Rasterise with Chrome, not with ImageMagick alone** — IM's
+built-in SVG renderer ignored the radial gradient and faceted the curves. The exact
+commands are in the header comment of each SVG source.
 
 ## 8. Verification gates
 
@@ -394,7 +525,7 @@ State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empt
 "build":   "astro build",
 "preview": "astro preview",
 "check":   "astro check",
-"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments, forms
+"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments, forms, sitemap
 "sync":    "astro sync --force",            // evict the content cache; see below
 "verify":  "npm run sync && npm run check && npm run build && npm run links"
 ```
@@ -467,14 +598,99 @@ class — a form that posts nowhere — not the name of one environment variable
 All three failure modes were confirmed to fail the gate, not assumed: an empty action,
 an action containing `undefined`, and a relative `_next`.
 
+### Why `check-html` compares the sitemap against every page
+
+Check 6, added in Phase 9. Every built page that is not `noindex` must appear in
+`dist/sitemap-0.xml`, its `<xhtml:link>` set must equal the `hreflang` set in its own
+`<head>`, and a `noindex` page must **not** appear.
+
+It exists because the sitemap shipped for four phases with the alternates missing
+from **twenty of its twenty-two URLs** and nothing noticed — `@astrojs/sitemap`'s
+`i18n` option cannot pair localised slugs, and its failure mode is silence rather
+than an error. Section 7 has the fix.
+
+Two details, on the same reasoning as checks 4 and 5. The sets are compared **by
+value, not counted**: the failure being guarded against is an *empty* set, which any
+check that merely asked "is this URL listed?" would have passed. And the page's own
+`<link rel="canonical">` is its identity, because `BaseLayout` builds the canonical
+and the self-referencing alternate from one array — so a page this check can find at
+all has already proved those two agree.
+
+Confirmed to fail, not assumed: restoring the `i18n` option and rebuilding produced
+twelve `sitemap: (none)` errors across the service pages in both locales.
+
+### Lighthouse is run ad hoc and is NOT a project dependency
+
+SPEC section 6 gates on Lighthouse ≥95 performance and ≥95 accessibility, but
+Lighthouse is deliberately **not** in `package.json` and must not be added. It is
+invoked one-off:
+
+```
+npx --yes lighthouse http://localhost:4321/ --preset=desktop \
+  --only-categories=performance,accessibility,best-practices,seo
+```
+
+The dependency rule in CLAUDE.md protects what ships and what a future session
+inherits. A measurement tool invoked by hand is neither. **A later session should
+neither install it nor read its absence from the table in section 1 as a gap.**
+
+Run it against `npm run preview`, never `astro dev` — dev serves unbundled and
+unminified and the numbers are meaningless. Note that `preview` falls back to port
+4322 if 4321 is taken, and a stale server from an earlier session on 4321 will answer
+happily; check which one you are measuring.
+
+**Localhost numbers are not the numbers that count.** The real run is against the
+deployed site on Cloudflare's CDN, and it is on PLAN's launch checklist.
+
 ## 9. Deployment
 
-Static build to `dist/`. Connected to the GitHub repo; push to `main` deploys. Preview deploys on branches. Rollback is redeploying a previous build, which is instant.
+**Cloudflare Pages, static.** Decided in Phase 9 — the reasoning is in section 1 and
+is not to be relitigated. Connected to the GitHub repo; push to `main` deploys.
+Preview deploys on branches. Rollback is redeploying a previous build, which is
+instant.
 
-The deploy host must be set to Node 22 (22.12 or newer). Astro 7 will not build on Node 20.
+**Project settings, none of which live in this repository:**
 
-DNS: `lennupesu.ee` apex plus `www` redirecting to apex. `lennupesu.com` redirects to `.ee`.
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Node version | 22.12 or newer — Astro 7 will not build on Node 20 |
+| Build environment variable | `PUBLIC_FORMSPREE_ID` |
+
+Node is pinned three ways so it cannot drift: `.nvmrc`, `engines.node`, and the
+host. Cloudflare Pages is documented to read `.nvmrc`, which this repo already
+carries, but **set `NODE_VERSION` in the dashboard as well and confirm at the first
+deploy** — that behaviour was not verified against Cloudflare's own build-configuration
+page in Phase 9, and a silent fallback to an older Node would fail the build with a
+message that does not say why.
+
+**`PUBLIC_FORMSPREE_ID` must be set as a build variable, or the build fails.** That
+is the Phase 6 guard working as designed, not a misconfiguration — see section 8. A
+first deploy that errors on a missing environment variable is the intended outcome;
+the alternative is a contact page that looks right and drops every enquiry.
+
+### DNS, and why it is blocked
+
+`lennupesu.ee` apex plus `www` redirecting to apex; `lennupesu.com` redirects to
+`.ee`. **None of it can be done yet — the domain is not registered**, which is in
+turn blocked on the business name being settled. See PLAN's blocked list.
+
+**`.ee` is not a TLD Cloudflare Registrar sells.** The domain is registered at an
+Estonian registrar and its **nameservers are pointed at Cloudflare**. Whoever does
+this work should not go looking for `.ee` in the Cloudflare dashboard and conclude
+something is wrong. Delegating the nameservers is also what makes apex CNAME
+flattening available, which is what lets the apex point at a `pages.dev` project at
+all.
+
+**Both redirects are dashboard and DNS work, not repository files.** A `_redirects`
+file in `public/` matches on path, not on host, so it cannot express either of
+them; the host-based rules are Cloudflare Bulk Redirects or Redirect Rules. Nothing
+was added to the repo for them on purpose — a half-built redirect file that looks
+like the job is done is worse than an empty slot on the blocked list.
 
 ## 10. Decisions deliberately deferred
 
-Analytics vendor (Phase 9) · whether Decap CMS is ever needed (only if publishing becomes a real blocker) · Russian (structure is ready, content is not) · whether the survey business gets a section here or its own domain.
+Whether Decap CMS is ever needed (only if publishing becomes a real blocker) · Russian (structure is ready, content is not) · whether the survey business gets a section here or its own domain.
+
+**Analytics and hosting came off this list in Phase 9.** Both are decided, in section 1: Cloudflare Pages, and no analytics at all. The analytics slot being empty is the decision — do not read it as a gap and fill it.

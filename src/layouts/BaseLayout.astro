@@ -1,10 +1,11 @@
 ---
 import '../styles/tokens.css'
 import '../styles/global.css'
+import tokensSource from '../styles/tokens.css?raw'
 
 import { site } from '../config/site'
 import { alternates, bcp47, otherLocale, useTranslations } from '../i18n/utils'
-import { defaultLocale, type Locale } from '../i18n/ui'
+import { defaultLocale, locales, type Locale } from '../i18n/ui'
 import type { RouteKey } from '../i18n/routes'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
@@ -119,6 +120,34 @@ const canonical = new URL(selfHref, site.domain).href
  */
 const ld = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c')
 
+/**
+ * `theme-color` READS ITS HEX OUT OF `tokens.css`, IT DOES NOT REPEAT IT.
+ *
+ * This tag was deliberately left out until Phase 9 with the note that adding it
+ * would mean writing `--bg`'s hex a second time, outside `tokens.css` — and that
+ * file says a raw hex anywhere else is a bug. That objection was right, so the
+ * answer is to resolve the value rather than copy it: Vite's `?raw` gives us the
+ * stylesheet as text at build time, and the token is lifted from it.
+ *
+ * It throws rather than falling back. A silent default here would paint the
+ * browser chrome a colour no token chose, on every page, and nothing would say so.
+ */
+const bgToken = /--bg:\s*(#[0-9a-fA-F]{3,8})/.exec(tokensSource)?.[1]
+if (!bgToken) {
+  throw new Error(
+    'BaseLayout: could not read `--bg` out of src/styles/tokens.css for the theme-color ' +
+      'meta tag. The token was renamed or its syntax changed — update this expression ' +
+      'rather than typing the hex here, which is what tokens.css exists to prevent.',
+  )
+}
+
+/**
+ * The one Open Graph image for the whole site. It carries NO TEXT — see
+ * `reference/icons/og-default.svg` for why, and ARCHITECTURE section 7. A page may
+ * still override it via the `ogImage` prop; none does today.
+ */
+const ogImageHref = new URL(ogImage ?? '/images/og/default.png', site.domain).href
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
@@ -148,8 +177,11 @@ const jsonLd = {
   {noindex && <meta name="robots" content="noindex, follow" />}
   <link rel="canonical" href={canonical} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  {/* No `theme-color` meta: it would mean writing --bg's hex a second time,
-      outside tokens.css. It belongs with the favicon and touch icons in Phase 9. */}
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  {/* iOS ignores an SVG icon, so the touch icon is the one raster that must exist.
+      Its source is full-bleed: iOS applies its own rounded mask. */}
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+  <meta name="theme-color" content={bgToken} />
   {alts.map((a) => (
     <link rel="alternate" hreflang={bcp47(a.locale)} href={new URL(a.href, site.domain).href} />
   ))}
@@ -158,7 +190,18 @@ const jsonLd = {
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonical} />
-  {ogImage && <meta property="og:image" content={new URL(ogImage, site.domain).href} />}
+  <meta property="og:site_name" content={site.brandText} />
+  <meta property="og:locale" content={bcp47(locale).replace('-', '_')} />
+  {locales.filter((l) => l !== locale).map((l) => (
+    <meta property="og:locale:alternate" content={bcp47(l).replace('-', '_')} />
+  ))}
+  <meta property="og:image" content={ogImageHref} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  {/* The image is the brand mark on the page background and carries no words, so
+      its alt text is the mark, not a description of the page. */}
+  <meta property="og:image:alt" content={site.brandText} />
+  <meta name="twitter:card" content="summary_large_image" />
   <script type="application/ld+json" is:inline set:html={ld(jsonLd)} />
   {extraJsonLd.map((block) => (
     <script type="application/ld+json" is:inline set:html={ld(block)} />

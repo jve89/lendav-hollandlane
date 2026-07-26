@@ -96,6 +96,10 @@ const year = new Date().getFullYear()
     <div class="site-footer__bottom">
       <p>© {year} {site.legalName}</p>
       <p>{vatNote(locale)}</p>
+      {/* The privacy policy sits here rather than in the nav above: it is not in
+          `navOrder`, because a reader looks for it in the footer and it would
+          otherwise spend one of five menu slots. See `routes.ts`. */}
+      <p><a href={path('privacy', locale)}>{navLabel('privacy', locale)}</a></p>
     </div>
   </div>
 </footer>
@@ -194,6 +198,14 @@ const year = new Date().getFullYear()
     border-block-start: 1px solid var(--line);
     color: var(--muted);
     font-size: var(--step-xs);
+  }
+
+  .site-footer__bottom a {
+    color: var(--muted);
+  }
+
+  .site-footer__bottom a:hover {
+    color: var(--ink-2);
   }
 
   @media (min-width: 560px) {
