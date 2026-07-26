@@ -148,13 +148,47 @@ explicitly excluding VAT. So:
 this to a single number, and do not resolve it by assuming the more flattering
 reading — an unstated basis is an unknown, not a default.
 
-Our **€450 minimum job** runs the same direction and is the second axis: their
-site states no minimum, so on a small roof the gap a customer experiences is
-wider than the per-m² figures alone suggest.
-
 **This is recorded, not acted on.** `site.prices` is unchanged. The pricing
 decision belongs to Phase 10, when the first job produces real throughput and
 cost data — see PLAN.
+
+### The minimum job value is not a second price gap. It is a different market.
+
+**Read this before drawing any conclusion from the per-m² comparison above.** On
+its own that comparison describes our position wrongly, and the correction is
+not a detail.
+
+They state no minimum job value. We state **€450**. On a 60 m² garage roof their
+site implies **€120** and ours implies **€450**:
+
+| roof | theirs, implied | ours | ratio | |
+|---|---|---|---|---|
+| 60 m² | €120 | €450 | **3.75×** | minimum binds |
+| 100 m² | €200 | €450 | **2.25×** | minimum binds |
+| 150 m² | €300 | €450 | 1.50× | per-m² applies |
+| 200 m² | €400 | €600 | 1.50× | per-m² applies |
+| 300 m² | €600 | €900 | 1.50× | per-m² applies |
+
+That is not a 50% gap. It is a different market, and it is **a deliberate choice
+rather than a competitive weakness.**
+
+**The minimum stops binding at exactly 150 m²** — €450 ÷ €3 — which is exactly
+the lower bound of the roof size named as our primary audience in section 2,
+*"typically 150–300 m²"*. Inside that band the gap is a flat 1.50× and the
+minimum never applies. Below it the ratio climbs because we are not bidding.
+
+**We are structurally not competing for small jobs, because a small job does not
+pay for the trip.** The equipment, the setup and the travel cost the same on a
+60 m² garage as on a 250 m² house. The minimum is what stops the site producing
+enquiries we would have to decline or lose money on — the same reasoning as the
+no-booking and no-calculator decisions in section 4.
+
+**So do not "fix" the minimum on the strength of a price comparison.** A future
+session reading only the per-m² figures would see a 3.75× gap at the small end,
+read it as a competitiveness problem, and lower or drop a number that is doing
+exactly its job. If the minimum is ever revisited it is on throughput and cost
+data from real jobs — Phase 10 — and never because a competitor quotes a lower
+number for work we have decided not to want.
 
 ### What is genuinely ours, and what is not
 

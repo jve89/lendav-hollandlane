@@ -251,14 +251,20 @@ cannot say:
 **The pricing decision now has an external number to weigh, not only our own
 measurements.** Competitive research on 26 July 2026 (SPEC section 10) found
 pesutech.ee publishing **"Hind alates 2 EUR m²"** on both of its drone pages against
-our €3, with **no minimum job value** stated anywhere. We are at least 50% dearer on
-the headline figure — more if their €2 includes VAT, which their pages do not say —
-for a service a homeowner cannot tell apart from two websites. Our €450 minimum runs
-the same direction on small roofs.
+our €3. We are at least 50% dearer on the headline figure — more if their €2 includes
+VAT, which their pages do not say — for a service a homeowner cannot tell apart from
+two websites.
 
 So when the first flight lands its throughput and cost data, the question is not only
 *"what does this job cost us to do"* but *"what does it cost us to do at a price a
 visitor will compare against €2"*. Both halves are needed before the price moves.
+
+**The €450 minimum job is a separate question and it is answered in SPEC section 10,
+not here.** It is not a second price gap; it is what keeps us out of a market we have
+decided not to serve, and it stops binding at exactly the 150 m² that section 2 names
+as the bottom of our target roof size. Read that before touching it. If it is
+revisited at all, it is on throughput and cost data from real jobs — never because a
+competitor quotes a lower number for work we do not want.
 
 **Nothing is decided here and `site.prices` has not moved.** This is an input recorded
 so the decision is made against it rather than in ignorance of it; €3 is a considered
