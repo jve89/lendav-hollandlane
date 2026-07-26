@@ -32,8 +32,8 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 - **No online booking or calendar.** Every job needs measuring before it can be priced. A booking widget would create appointments we cannot honour.
 - **No instant automated quote.** An area-based calculator would quote jobs we would refuse and undercut jobs we should charge more for.
 - **No payments, invoicing, or customer accounts.** Invoicing happens outside the site.
-- **No page per Estonian town.** Two real regional pages at launch. A new one is added only when a completed job in that town supplies genuine photos and content. Thin location pages are a ranking liability, not an asset.
-- **No blog posts at launch.** The infrastructure ships; the posts wait until there is something real to say.
+- **No page per Estonian town.** Two real regional pages, Tallinn and Harjumaa — and they are the first work *after* launch, not part of it. A new one is added only when a completed job in that town supplies genuine photos and content. Thin location pages are a ranking liability, not an asset.
+- **No blog at launch — neither the posts nor the machine.** The infrastructure is built after launch, and the posts wait beyond that until there is something real to say.
 - **No Russian at launch.** The routing and content model must make Russian a translation drop, not a refactor.
 - **No customer login, no CRM, no dashboard.**
 - **No stock photography, no invented testimonials, no fabricated case studies.** See CLAUDE.md — this is a hard rule, not a preference.
@@ -79,15 +79,19 @@ Russian translation · blog posts · additional regional pages backed by real jo
 
 This is the whole of section 3 items 1 and 2 in a single screen. The video answers "what is this" faster than a paragraph can; the block under it answers "what does it cost and can I trust them" before the visitor has scrolled.
 
-**The footage does not exist yet.** There is no video and no photography until the first jobs, expected September 2026. The hero must therefore be built so that the state with no footage is the *default* path, not a degraded one — the same principle already applied to `BeforeAfter` in ARCHITECTURE section 6. Building the empty path first is what stops a placeholder shipping to production.
+**The footage does not exist yet, and what governs is the sequence, not a date.** The equipment is ordered; delivery follows roughly a week after that. The first flight is a **controlled job on family property, not a paying customer's roof**, flown as soon as the kit arrives. That flight produces the hero footage, a before/after pair, a measured job duration and the water-and-power answer. **The site launches after that flight, not before it.**
+
+An earlier version of this section put the footage at "September 2026" and had the site launching without it. That was an assumption made in session one and never checked with the operator; it is recorded here so it is not reinstated. Express this as a sequence — dates rot, and this one already did.
+
+**No design decision changes.** The footage does not exist *today*, so the hero must still be built so that the state with no footage is the *default* path, not a degraded one — the same principle already applied to `BeforeAfter` in ARCHITECTURE section 6. Building the empty path first is what stops a placeholder shipping to production.
 
 **No stock footage.** Section 4 and CLAUDE.md forbid stock photography, and that applies identically to video. If the footage is not ours, it does not go on the page.
 
 **Hosting — self-hosted in `public/video/`.** Not a video CDN. At this site's traffic the file is free to serve on the hosting plan we already have, with roughly two orders of magnitude of headroom. More importantly, what a video CDN sells — adaptive bitrate, a media library, a player — is of no use to a twelve-second silent loop, and its player is client JavaScript delivering HLS, which works against both the Lighthouse target above and the zero-JS rule. Revisit only if a real video library appears, meaning several job clips at Phase 10.
 
-**Two states, and the NO-FOOTAGE state is what ships.** `reference/direction-d.html` is the approved design direction and demonstrates both states on the same page.
+**Two states, and the NO-FOOTAGE state is the one that is built first.** `reference/direction-d.html` is the approved design direction and demonstrates both states on the same page.
 
-- **NO-FOOTAGE — what launches, and what the site lives on until the footage exists.** A black, type-led hero: the headline, the sub, and the price and credentials block, carried by type and the tokens alone. **No media band, no poster, no placeholder.** Not a reserved empty band, not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon" — the section simply has no media in it. This is the default path. It is built first and it must look finished, because it is what the site launches with and may run on for months.
+- **NO-FOOTAGE — what the site renders today, and until the first flight.** A black, type-led hero: the headline, the sub, and the price and credentials block, carried by type and the tokens alone. **No media band, no poster, no placeholder.** Not a reserved empty band, not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon" — the section simply has no media in it. This is the default path. It is built first and it must look finished, for two reasons: it is the state every preview build and every review renders in until the footage lands, and it is what launch falls back to if that footage slips or turns out unusable. A hero that looks broken without footage will ship looking broken.
 - **FOOTAGE — what the same hero becomes.** It *gains* a media band above the price and credentials block. Within this state the media degrades video → poster still, under the two guards below.
 
 The distinction matters for how it is built: this is a type-led hero that later gains a video, not a video hero with a hole in it. The no-footage state is not the bottom of a fallback chain — it is a finished design in its own right, and nothing about it is a placeholder awaiting an asset.

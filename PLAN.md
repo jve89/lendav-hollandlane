@@ -2,8 +2,37 @@
 
 One phase per session. Fresh session each time. Commit on every green phase, without exception.
 
+---
+
+## Read the ORDER, not the integers
+
+**The phases run in the order printed below, and since 26 July 2026 that is no longer
+numerical order.** Launch moved: the content drop now happens *before* it, and the ranking
+work *after* it.
+
+| Order | Phase | |
+|---|---|---|
+| — | Phases 0–5 | ✅ complete and committed |
+| 1 | **Phase 6 — contact and quote form** | **next** · launch-blocking |
+| 2 | Phase 9 — SEO, performance, launch readiness | launch-blocking |
+| 3 | Phase 10 — real content drop | launch-blocking |
+| — | **LAUNCH** | |
+| 4 | Phase 7 — regional pages | post-launch |
+| 5 | Phase 8 — blog infrastructure | post-launch |
+
+**Phase 6 is next.** After Phase 6 comes Phase 9, not Phase 7.
+
+The integers are kept only because `src/` cites them: **37 comments reference `Phase 10` by
+number across twenty files** — 24 of them in the ten service markdown files, 13 in ten
+source files — and nine further files cite Phases 6–9. Renumbering would edit all of them
+to gain nothing, because the numbers are labels and the order is the instruction. **Do not
+execute the phases numerically.**
+
 **Re-anchor prompt for each session:**
-> Read SPEC.md, ARCHITECTURE.md and PLAN.md. We are doing Phase N. Plan first, do not write anything until I approve.
+> Read SPEC.md, ARCHITECTURE.md and PLAN.md. Take the next phase from the order table at
+> the top of PLAN — the phases are **not** in numerical order, so do not infer it from the
+> integers. Tell me which phase you have taken and why before doing anything else. Plan
+> first, do not write anything until I approve.
 
 **Gate for every phase:** `npm run verify` exits 0.
 
@@ -125,7 +154,7 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 
 ---
 
-## Phase 6 — Contact and quote form
+## Phase 6 — Contact and quote form *(next · launch-blocking)*
 
 - `kontakt.astro` with `QuoteForm`, phone, email, service area, season
 - Formspree wired via `PUBLIC_FORMSPREE_ID`
@@ -138,29 +167,9 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 
 ---
 
-## Phase 7 — Regional pages
+## Phase 9 — SEO, performance, launch readiness *(launch-blocking)*
 
-Tallinn and Harjumaa only. No other towns until a completed job justifies one.
-
-**Verify:** gate passes · each page has region-specific substance, not a template with the name swapped.
-
-**Commit:** `feat: Tallinn and Harjumaa pages`
-
----
-
-## Phase 8 — Blog infrastructure
-
-The machine, not the posts. `blogi/index.astro` renders an honest empty state.
-
-First posts, when there is time and something real to say, target informational searches: how to tell moss from lichen, when to clean an Estonian roof, what pressure does to fibre-cement, drone versus scaffolding cost.
-
-**Verify:** gate passes · empty state renders · adding one draft post appears in dev and is excluded from the production build.
-
-**Commit:** `feat: blog infrastructure`
-
----
-
-## Phase 9 — SEO, performance, launch
+Follows Phase 6. Readiness, not the launch event itself — launch is after Phase 10.
 
 - Sitemap with hreflang — **see the known limitation below, which is the real work in this line**
 - OG images per page type
@@ -190,23 +199,127 @@ Two things to check when doing it: `serialize` receives absolute URLs, and the `
 
 ---
 
-## Phase 10 — Real content drop *(after the first jobs, ~October 2026)*
+## Phase 10 — Real content drop *(launch-blocking — the last thing before launch)*
 
-Not a build phase. This is why the empty states exist.
+Not a build phase. This is why the empty states exist, and it is the last work that happens
+before the site goes live. **It used to sit after launch, at "~October 2026". That was an
+unchecked assumption and it was wrong in both respects.**
 
-- Before/after photo pairs into `src/content/jobs/`
-- Real customer reviews
-- The confirmed cleaning product and its biocide authorisation, replacing the FAQ TODO
-- Water and power answer, replacing the other FAQ TODO
-- Measured figures — throughput, job duration — feeding both the copy and the financial model
-- Native-speaker Estonian review, removing every `needs-native-review` marker
+The source is a **controlled first job on family property**, flown as soon as the kit
+arrives — not a paying customer's roof. One flight answers most of what the site currently
+cannot say:
+
+- **Hero footage** into `public/video/`, plus its poster still — SPEC section 9's FOOTAGE
+  state, under the 2 MB desktop cap and the 12-second loop limit. Mobile still fetches zero
+  bytes of video.
+- **A before/after pair** into `src/content/jobs/`, which fills `BeforeAfter` on both home
+  pages the moment the file lands — no code change needed, that is the contract.
+- **A measured job duration and throughput**, feeding both the copy and the financial
+  model, and restoring the figure `CompareTable` currently withholds.
+- **The water and power answer**, replacing the unconfirmed FAQ entry in `src/i18n/faq.ts`.
+
+**What the flight does not settle:** the cleaning product and its Estonian biocide
+authorisation. That is a purchasing decision, not a flying one. It stays unconfirmed on
+CLAUDE.md's terms — no product named, no claim about one made — until the operator answers
+it. See the blocked list below, which now records a promise on six pages that depends on
+this answer.
+
+**No testimonial from the family job.** It would not be fabricated, so CLAUDE.md permits
+it, and it is still not to be used. A first review profile that opens with a relative is a
+reputational risk out of all proportion to the value of one review. **The reviews section
+stays absent until an arm's-length customer has paid for a job and agreed to be quoted.**
+`published: false` on the job file governs whether the photos appear; the `testimonial` and
+`testimonialAuthor` fields stay empty, and the schema's both-or-neither rule keeps them
+that way.
+
+Also in this phase, because it gates launch rather than the footage: the **native-speaker
+Estonian review**, clearing every `needs-native-review` marker.
+
+---
+
+## LAUNCH
+
+Everything above ships.
+
+**The gate here is not `npm run verify`.** That has been green since Phase 0 and proves only
+that the site is not broken — see SPEC section 6. The gate is the list below being empty.
+
+---
+
+## Phase 7 — Regional pages *(post-launch)*
+
+The first ranking work after launch. Tallinn and Harjumaa only. No other towns until a
+completed job justifies one.
+
+**Verify:** gate passes · each page has region-specific substance, not a template with the name swapped.
+
+**Commit:** `feat: Tallinn and Harjumaa pages`
+
+---
+
+## Phase 8 — Blog infrastructure *(post-launch)*
+
+The machine, not the posts. `blogi/index.astro` renders an honest empty state.
+
+First posts, when there is time and something real to say, target informational searches: how to tell moss from lichen, when to clean an Estonian roof, what pressure does to fibre-cement, drone versus scaffolding cost.
+
+**Verify:** gate passes · empty state renders · adding one draft post appears in dev and is excluded from the production build.
+
+**Commit:** `feat: blog infrastructure`
 
 ---
 
 ## Blocked on the operator, not on code
 
-A working email address — blocked on `lennupesu.ee` being registered and on the business name being settled · Formspree account · the cleaning product and its Estonian biocide authorisation · the water and power answer · `lennupesu.ee` registered and DNS pointed · Google Business Profile verified · native-speaker Estonian review.
+**Every item here blocks launch.** None of them blocks Phase 6 or Phase 9. The first three
+block Phase 10.
 
-The registry code, the VAT number, the legal name and the phone number came off this list when they landed in `site.ts`. The list is only worth reading if it is true, so take an item off it the moment it is answered.
+**Equipment, and the first flight.** Ordered within the week; delivered roughly a week after
+that; flown on family property as soon as it arrives. Phase 10 has no input at all until
+this happens.
 
-None of these block Phases 0–8. All of them block launch.
+**The water and power answer.** Expected out of that first flight.
+
+**The `needs-operator-review` claims.** Eight markers today, one at the top of four services
+in both locales — windows, gutters, facade, solar. Every claim under a marker is confirmed
+or cut; the marker does not come out any other way.
+
+**The cleaning product decision — and a promise on six pages that depends on it.** Five
+service pages and the FAQ, in both locales, tell the reader that the quote will name the
+product *and the Estonian biocide authorisation it is permitted under* — in Estonian,
+"millise Eesti biotsiidiloa alusel see on lubatud". Twelve strings; six pages per locale.
+
+That sentence **presupposes a biocidal product, and it may be false**. The regulatory
+trigger is the **claim, not the chemistry**: Terviseamet's definition of a biocide excludes
+purely physical or mechanical products, so an operator who cleans with a surfactant and
+water pressure while making no claim about killing or deterring organisms is not using a
+biocide at all. On that route there is no authorisation, nothing to name, and the promise is
+false on all six pages.
+
+The sentence must be rewritten to survive **both** routes — biocidal product with an
+authorisation to cite, or physical cleaning with no authorisation and no organism-killing
+claim made anywhere on the site. **Not in this commit, and not by guessing which route it
+is.** It is blocked on the operator's product decision and the rewrite belongs to the phase
+that has the answer.
+
+**The final business name.** `site.brand` and `site.brandText` are provisional. This is the
+whole reason the name is written in one file and nowhere else in `src/`.
+
+**`lennupesu.ee` registered and DNS pointed.** Blocked in turn on the name being settled.
+
+**A working email address.** Blocked on the domain, which is blocked on the name.
+`site.email` is unconfirmed and `Credentials` deliberately does not print it.
+
+**A Formspree account.** Phase 6 builds against `PUBLIC_FORMSPREE_ID` and cannot meet its
+own verify condition — a real test submission arriving in the inbox — without one.
+
+**Google Business Profile verified.** One of the two discovery channels named in SPEC
+section 2.
+
+**Native-speaker Estonian review.** All Estonian copy in this repo is AI-drafted and
+unverified. Twelve `needs-native-review` markers; each is cleared by a native speaker
+signing the copy off, or the copy is rewritten.
+
+The registry code, the VAT number, the legal name and the phone number came off this list
+when they landed in `site.ts`. The list is only worth reading if it is true, so take an item
+off it the moment it is answered.
