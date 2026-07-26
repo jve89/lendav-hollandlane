@@ -151,6 +151,11 @@ template, do not — Astro preserves `<!-- -->` and it will fail the build. Use
 
 **Claims that are forbidden:**
 - "First in Estonia", "only drone operator", "Estonia's leading" — Droonipesu OÜ (pesutech.ee) already operates nationwide. These claims are false and competitively reckless.
+- **That a competitor lacks an authorisation, a competency or insurance — asserted OR implied.** Their website does not state one; that is all we know, and it is not the same fact. A permission missing from a marketing site is not a permission missing from the operator. **This is the obvious next temptation and it is why the rule is written here**, next to the entry above: the competitive research on 26 July 2026 found no regulatory language anywhere on their site (SPEC section 10), and the gap between *"they do not say so"* and *"they do not have it"* is where this would go wrong.
+
+  Watch the **soft forms**, because a flat "they are unlicensed" is not what anyone would actually write. These are all forbidden: *"the only drone operator with a permit"*, *"unlike others, we are insured"*, *"the only one that can legally fly over houses"*, and any comparative construction that leaves the reader to draw it. They are unverifiable, and they collapse straight back into the "only" claim already banned on the line above.
+
+  Say what is ours instead, with no comparison attached: we hold the authorisation, we are insured, here are the references. A reader comparing two sites will notice which one says so, and that inference is theirs to draw rather than ours to plant. Unlike most content slips in this repo, this one has a route to a legal problem rather than an embarrassing correction.
 - Any specific percentage, speed multiple or saving that is not backed by a measurement in this repo.
 - Guarantees about outcomes, longevity or damage.
 

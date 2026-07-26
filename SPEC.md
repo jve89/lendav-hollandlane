@@ -1,9 +1,11 @@
 # SPEC.md — Lendav Hollandlane website
 
-**Version 1.2 · 26 July 2026** — the business name was settled as **Lendav
-Hollandlane** and the site's domain became `lendavhollandlane.ee`. Nothing else
-in this document moved: the audience, the scope, the content constraints and the
-hero decision are unchanged. The legal name behind the brand is still AIF OÜ.
+**Version 1.3 · 26 July 2026** — section 5's differentiator list was overstated
+and is corrected, and **section 10 is new**: the competitor publishes prices
+too, and is cheaper. Version 1.2 settled the business name as **Lendav
+Hollandlane** and the domain as `lendavhollandlane.ee`. The audience, the scope,
+the content constraints and the hero decision are unchanged, as is the legal
+name behind the brand, AIF OÜ.
 
 ---
 
@@ -44,7 +46,7 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 ## 5. Non-negotiable content constraints
 
 - Every price shown is **excluding VAT**, and says so. Estonian VAT is 24%.
-- We do **not** claim to be the first or only drone cleaning operator in Estonia. Droonipesu OÜ (trading as Pesutech) already operates nationwide. Our differentiators are published pricing, the documented SORA SAIL II operational authorisation, and insurance — all of which are verifiable claims.
+- We do **not** claim to be the first or only drone cleaning operator in Estonia. Droonipesu OÜ (trading as Pesutech) already operates nationwide. Our differentiators are **the structure of our price list** — a per-m² from-price, a stated minimum job value and an explicit ex-VAT basis, against their two from-prices on two service pages — the documented SORA SAIL II operational authorisation, and insurance. All three are verifiable claims. **This said "published pricing" until 26 July 2026, and that was overstated: they publish prices too, and they are cheaper. See section 10.**
 - Regulatory claims must be exact: operational authorisation from the Estonian Transport Administration (Transpordiamet) for specific-category operations under SORA, SAIL II; third-party liability insurance under Regulation (EC) 785/2004.
 - Any statement about cleaning products must name the actual product and its Estonian biocide authorisation. Until that is confirmed, **no product is named and no claim about one is made** — the page says that the product and its authorisation are given in the quote, and the unconfirmed fact is recorded as a comment in the content file. Revised in Phase 4: this previously required a visible `TODO:` marker on the live page. The constraint that matters is that nothing unverified is asserted, not that the gap is advertised to the customer. See CLAUDE.md.
 - Estonian is the source of truth. English is a translation of it, not a parallel original.
@@ -112,3 +114,82 @@ Detail in the Hero contract, ARCHITECTURE section 6.
 A cut that cannot meet both caps is re-cut or re-encoded. It is not exempted.
 
 See the Hero contract in ARCHITECTURE section 6.
+
+## 10. Competitive position — Droonipesu OÜ / pesutech.ee
+
+**Everything below was observed on 26 July 2026 and is a snapshot of that day,
+not a standing truth.** Competitor pricing and copy move. A future session
+re-checks these pages rather than trusting this section, exactly as the hosting
+figures in ARCHITECTURE section 1 are treated. Sources:
+
+- `https://pesutech.ee/samblatorje-drooniga/` — drone moss treatment
+- `https://pesutech.ee/korgete-pindade-pesu-drooniga/` — drone washing of high surfaces
+
+**This section is appended as 10 rather than inserted in sequence** because SPEC
+section numbers are cited 33 times across 14 files in this repo; renumbering to
+place it thematically would rewrite all of them to gain nothing.
+
+### They publish prices, and they are cheaper
+
+Both drone pages state **"Hind alates 2 EUR m²"**. Our roof and facade
+from-price is €3/m². There is no price list page on their site, no minimum job
+value, and no price on their home page.
+
+**We are at least 50% more expensive on the figure a homeowner actually
+compares, and possibly more.** Their pages do not state a VAT basis. Ours is
+explicitly excluding VAT. So:
+
+| if their €2 is | their ex-VAT price | we are dearer by |
+|---|---|---|
+| excluding VAT | €2.00 | 50% |
+| including VAT | €1.61 | 86% |
+
+**50% is the best case for us, and their basis is unknown.** Do not collapse
+this to a single number, and do not resolve it by assuming the more flattering
+reading — an unstated basis is an unknown, not a default.
+
+Our **€450 minimum job** runs the same direction and is the second axis: their
+site states no minimum, so on a small roof the gap a customer experiences is
+wider than the per-m² figures alone suggest.
+
+**This is recorded, not acted on.** `site.prices` is unchanged. The pricing
+decision belongs to Phase 10, when the first job produces real throughput and
+cost data — see PLAN.
+
+### What is genuinely ours, and what is not
+
+**Ours, and defensible:**
+
+- **The structure of the price list.** They publish two from-prices on two
+  service pages. We publish a price list with a per-m² from-price, a minimum job
+  value and a stated ex-VAT basis. The difference is findability and
+  completeness, not the mere fact of publishing.
+- **An English site.** They are Estonian only. This is what SPEC section 2's
+  tertiary audience rests on.
+- **A drone company, not a company with a drone.** They list eight services, of
+  which two are drone-based. It is an exterior cleaning business that owns a
+  drone.
+- **A documented operational authorisation, stated on our site.** See below for
+  the hard limit on how this may be used.
+
+**Not ours, and must not be claimed:**
+
+- **Cheaper.** We are not, on the headline figure.
+- **More social proof.** They carry no reviews, testimonials or customer counts.
+  Neither do we. This is a tie, and it stays a tie until an arm's-length
+  customer has paid and agreed to be quoted — PLAN Phase 10.
+
+### The credentials gap, stated exactly
+
+The only safety language anywhere on their site is the generic *"Töötame
+vastavalt Eesti ja Euroopa Liidu ohutusnõuetele"*. Neither drone page nor the
+home page names Transpordiamet, SORA, the specific category, a pilot competency
+or insurance.
+
+**What that licenses us to say: their website does not state an authorisation,
+and ours does.** That is an observation about two websites and it is true.
+
+**What it never licenses, in the repo or on a page: that they do not hold one.**
+We have no idea. A permission absent from a marketing site is not a permission
+absent from the operator, and the inference is as forbidden as the assertion.
+This is in CLAUDE.md's forbidden-claims list, and that list governs.

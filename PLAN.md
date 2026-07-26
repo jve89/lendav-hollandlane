@@ -248,6 +248,23 @@ cannot say:
   model, and restoring the figure `CompareTable` currently withholds.
 - **The water and power answer**, replacing the unconfirmed FAQ entry in `src/i18n/faq.ts`.
 
+**The pricing decision now has an external number to weigh, not only our own
+measurements.** Competitive research on 26 July 2026 (SPEC section 10) found
+pesutech.ee publishing **"Hind alates 2 EUR m²"** on both of its drone pages against
+our €3, with **no minimum job value** stated anywhere. We are at least 50% dearer on
+the headline figure — more if their €2 includes VAT, which their pages do not say —
+for a service a homeowner cannot tell apart from two websites. Our €450 minimum runs
+the same direction on small roofs.
+
+So when the first flight lands its throughput and cost data, the question is not only
+*"what does this job cost us to do"* but *"what does it cost us to do at a price a
+visitor will compare against €2"*. Both halves are needed before the price moves.
+
+**Nothing is decided here and `site.prices` has not moved.** This is an input recorded
+so the decision is made against it rather than in ignorance of it; €3 is a considered
+price, not a placeholder waiting for a competitor. Re-check pesutech.ee at the time
+rather than trusting the figure above — it is a snapshot of one day.
+
 **What the flight does not settle:** the cleaning product and its Estonian biocide
 authorisation. That is a purchasing decision, not a flying one. It stays unconfirmed on
 CLAUDE.md's terms — no product named, no claim about one made — until the operator answers
