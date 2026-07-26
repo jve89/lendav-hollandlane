@@ -1,0 +1,37 @@
+---
+/**
+ * The price list, English. Identical composition to `hinnakiri.astro`,
+ * different locale — see the notes there. Estonian is the source of truth; the
+ * English strings in `i18n/pricing.ts` are a translation of it.
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import PriceTable from '../../components/PriceTable.astro'
+import PricingDetails from '../../components/PricingDetails.astro'
+import Cta from '../../components/Cta.astro'
+import { pricingCopy } from '../../i18n/pricing'
+import { servicesFor } from '../../i18n/services'
+import { useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const c = pricingCopy[locale]
+const services = await servicesFor(locale)
+---
+<PageLayout
+  title={t('meta.pricing.title')}
+  description={t('meta.pricing.description')}
+  locale={locale}
+  routeKey="pricing"
+  heading={t('pricing.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PriceTable locale={locale} entries={services} />
+    </div>
+  </section>
+
+  <PricingDetails locale={locale} />
+
+  <Cta locale={locale} />
+</PageLayout>

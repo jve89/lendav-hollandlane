@@ -40,6 +40,7 @@ import { glob } from 'astro/loaders'
 import { z } from 'astro/zod'
 import { locales } from './i18n/ui'
 import { priceKinds, serviceKeys } from './i18n/home'
+import { faqIds } from './i18n/faq'
 
 /**
  * Shared field shapes. Declared once so two collections cannot disagree about
@@ -100,12 +101,21 @@ const services = defineCollection({
     icon: z.enum(serviceKeys),
     ...seo,
     /**
-     * Which FAQ answers this service page repeats. Deliberately NOT a
-     * `reference()`: there is no `faq` collection — the FAQ lives in
-     * `i18n/home.ts` until Phase 5 builds `kkk.astro` and defines the id space.
-     * Stays `[]` until then.
+     * Which FAQ answers this service page repeats. Still deliberately NOT a
+     * `reference()` — there is no `faq` collection, because the FAQ is UI copy
+     * in two locales rather than a set of files.
+     *
+     * TIGHTENED IN PHASE 5, which built the id space it was waiting for. It was
+     * `z.array(z.string())` while the ids did not exist; now that `faqIds` is a
+     * closed tuple in `i18n/faq.ts`, a service file naming a question that is
+     * not there fails the build instead of referencing nothing at all. That is
+     * the whole reason this project uses `strictObject` everywhere: a typo must
+     * be loud, not silently empty.
+     *
+     * Every service file has it `[]` today. The field is rendered by whichever
+     * later phase repeats FAQ answers onto a service page.
      */
-    faqRefs: z.array(z.string()).default([]),
+    faqRefs: z.array(z.enum(faqIds)).default([]),
   }),
 })
 

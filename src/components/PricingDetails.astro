@@ -1,0 +1,165 @@
+---
+/**
+ * PricingDetails — everything on `/hinnakiri` below the price table.
+ *
+ * Extracted for the reason `ServiceGrid` was: the page exists in two locales,
+ * and two copies of this markup and its layout rules would drift. The pages
+ * differ only in the locale they pass.
+ *
+ * IT CONTAINS NO FIGURE AND READS NONE. Every amount on the pricing page is
+ * inside `PriceTable`, which reads `site.prices`. The copy here names what
+ * MOVES a price without ever quantifying it — CLAUDE.md forbids a percentage,
+ * a multiple or a saving that no measurement in this repository supports.
+ *
+ * The "why there is no calculator" block is deliberate and is not an apology.
+ * SPEC section 4 rules out an instant automated quote, and a visitor who
+ * expected one should be told why rather than left to conclude the page is
+ * unfinished.
+ */
+import { pricingCopy } from '../i18n/pricing'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const c = pricingCopy[locale]
+---
+<section class="section section--raised">
+  <div class="wrap">
+    <h2>{c.factors.heading}</h2>
+    <p class="lead factors__lead">{c.factors.lead}</p>
+
+    <ul class="factors">
+      {c.factors.items.map((item) => (
+        <li class="factors__item">
+          <b>{item.label}.</b> {item.text}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap cols">
+    <div>
+      <h2>{c.quote.heading}</h2>
+      <ol class="steps">
+        {c.quote.steps.map((step) => <li>{step}</li>)}
+      </ol>
+    </div>
+
+    <div>
+      <h2>{c.excluded.heading}</h2>
+      <ul class="excluded">
+        {c.excluded.items.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <h2 class="nocalc__heading">{c.noCalculator.heading}</h2>
+    <p class="nocalc__body">{c.noCalculator.body}</p>
+  </div>
+</section>
+
+<style>
+  .factors__lead {
+    margin-block: var(--sp-4) var(--sp-8);
+  }
+
+  .factors {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .factors__item {
+    color: var(--ink-3);
+    font-size: var(--step-sm);
+    line-height: var(--lh-tight);
+    max-width: var(--measure);
+  }
+
+  .factors__item b {
+    color: var(--ink);
+    font-weight: var(--fw-strong);
+  }
+
+  .cols {
+    display: grid;
+    gap: var(--sp-10);
+  }
+
+  /* The global reset clears list markers, so an ordered list has to put its
+     numbers back explicitly — and these are steps in a sequence, where the
+     number carries meaning rather than decorating. */
+  .steps {
+    counter-reset: step;
+    display: grid;
+    gap: var(--sp-4);
+    margin-block-start: var(--sp-6);
+    max-width: var(--measure);
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-4);
+    align-items: baseline;
+    color: var(--ink-2);
+    font-size: var(--step-sm);
+    line-height: var(--lh-tight);
+  }
+
+  .steps li::before {
+    content: counter(step);
+    color: var(--accent-text);
+    font-weight: var(--fw-display);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .excluded {
+    display: grid;
+    margin-block-start: var(--sp-6);
+    max-width: var(--measure);
+  }
+
+  .excluded li {
+    padding-block: var(--sp-4);
+    border-block-end: 1px solid var(--line);
+    color: var(--ink-3);
+    font-size: var(--step-sm);
+    line-height: var(--lh-tight);
+  }
+
+  .excluded li:last-child {
+    border-block-end: 0;
+  }
+
+  .nocalc__heading {
+    font-size: var(--step-prose-h2);
+    letter-spacing: var(--ls-h3);
+  }
+
+  .nocalc__body {
+    margin-block-start: var(--sp-4);
+    max-width: var(--measure);
+    color: var(--ink-3);
+  }
+
+  @media (min-width: 760px) {
+    .factors {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-6) var(--sp-8);
+    }
+
+    .cols {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-9);
+    }
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+/**
+ * The price list, Estonian. `en/pricing.astro` is the same page in the other
+ * locale and the two must stay in step — which is why everything below the
+ * price table lives in `PricingDetails`.
+ *
+ * SPEC section 3 item 1: state what we clean and what it costs. SPEC section 4:
+ * no booking, no instant quote, no calculator, no total. This page publishes
+ * where a price STARTS and says plainly why it does not publish more than that.
+ *
+ * No amount is typed here. `PriceTable` reads `site.prices` and resolves each
+ * service's `priceKind`; the copy in `i18n/pricing.ts` contains no figure at
+ * all.
+ */
+import PageLayout from '../layouts/PageLayout.astro'
+import PriceTable from '../components/PriceTable.astro'
+import PricingDetails from '../components/PricingDetails.astro'
+import Cta from '../components/Cta.astro'
+import { pricingCopy } from '../i18n/pricing'
+import { servicesFor } from '../i18n/services'
+import { useTranslations } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+const c = pricingCopy[locale]
+
+/**
+ * The same five entries the services index and the home page render, in the
+ * same `order`. The table prices the services the site actually sells, and it
+ * cannot list one the collection does not have.
+ */
+const services = await servicesFor(locale)
+---
+<PageLayout
+  title={t('meta.pricing.title')}
+  description={t('meta.pricing.description')}
+  locale={locale}
+  routeKey="pricing"
+  heading={t('pricing.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <PriceTable locale={locale} entries={services} />
+    </div>
+  </section>
+
+  <PricingDetails locale={locale} />
+
+  <Cta locale={locale} />
+</PageLayout>

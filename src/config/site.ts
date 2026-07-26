@@ -12,6 +12,17 @@ export const site = {
   brandText: 'Lennupesu',
   legalName: 'AIF OÜ',
 
+  /**
+   * The person who holds the remote pilot competency and flies every job. Sole
+   * operator of the company.
+   *
+   * It lives here rather than in the about page's copy for the same reason the
+   * legal name does: it identifies the business, it is written in two locales,
+   * and when it changes it must change in one line. Estonian copy that uses it
+   * is phrased so the NOMINATIVE is grammatical — nothing declines it.
+   */
+  operator: 'Johan van Erkel',
+
   regCode: '16654436',
   vatNumber: 'EE102744992',
   phone: '+372 5400 4610',

@@ -1,54 +1,54 @@
 ---
 /**
- * Faq — an excerpt of three questions on the home page. Native <details>, so
- * this costs zero bytes of JavaScript (ARCHITECTURE section 2).
+ * Faq — the home page's FAQ excerpt: three questions and a link to the rest.
  *
- * Which three: roof damage, weather and season, cleaning frequency. The
- * chemicals answer and the water-and-power answer are deliberately NOT here —
- * both are unconfirmed and PLAN puts their visible TODO markers on the service
- * pages (Phase 4) and the FAQ page (Phase 5), where a reader has come looking
- * for detail. Putting an unanswerable question on the highest-traffic page
- * would spend attention the price and the benefit need.
+ * SINCE PHASE 5 IT DOES NOT OWN ITS COPY. The questions live in `i18n/faq.ts`,
+ * which is also what `/kkk` renders and what `services.faqRefs` names. This
+ * component selects by id and defaults to `homeFaqIds` — roof damage, weather
+ * and season, cleaning frequency: the three objections a homeowner arrives
+ * with.
  *
- * There is no "all questions" link yet: /kkk does not exist until Phase 5, and
- * `npm run links` correctly fails on a link to a page that is not built.
+ * The unconfirmed three (cleaning product, water and power, duration) are
+ * deliberately not among them. Each is answered with a commitment about our own
+ * conduct rather than a fact, which is the right answer on a page a reader
+ * reached looking for detail and the wrong one on the highest-traffic page in
+ * the site.
  *
- * The season is interpolated from site.ts via `monthRange`, so no month name is
- * typed into this repository and Russian remains a translation drop.
+ * The disclosure markup moved to `FaqList.astro`, because `/kkk` renders the
+ * same list three times under three group headings.
  */
-import { site } from '../config/site'
-import { homeCopy } from '../i18n/home'
-import { monthRange } from '../i18n/utils'
+import FaqList from './FaqList.astro'
+import { homeFaqIds, type FaqId } from '../i18n/faq'
+import { builtRoutes } from '../i18n/routes'
+import { path, useTranslations } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
 
 interface Props {
   locale: Locale
+  /** Which questions to show, in order. Defaults to the home page's three. */
+  ids?: readonly FaqId[]
 }
 
-const { locale } = Astro.props
-const c = homeCopy[locale].faq
-const season = monthRange(site.season.fromMonth, site.season.toMonth, locale)
+const { locale, ids = homeFaqIds } = Astro.props
+const t = useTranslations(locale)
 
-const items = c.items.map((item) => ({
-  q: item.q,
-  a: item.a.replace('{season}', season),
-}))
+/**
+ * The link to the full FAQ appears only once `/kkk` is built. `npm run links`
+ * correctly fails on a link to a page that does not exist, and `builtRoutes` is
+ * how every component in this repository asks that question — the same pattern
+ * `Hero` and `Cta` use for the quote route.
+ */
+const allHref = builtRoutes.has('faq') ? path('faq', locale) : undefined
 ---
 <section class="section section--raised faq">
   <div class="wrap faq__wrap">
-    <h2>{c.heading}</h2>
+    <h2>{t('faq.heading')}</h2>
 
-    <div class="faq__list">
-      {items.map((item) => (
-        <details class="faq__item">
-          <summary class="faq__q">
-            <span>{item.q}</span>
-            <span class="faq__mark" aria-hidden="true"></span>
-          </summary>
-          <p class="faq__a">{item.a}</p>
-        </details>
-      ))}
+    <div class="faq__body">
+      <FaqList locale={locale} ids={ids} />
     </div>
+
+    {allHref && <p class="faq__all"><a href={allHref}>{t('faq.all')}</a></p>}
   </div>
 </section>
 
@@ -57,68 +57,18 @@ const items = c.items.map((item) => ({
     max-width: 820px;
   }
 
-  .faq__list {
+  .faq__body {
     margin-block-start: var(--sp-7);
-    display: grid;
-    gap: var(--sp-3);
   }
 
-  .faq__item {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--r-card);
-  }
-
-  .faq__q {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--sp-5);
-    padding: var(--sp-4) var(--sp-5);
-    font-weight: var(--fw-strong);
-    color: var(--ink);
-    cursor: pointer;
-    list-style: none;
-  }
-
-  .faq__q::-webkit-details-marker {
-    display: none;
-  }
-
-  /* A drawn mark rather than a glyph, so it needs no icon font and rotates
-     cleanly. It is decoration: the <details> element already announces state. */
-  .faq__mark {
-    position: relative;
-    flex: none;
-    inline-size: 12px;
-    block-size: 12px;
-  }
-
-  .faq__mark::before,
-  .faq__mark::after {
-    content: '';
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 0;
-    inline-size: 12px;
-    block-size: 2px;
-    border-radius: 2px;
-    background: var(--accent);
-    transform: translateY(-50%);
-  }
-
-  .faq__mark::after {
-    transform: translateY(-50%) rotate(90deg);
-    transition: transform 0.15s ease;
-  }
-
-  .faq__item[open] .faq__mark::after {
-    transform: translateY(-50%) rotate(0deg);
-  }
-
-  .faq__a {
-    padding: 0 var(--sp-5) var(--sp-5);
-    color: var(--ink-3);
+  .faq__all {
+    margin-block-start: var(--sp-6);
     font-size: var(--step-sm);
+    font-weight: var(--fw-strong);
+  }
+
+  .faq__all a {
+    color: var(--accent-text);
+    text-underline-offset: 0.2em;
   }
 </style>

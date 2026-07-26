@@ -80,11 +80,17 @@ export interface CompareRow {
   alt: string
 }
 
-export interface FaqItem {
-  q: string
-  /** May contain the token `{season}`, replaced at render from `site.season`. */
-  a: string
-}
+/**
+ * The three FAQ items left this file in Phase 5, for `i18n/faq.ts`, the same
+ * way the service cards left it in Phase 4 and the price vocabulary left it for
+ * `ui.ts`. `/kkk` renders the full set and the home page shows three of them;
+ * two files holding the answer to "does the drone damage my roof" is one too
+ * many, and the drift would be invisible until someone fixed one of them.
+ *
+ * The section heading went to `ui.ts` as `faq.heading`, because the home
+ * section and the FAQ page's own `<h1>` are the same words and neither owns
+ * them. `Faq.astro` now selects by id through `homeFaqIds`.
+ */
 
 export interface HomeCopy {
   hero: {
@@ -128,10 +134,6 @@ export interface HomeCopy {
     columnDrone: string
     columnAlt: string
     rows: readonly CompareRow[]
-  }
-  faq: {
-    heading: string
-    items: readonly [FaqItem, FaqItem, FaqItem]
   }
   cta: {
     heading: string
@@ -214,29 +216,6 @@ export const homeCopy = {
         },
       ],
     },
-    faq: {
-      heading: 'Korduma kippuvad küsimused',
-      items: [
-        {
-          q: 'Kas droon kahjustab katust?',
-          a: 'Droon ei puutu katust. Survet ja otsakut reguleeritakse materjali järgi — eterniidile ja vanale katendile kasutame madalat survet. Suurim kahju katusele tekib tavaliselt siis, kui keegi selle peal kõnnib, ja seda me ei tee.',
-        },
-        {
-          q: 'Mis ilmaga te ei tööta?',
-          // `{season}` arrives from `monthRange` in the NOMINATIVE — "aprill–oktoober".
-          // Estonian running text would want "aprillist oktoobrini" here, so the range
-          // is given as a standalone label rather than inflected mid-sentence.
-          a: 'Tugeva tuulega, vihmaga ja miinuskraadidega me ei lenda. Hooaeg: {season}. Kui ilm töö edasi lükkab, lepime uue aja kokku ilma lisatasuta.',
-        },
-        {
-          q: 'Kui tihti tuleks katust pesta?',
-          // No interval is asserted here. The one-pager's "iga 3–5 aasta tagant"
-          // has no source behind it, so the answer explains what drives the
-          // interval instead. A number returns when there is something to cite.
-          a: 'Seda otsustab maja, mitte kalender. Kiiremini sammalduvad katused, mis jäävad varju, mille lähedal kasvavad puud ja mille kalded on põhja poole. Ka katusematerjal loeb. Kõige kindlam märk on katus ise: kui sammal on nähtav, on aeg pesta.',
-        },
-      ],
-    },
     cta: {
       heading: 'Küsi tasuta pakkumist',
       body: 'Saatke objekti aadress ja lühike kirjeldus. Vastame kirjaliku hinnaga.',
@@ -313,23 +292,6 @@ export const homeCopy = {
           label: 'Impact on the garden',
           drone: 'Light ground equipment only',
           alt: 'Scaffold feet and a lift on the lawn',
-        },
-      ],
-    },
-    faq: {
-      heading: 'Frequently asked questions',
-      items: [
-        {
-          q: 'Will the drone damage my roof?',
-          a: 'The drone never touches the roof. Pressure and nozzle are matched to the material — low pressure on fibre-cement and older coverings. Most roof damage during cleaning comes from someone walking on it, and we do not do that.',
-        },
-        {
-          q: 'In what weather can you not work?',
-          a: 'We do not fly in strong wind, rain or sub-zero temperatures. The season runs {season}. If the weather postpones a job, we reschedule at no extra cost.',
-        },
-        {
-          q: 'How often should a roof be cleaned?',
-          a: 'That depends on the house, not on the calendar. Moss comes back faster on roofs that sit in shade, have trees close by, or have north-facing pitches. The roofing material matters too. The surest sign is the roof itself: once you can see moss, it is time.',
         },
       ],
     },

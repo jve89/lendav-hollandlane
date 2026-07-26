@@ -96,10 +96,13 @@ lennupesu/
     ├── i18n/
     │   ├── ui.ts                   # UI strings per locale
     │   ├── routes.ts               # static route map, built routes, nav order
-    │   ├── utils.ts                # getLocale, t(), path(), formatPrice, priceLine
+    │   ├── utils.ts                # getLocale, t(), path(), formatPrice, priceLine, vatNote
     │   ├── collections.ts          # locale guard + alternates for localised collections
     │   ├── services.ts             # services: cross-locale pairing and its assertion
-    │   └── home.ts                 # home page copy — lists, not UI strings
+    │   ├── home.ts                 # home page copy — lists, not UI strings
+    │   ├── pricing.ts              # pricing page copy; contains no figure at all
+    │   ├── faq.ts                  # the FAQ, its id space, and the token resolver
+    │   └── about.ts                # credentials page copy; the one place SORA/SAIL II render
     ├── styles/
     │   ├── tokens.css              # colours, spacing, type scale, radii
     │   └── global.css              # element defaults, layout primitives
@@ -114,13 +117,16 @@ lennupesu/
     │   ├── TrustBar.astro
     │   ├── ServiceCard.astro
     │   ├── ServiceGrid.astro       # the card list + its flex layout, in one place
-    │   ├── PriceTable.astro
+    │   ├── PriceTable.astro        # prices from site.ts; never takes an amount
+    │   ├── PricingDetails.astro    # /hinnakiri below the table, so the twins cannot drift
     │   ├── CompareTable.astro      # drone vs scaffolding
     │   ├── BeforeAfter.astro       # renders a job's photo pair, or an explicit empty state
-    │   ├── Faq.astro
+    │   ├── FaqList.astro           # the <details> list; used by Faq and FaqGroups
+    │   ├── Faq.astro               # the home page's three-question excerpt
+    │   ├── FaqGroups.astro         # the whole FAQ in its three groups, for /kkk
+    │   ├── Credentials.astro       # /meist body: what we hold, who holds it, identifiers
     │   ├── QuoteForm.astro
-    │   ├── Cta.astro
-    │   └── Seo.astro
+    │   └── Cta.astro
     ├── content/
     │   ├── services/
     │   │   ├── et/                 # katusepesu.md, fassaadipesu.md, ...
@@ -159,6 +165,14 @@ lennupesu/
             └── blog/{index,[slug]}.astro
 ```
 
+**`Seo.astro` was removed from this tree in Phase 5, and it is not coming.** It
+was listed here from the start and never built, because `BaseLayout` owns the
+`<head>` — the title and its brand suffix, the canonical, the hreflang set, Open
+Graph and every JSON-LD block. A component that also emitted head tags would be
+a second place for a page to describe itself, which is precisely the failure the
+`alternates` and `jsonLd` props exist to prevent. See the `BaseLayout` contract
+in section 6.
+
 ## 5. Data model
 
 ### `src/config/site.ts` — the single source of truth
@@ -168,6 +182,7 @@ export const site = {
   brand: 'LennuPesu',                 // wordmark only; running text uses brandText
   brandText: 'Lennupesu',
   legalName: 'AIF OÜ',
+  operator: 'Johan van Erkel',        // sole operator; holds the remote pilot competency
   regCode: '16654436',
   vatNumber: 'EE102744992',
   phone: '+372 5400 4610',
@@ -218,11 +233,25 @@ where `strictObject` is the current spelling of this.
 `title, slug, locale, summary, priceKind, priceNote?, order, icon, seoTitle, seoDescription, faqRefs[]`
 
 `priceKind` is a REFERENCE — one of `roof | facade | quote | addon` — that
-`ServiceCard` resolves against `site.prices`. It is deliberately not a `priceFrom`
-amount: a euro figure typed into a markdown file breaks the single-source rule in
-CLAUDE.md, which overrides this document. `priceNote` is prose and never a figure.
-`faqRefs` is a plain string array, not a `reference()`, because there is no `faq`
-collection — the FAQ id space arrives with Phase 5.
+`ServiceCard` and `PriceTable` resolve against `site.prices`. It is deliberately
+not a `priceFrom` amount: a euro figure typed into a markdown file breaks the
+single-source rule in CLAUDE.md, which overrides this document. `priceNote` is
+prose and never a figure.
+
+`faqRefs` is still not a `reference()`, because there is no `faq` collection —
+the FAQ is UI copy in two locales, not a set of files. **It stopped being a
+plain string array in Phase 5**, which built the id space it was waiting for:
+`faqIds` in `src/i18n/faq.ts` is a closed tuple, `content.config.ts` builds
+`z.enum(faqIds)` from it, and a service file naming a question that does not
+exist now fails the build instead of referencing nothing. Every service file has
+it `[]` today.
+
+**Where the VAT rate lives.** `site.vatRate`, and the ex-VAT note interpolates
+it through `vatNote()` in `i18n/utils.ts`. Until Phase 5 the note typed "24%"
+into `ui.ts` while `site.vatRate` sat unread, which is worse than not having the
+field: a later session reads the config, assumes it is the source, changes it,
+and nothing moves. The rate is formatted by `Intl`, so the symbol is not typed
+either.
 
 **`locations`** — one per region we can honestly claim.
 `name, slug, locale, intro, isPrimary, jobRefs[], seoTitle, seoDescription`
@@ -249,7 +278,9 @@ unattributed review must not be publishable.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
 - **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled. Note that `import.meta.env` values are inlined as strings and never coerced.
-- **`PriceTable`** — reads prices from `site.ts`. Always renders the ex-VAT note. Never takes prices as props.
+- **`PriceTable`** — props `{ locale, entries }`, where `entries` are `services` collection entries. It reads prices from `site.ts` and **never takes a price**: each row's figure comes from resolving that entry's `priceKind` through `priceLine()`, and the minimum job comes from `site.prices.minimumJob`. Taking entries rather than rows is what stops the table disagreeing with the service page it links to. It **always renders the ex-VAT note**, and that is not a prop — CLAUDE.md requires every displayed price to be labelled excluding VAT, and a caller that could switch the label off would eventually be a caller that did. No total, no estimate, no calculator: SPEC section 4.
+- **`Faq` / `FaqList` / `FaqGroups`** — `FaqList` is the `<details>` list and owns the disclosure markup; `Faq` is the home page's three-question excerpt around it; `FaqGroups` is the whole set in its three groups for `/kkk`. All three read `i18n/faq.ts` through `faqEntries()`, which resolves `{season}`, `{minimum}`, `{area}` and `{authority}` from `site.ts` — and because the FAQ page's `FAQPage` JSON-LD is built from the same resolved objects it renders, the structured data cannot drift from the visible answer.
+- **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. It prints no email address, because `site.email` is unconfirmed.
 
 ### `Hero` — the contract
 

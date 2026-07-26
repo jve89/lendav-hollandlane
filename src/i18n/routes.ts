@@ -59,6 +59,9 @@ export const navOrder = [
 export const builtRoutes: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'home',
   'services',
+  'pricing',
+  'about',
+  'faq',
   'notFound',
 ])
 

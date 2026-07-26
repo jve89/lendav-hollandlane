@@ -1,0 +1,57 @@
+---
+/**
+ * The FAQ, Estonian. `en/faq.astro` is its pair.
+ *
+ * SPEC section 3 item 4: answer the objections that stop a booking. Fourteen
+ * questions in three groups, all from `i18n/faq.ts`.
+ *
+ * THREE OF THEM ARE ANSWERED WITH A COMMITMENT, NOT A FACT — the cleaning
+ * product, what we need from the site, and how long the work takes. None of
+ * those is confirmed, so none of them is asserted; each says instead what we
+ * will tell the customer and when, which is verifiable because it is about our
+ * own conduct. The `unconfirmed:` markers naming what may not be invented live
+ * beside the answers in `i18n/faq.ts`, in the repository and never on the page.
+ * PLAN Phase 10 replaces all three.
+ *
+ * `FAQPage` JSON-LD, per ARCHITECTURE section 7, and on this page only. It is
+ * built from `faqEntries()` — THE SAME RESOLVED STRINGS `FaqGroups` renders —
+ * so the structured data cannot say something the visible answer does not. It
+ * is passed to `PageLayout` as data; `BaseLayout` serialises it, because no
+ * page writes its own `<head>` and no page builds a JSON string by hand.
+ */
+import PageLayout from '../layouts/PageLayout.astro'
+import FaqGroups from '../components/FaqGroups.astro'
+import Cta from '../components/Cta.astro'
+import { faqEntries } from '../i18n/faq'
+import { useTranslations } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+const entries = faqEntries(locale)
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: entries.map((entry) => ({
+    '@type': 'Question',
+    name: entry.q,
+    acceptedAnswer: { '@type': 'Answer', text: entry.a },
+  })),
+}
+---
+<PageLayout
+  title={t('meta.faq.title')}
+  description={t('meta.faq.description')}
+  locale={locale}
+  routeKey="faq"
+  heading={t('faq.heading')}
+  jsonLd={[faqJsonLd]}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <FaqGroups locale={locale} />
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>

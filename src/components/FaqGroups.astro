@@ -1,0 +1,55 @@
+---
+/**
+ * FaqGroups — the whole FAQ, in its three groups, for `/kkk`.
+ *
+ * Extracted so the two locale pages stay in step, like `ServiceGrid` and
+ * `PricingDetails`. Each group is an `<h2>` and a `FaqList`; the page supplies
+ * the `<h1>` through `PageLayout` and the `FAQPage` structured data, which it
+ * builds from the same `faqEntries()` the lists render.
+ *
+ * Groups render in `faqGroups` order and questions in `faqIds` order. A
+ * question whose group is empty renders nothing rather than an empty heading —
+ * which cannot happen today, since `faqGroupOf` is a total map, but a heading
+ * with no content is the kind of thing a later edit produces.
+ */
+import FaqList from './FaqList.astro'
+import { faqCopy, faqEntriesByGroup, faqGroups } from '../i18n/faq'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const copy = faqCopy[locale]
+
+const groups = faqGroups
+  .map((group) => ({
+    group,
+    heading: copy.groups[group],
+    ids: faqEntriesByGroup(locale, group).map((entry) => entry.id),
+  }))
+  .filter((group) => group.ids.length > 0)
+---
+<div class="faq-groups">
+  {groups.map((group) => (
+    <section class="faq-groups__group">
+      <h2 class="faq-groups__heading">{group.heading}</h2>
+      <FaqList locale={locale} ids={group.ids} />
+    </section>
+  ))}
+</div>
+
+<style>
+  .faq-groups {
+    display: grid;
+    gap: var(--sp-10);
+    max-width: 820px;
+  }
+
+  .faq-groups__heading {
+    font-size: var(--step-prose-h2);
+    letter-spacing: var(--ls-h3);
+    margin-block-end: var(--sp-5);
+  }
+</style>

@@ -1,0 +1,42 @@
+---
+/**
+ * The FAQ, English. Identical composition to `kkk.astro`, different locale —
+ * see the notes there, including why three answers are commitments rather than
+ * facts and where their markers live.
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import FaqGroups from '../../components/FaqGroups.astro'
+import Cta from '../../components/Cta.astro'
+import { faqEntries } from '../../i18n/faq'
+import { useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const entries = faqEntries(locale)
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: entries.map((entry) => ({
+    '@type': 'Question',
+    name: entry.q,
+    acceptedAnswer: { '@type': 'Answer', text: entry.a },
+  })),
+}
+---
+<PageLayout
+  title={t('meta.faq.title')}
+  description={t('meta.faq.description')}
+  locale={locale}
+  routeKey="faq"
+  heading={t('faq.heading')}
+  jsonLd={[faqJsonLd]}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <FaqGroups locale={locale} />
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>

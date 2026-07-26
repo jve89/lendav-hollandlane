@@ -1,0 +1,31 @@
+---
+/**
+ * The credentials page, English. Identical composition to `meist.astro`,
+ * different locale — see the notes there, including the equipment marker.
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import Credentials from '../../components/Credentials.astro'
+import Cta from '../../components/Cta.astro'
+import { aboutCopy } from '../../i18n/about'
+import { useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const c = aboutCopy[locale]
+---
+<PageLayout
+  title={t('meta.about.title')}
+  description={t('meta.about.description')}
+  locale={locale}
+  routeKey="about"
+  heading={t('about.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <Credentials locale={locale} />
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>

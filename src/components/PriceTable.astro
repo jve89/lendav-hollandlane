@@ -1,0 +1,183 @@
+---
+/**
+ * PriceTable — the published prices, read from `site.ts`. ARCHITECTURE section 6.
+ *
+ * IT NEVER TAKES A PRICE. It takes service entries and resolves each one's
+ * `priceKind` — a REFERENCE — through `priceLine()`, exactly as `ServiceCard`
+ * has since Phase 4. The minimum job value comes from `site.prices.minimumJob`
+ * through `formatPrice()`. No euro amount is typed into a copy file, a markdown
+ * file, a page or this component, and a price change is one line in `site.ts`.
+ *
+ * IT ALWAYS RENDERS THE EX-VAT NOTE, and the note is not optional or a prop:
+ * CLAUDE.md requires every displayed price to be labelled excluding VAT, and a
+ * caller that could switch the label off would eventually be a caller that did.
+ * The rate inside it comes from `site.vatRate` via `vatNote()`.
+ *
+ * A real `<table>`, following `CompareTable`'s conventions: this is tabular
+ * data, the row header is the service, and a screen reader user needs the pair
+ * to make sense of a cell. It keeps its own horizontal scroll rather than
+ * pushing the page sideways at 390px.
+ *
+ * NO TOTAL, NO ESTIMATE, NO CALCULATOR — SPEC section 4. This component states
+ * where a price starts. What a specific roof costs is in the written quote, and
+ * nothing here adds two numbers together.
+ *
+ * The link is on the service title, so its accessible name is the service and
+ * nothing else — the same reasoning as `ServiceCard`'s title link.
+ */
+import type { CollectionEntry } from 'astro:content'
+import { site } from '../config/site'
+import { serviceHref } from '../i18n/services'
+import { formatPrice, priceLine, useTranslations, vatNote } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+  /**
+   * The services to price, in the order they should read. Entries rather than
+   * rows, so the table cannot disagree with the service page it links to.
+   */
+  entries: readonly CollectionEntry<'services'>[]
+}
+
+const { locale, entries } = Astro.props
+const t = useTranslations(locale)
+---
+<div class="prices">
+  <div class="prices__scroll">
+    <table class="prices__table">
+      <caption class="visually-hidden">{t('priceTable.caption')}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{t('priceTable.service')}</th>
+          <th scope="col">{t('priceTable.price')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {entries.map((entry) => (
+          <tr>
+            <th scope="row">
+              <a href={serviceHref(locale, entry.data.slug)}>{entry.data.title}</a>
+            </th>
+            <td>
+              <span class="prices__amount">{priceLine(entry.data.priceKind, locale)}</span>
+              {entry.data.priceNote && <span class="prices__note">{entry.data.priceNote}</span>}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* The minimum job is not a service and does not belong in a service column. */}
+  <dl class="prices__minimum">
+    <dt>{t('priceTable.minimum')}</dt>
+    <dd>{formatPrice(site.prices.minimumJob, locale)}</dd>
+  </dl>
+  <p class="fineprint prices__minimum-note">{t('priceTable.minimumNote')}</p>
+
+  <p class="fineprint prices__vat">{vatNote(locale)}</p>
+</div>
+
+<style>
+  .prices__scroll {
+    overflow-x: auto;
+  }
+
+  .prices__table {
+    inline-size: 100%;
+    min-inline-size: 20rem;
+    border-collapse: collapse;
+    text-align: start;
+  }
+
+  .prices__table th,
+  .prices__table td {
+    padding: var(--sp-4) var(--sp-3);
+    text-align: start;
+    vertical-align: top;
+    border-block-end: 1px solid var(--line);
+    line-height: var(--lh-tight);
+  }
+
+  .prices__table thead th {
+    color: var(--muted);
+    font-size: var(--step-micro);
+    letter-spacing: var(--ls-caps);
+    text-transform: uppercase;
+    font-weight: var(--fw-strong);
+    padding-block-end: var(--sp-3);
+  }
+
+  .prices__table tbody th {
+    inline-size: 55%;
+    color: var(--ink);
+    font-weight: var(--fw-strong);
+  }
+
+  .prices__table tbody th a {
+    text-decoration: none;
+  }
+
+  .prices__table tbody th a:hover {
+    color: var(--accent-text);
+  }
+
+  .prices__amount {
+    display: block;
+    color: var(--accent-text);
+    font-weight: var(--fw-display);
+    font-size: var(--step-sub);
+  }
+
+  /* The qualifier belongs with the figure it qualifies, not in a footnote —
+     "hind sõltub paneelide arvust" is the answer to the price, not an aside. */
+  .prices__note {
+    display: block;
+    margin-block-start: var(--sp-2);
+    color: var(--muted);
+    font-size: var(--step-xs);
+    max-width: var(--measure-narrow);
+  }
+
+  .prices__table tbody tr:last-child th,
+  .prices__table tbody tr:last-child td {
+    border-block-end: 0;
+  }
+
+  .prices__minimum {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--sp-2) var(--sp-4);
+    margin-block-start: var(--sp-8);
+    padding-block-start: var(--sp-6);
+    border-block-start: 1px solid var(--line);
+  }
+
+  .prices__minimum dt {
+    color: var(--ink-2);
+    font-weight: var(--fw-strong);
+  }
+
+  .prices__minimum dd {
+    color: var(--ink);
+    font-weight: var(--fw-display);
+    font-size: var(--step-sub);
+  }
+
+  .prices__minimum-note {
+    margin-block-start: var(--sp-2);
+  }
+
+  .prices__vat {
+    margin-block-start: var(--sp-6);
+  }
+
+  @media (min-width: 760px) {
+    .prices__table th,
+    .prices__table td {
+      padding: var(--sp-4);
+    }
+  }
+</style>

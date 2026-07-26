@@ -1,0 +1,49 @@
+---
+/**
+ * The credentials page, Estonian. `en/about.astro` is its pair.
+ *
+ * PLAN Phase 5 calls this "the page that beats the incumbent". What it has to
+ * beat is a competitor who also flies drones — so what it sells is not the
+ * drone. It is that the authorisation and the insurance exist and can be seen,
+ * that the prices are published, that nobody walks on the roof, and that one
+ * named person does the work.
+ *
+ * TODO(equipment): THE EQUIPMENT PARAGRAPH IS DELIBERATELY ABSENT. The kit is
+ * not yet in the operator's possession and this page will not claim gear the
+ * business does not own — not a drone make or model, not a rig or payload name,
+ * not a pressure or tank figure, not a photograph of equipment. This marker
+ * lives in the repository and never on the page: the visitor reads a finished
+ * page, and a future session does not mistake the gap for an oversight. The
+ * full prohibition is written at the top of `i18n/about.ts`, beside the copy it
+ * governs. It is lifted when the equipment is delivered, not before.
+ *
+ * The exact regulatory references — SORA, SAIL II, the insurance regulation —
+ * appear on this page and nowhere in customer-facing copy elsewhere, per
+ * CLAUDE.md. They are read from `site.credentials`, not typed.
+ */
+import PageLayout from '../layouts/PageLayout.astro'
+import Credentials from '../components/Credentials.astro'
+import Cta from '../components/Cta.astro'
+import { aboutCopy } from '../i18n/about'
+import { useTranslations } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+const c = aboutCopy[locale]
+---
+<PageLayout
+  title={t('meta.about.title')}
+  description={t('meta.about.description')}
+  locale={locale}
+  routeKey="about"
+  heading={t('about.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <Credentials locale={locale} />
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>

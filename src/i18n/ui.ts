@@ -56,6 +56,15 @@ export const ui = {
     'meta.services.title': 'Teenused ja hinnad',
     'meta.services.description':
       'Katusepesu, fassaadipesu, päikesepaneelide pesu, aknad ja vihmaveesüsteemid. Kõik drooniga, katusele astumata. Hinnad on avaldatud.',
+    'meta.pricing.title': 'Hinnakiri',
+    'meta.pricing.description':
+      'Katuse- ja fassaadipesu ruutmeetrihind, väikseima töö maksumus ja see, mis hinda muudab. Kõik hinnad on ilma käibemaksuta.',
+    'meta.faq.title': 'KKK',
+    'meta.faq.description':
+      'Vastused katuse kahjustamise, ilma, hinna, lubade ja kindlustuse kohta. Mida me ei tea, seda me ei väida.',
+    'meta.about.title': 'Meist',
+    'meta.about.description':
+      'Käitamisluba, vastutuskindlustus ja see, kes tööd teeb. Katusele ei astuta ja hinnad on avaldatud.',
 
     // services index
     'services.heading': 'Teenused',
@@ -82,6 +91,25 @@ export const ui = {
      * render the token.
      */
     'price.vatNote': 'Hinnad ei sisalda käibemaksu {vat}.',
+
+    /**
+     * The price table. The AMOUNTS are never here — `PriceTable` reads them
+     * from `site.prices` and resolves each service's `priceKind` through
+     * `priceLine`. These are the column headers and the labels around them.
+     */
+    'priceTable.caption': 'Teenuste hinnad',
+    'priceTable.service': 'Teenus',
+    'priceTable.price': 'Hind',
+    'priceTable.minimum': 'Väikseima töö maksumus',
+    'priceTable.minimumNote':
+      'Sellest väiksema töö puhul ei tasu väljasõit ja ülesseadmine end ära.',
+
+    // pricing, FAQ and credentials page headings
+    'pricing.heading': 'Katusepesu ja fassaadipesu hinnad',
+    'about.heading': 'Load, kindlustus ja see, kes lendab',
+    'faq.heading': 'Korduma kippuvad küsimused',
+    /** The home page's link to the full FAQ. */
+    'faq.all': 'Kõik korduma kippuvad küsimused',
 
     // 404
     'notFound.heading': 'Lehte ei leitud',
@@ -151,6 +179,15 @@ export const ui = {
     'meta.services.title': 'Services and prices',
     'meta.services.description':
       'Roof cleaning, facade cleaning, solar panels, windows and guttering. All by drone, with nobody on your roof. Prices published.',
+    'meta.pricing.title': 'Pricing',
+    'meta.pricing.description':
+      'The square-metre price for roof and facade cleaning, the minimum job, and what moves the price. All prices exclude VAT.',
+    'meta.faq.title': 'FAQ',
+    'meta.faq.description':
+      'Answers on roof damage, weather, price, authorisations and insurance. Where we do not know, we do not claim.',
+    'meta.about.title': 'About us',
+    'meta.about.description':
+      'The operational authorisation, the liability insurance, and the person who does the work. Nobody walks on your roof and the prices are published.',
 
     // services index
     'services.heading': 'Services',
@@ -163,6 +200,19 @@ export const ui = {
     'price.addon': 'As an add-on',
     /** `{vat}` comes from `site.vatRate` via `vatNote()`. See the Estonian block. */
     'price.vatNote': 'Prices exclude {vat} VAT.',
+
+    // the price table — see the Estonian block
+    'priceTable.caption': 'Service prices',
+    'priceTable.service': 'Service',
+    'priceTable.price': 'Price',
+    'priceTable.minimum': 'Minimum job',
+    'priceTable.minimumNote': 'Below this the trip and the setup do not pay for themselves.',
+
+    // pricing, FAQ and credentials page headings
+    'pricing.heading': 'Roof and facade cleaning prices',
+    'about.heading': 'The authorisation, the insurance and the person who flies',
+    'faq.heading': 'Frequently asked questions',
+    'faq.all': 'All frequently asked questions',
 
     // 404
     'notFound.heading': 'Page not found',
