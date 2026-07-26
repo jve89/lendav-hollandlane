@@ -6,7 +6,7 @@
 
 ## 1. What this is
 
-The marketing website for **LennuPesu**, the consumer-facing brand of AIF Drone Services OÜ: drone-based roof, facade and solar panel cleaning in Estonia.
+The marketing website for **LennuPesu**, the consumer-facing brand of AIF OÜ: drone-based roof, facade and solar panel cleaning in Estonia.
 
 Its single job is to turn a stranger into a written enquiry with an address and an approximate area. It is not a shop, not a booking system, and not a portfolio for its own sake.
 

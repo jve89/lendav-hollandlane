@@ -7,9 +7,10 @@
  * insurance regulation number belong on the credentials page (Phase 5) and in
  * KÜ small print, not in a footer a homeowner reads.
  *
- * `regCode` and `vatNumber` are still the literal string TODO in site.ts, and
- * they render as TODO. That is the intended behaviour: an unverified fact shows
- * as a visible gap rather than as plausible filler.
+ * `regCode`, `vatNumber` and `phone` are real as of this commit. `email` is not:
+ * the domain is not registered, so the address here does not yet receive mail.
+ * See the `unconfirmed:` comment on it in site.ts before treating it as a
+ * working contact route anywhere.
  */
 import { site } from '../config/site'
 import { navLabel, path, useTranslations, monthRange } from '../i18n/utils'

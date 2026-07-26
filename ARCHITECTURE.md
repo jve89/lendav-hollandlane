@@ -165,28 +165,38 @@ lennupesu/
 
 ```ts
 export const site = {
-  brand: 'LennuPesu',
-  legalName: 'AIF Drone Services OÜ',
-  regCode: 'TODO',
-  vatNumber: 'TODO',
-  phone: '+372 0000 0000',          // TODO
-  phoneHref: 'tel:+3720000000',
-  email: 'info@lennupesu.ee',
+  brand: 'LennuPesu',                 // wordmark only; running text uses brandText
+  brandText: 'Lennupesu',
+  legalName: 'AIF OÜ',
+  regCode: '16654436',
+  vatNumber: 'EE102744992',
+  phone: '+372 5400 4610',
+  phoneHref: 'tel:+37254004610',
+  email: 'info@lennupesu.ee',         // unconfirmed: domain not registered yet
   domain: 'https://lennupesu.ee',
   vatRate: 0.24,
   prices: {
-    roofFrom: 3.00,                 // EUR per m², EXCLUDING VAT
-    facadeFrom: 3.00,
+    roofFrom: 3.0,                    // EUR per m², EXCLUDING VAT
+    facadeFrom: 3.0,
     minimumJob: 450,
   },
-  season: { from: 4, to: 10 },      // April–October
+  season: { fromMonth: 4, toMonth: 10 },   // April–October
   credentials: {
     authority: 'Transpordiamet',
-    authorisation: 'Erikategooria käitamisluba (SORA, SAIL II)',
-    insurance: 'Määrus (EÜ) 785/2004',
+    authorisationEt: 'Erikategooria käitamisluba (SORA, SAIL II)',
+    authorisationEn: 'Specific-category operational authorisation (SORA, SAIL II)',
+    insuranceRef: 'Määrus (EÜ) 785/2004',
+    insuranceRefEn: 'Regulation (EC) 785/2004',
   },
+  serviceArea: { baseEt: 'Tallinn ja Harjumaa', baseEn: 'Tallinn and Harju county' },
 } as const
 ```
+
+This example is the shape of the real file, not an abbreviation of it. It had
+drifted on four counts — the legal name, `season`'s key names, the locale-split
+`credentials` fields, and the missing `brandText` and `serviceArea` — and a code
+example that disagrees with the code is the failure class that has already cost
+this project three sessions. Keep it in step or delete it; do not let it rot.
 
 Nothing else in the codebase hardcodes a phone number, an email address or a price. A grep for `+372` outside this file is a bug.
 

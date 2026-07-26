@@ -10,13 +10,19 @@
 export const site = {
   brand: 'LennuPesu',              // wordmark only; running text uses "Lennupesu"
   brandText: 'Lennupesu',
-  legalName: 'AIF Drone Services OÜ',
+  legalName: 'AIF OÜ',
 
-  // TODO(operator): fill these before launch
-  regCode: 'TODO',
-  vatNumber: 'TODO',
-  phone: '+372 0000 0000',
-  phoneHref: 'tel:+3720000000',
+  regCode: '16654436',
+  vatNumber: 'EE102744992',
+  phone: '+372 5400 4610',
+  phoneHref: 'tel:+37254004610',
+
+  /**
+   * unconfirmed: lennupesu.ee is not registered and the business name is not
+   * final, so this address does not yet receive mail. Do not print it as a
+   * working contact route on any page, and do not invent a different one —
+   * replace it only when the domain exists. PLAN, blocked on the operator.
+   */
   email: 'info@lennupesu.ee',
 
   domain: 'https://lennupesu.ee',

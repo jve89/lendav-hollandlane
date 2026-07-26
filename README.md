@@ -1,7 +1,7 @@
 # Lennupesu
 
 Marketing website for Lennupesu — drone roof, facade and solar panel cleaning in Estonia.
-Consumer brand of AIF Drone Services OÜ.
+Consumer brand of AIF OÜ.
 
 ## Read these before doing anything
 

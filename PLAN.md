@@ -205,6 +205,8 @@ Not a build phase. This is why the empty states exist.
 
 ## Blocked on the operator, not on code
 
-Registry code and VAT number · real phone number and email · Formspree account · the cleaning product and its Estonian biocide authorisation · the water and power answer · `lennupesu.ee` registered and DNS pointed · Google Business Profile verified · native-speaker Estonian review.
+A working email address — blocked on `lennupesu.ee` being registered and on the business name being settled · Formspree account · the cleaning product and its Estonian biocide authorisation · the water and power answer · `lennupesu.ee` registered and DNS pointed · Google Business Profile verified · native-speaker Estonian review.
+
+The registry code, the VAT number, the legal name and the phone number came off this list when they landed in `site.ts`. The list is only worth reading if it is true, so take an item off it the moment it is answered.
 
 None of these block Phases 0–8. All of them block launch.
