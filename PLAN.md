@@ -344,7 +344,12 @@ that the site is not broken — see SPEC section 6. The gate is the list below b
    the board but it was localhost, with no CDN, no TLS handshake and no real
    latency. Those are not the numbers SPEC section 6 gates on.
 4. Search Console: verify the property, submit `/sitemap-index.xml`.
-5. Send one real enquiry through the deployed form and confirm it arrives.
+5. **Send one real enquiry through the deployed form and confirm it in the inbox, not
+   in the network panel.** A 200 from Formspree, or a 302 to its thanks page, says the
+   request was well formed and the endpoint is right; it is not delivery. The mail still
+   has Formspree's own sending and a Cloudflare Email Routing forward to survive, and it
+   arrives at `info@lendavhollandlane.ee` — which forwards to the operator's mailbox, not
+   to any address a session can search. ARCHITECTURE section 6.
 6. **Confirm Cloudflare Web Analytics is OFF** and that no beacon is injected.
    `/privaatsus` states that the site runs no analytics; a dashboard toggle can make
    that false with no commit and nothing in the repo can detect it. See
@@ -470,45 +475,6 @@ for everyone, or our page for all but the no-JS minority". Keep `_next` in the f
 way — it costs nothing, the script depends on it, and it starts working server-side the day
 the plan is upgraded. Do not swap it for the dashboard's redirect setting, which is one URL
 per form and would send Estonian and English visitors to the same page.
-
-**FORMSHIELD ACCEPTS A SUBMISSION WITH A 200 AND THEN DROPS IT. A GREEN WIRE RESPONSE IS
-NOT EVIDENCE OF DELIVERY, AND THIS IS THE ONE THAT WILL WASTE A SESSION.** Observed on
-26 July 2026 while testing the AJAX submit: six submissions from `localhost`, every one
-accepted — `{"next":"/thanks","ok":true}` with HTTP 200 on the AJAX path, HTTP 302 to
-`/thanks` on the native path — and **not one of the six produced an email**, checked
-across inbox, spam and trash for thirty-five minutes. A submission from the live site the
-same evening, same recipient and same routing, did arrive. Formspree's spam filtering
-silently discarding localhost test traffic is the working hypothesis, to be confirmed in
-their dashboard, which shows submissions and their spam classification.
-
-**What this costs a future session: the obvious test of the contact form is not a test of
-the contact form.** Submitting from `localhost` or a preview build and getting a 200 tells
-you the request was well formed and the endpoint is right. It tells you *nothing* about
-whether the enquiry was delivered — which is the only thing SPEC section 6 actually gates
-on. **Test delivery from the deployed site, and confirm in the inbox rather than in the
-network panel.** Launch checklist step 5 already says to send one real enquiry through the
-deployed form; this is why it says *deployed*.
-
-**This is the fourth instance of one pattern, and it is worth naming as a pattern rather
-than as four unrelated notes: a setting outside this repository that silently falsifies
-something the repository believes.** The other three, all already recorded:
-
-1. **Formspree reCAPTCHA** (their dashboard) — would break the native no-JavaScript POST.
-   ARCHITECTURE section 6.
-2. **Formspree domain restriction** (their dashboard) — rejects submissions whose `Referer`
-   does not match, including `localhost` and every preview deploy. ARCHITECTURE section 6.
-3. **Cloudflare Web Analytics injection** (their dashboard) — would make `/privaatsus`'s
-   no-analytics, no-cookies claims false with no commit and no build. ARCHITECTURE section 1,
-   duplicated at the top of `src/i18n/privacy.ts`, and launch checklist step 6.
-4. **Formshield dropping accepted submissions** — this entry.
-
-None of the four is detectable from inside the repository, and no gate in `npm run verify`
-can ever catch one. What they have in common is that the repository's own evidence looks
-green while the thing it describes is false — which is the same shape as the twenty pages
-with no hreflang and the thirty-seven HTML comments in production, except that those two
-were fixable with a check and these are not. **The only defence is to distrust a green
-signal that came from anywhere other than the deployed site**, and to check the dashboards
-when something that should work does not.
 
 **A data retention period for form submissions — NO LONGER BLOCKING, and here is what
 was done instead.** Phase 9 stated a **criterion** rather than a number, on both

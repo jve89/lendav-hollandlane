@@ -1,18 +1,22 @@
 # ARCHITECTURE.md — Lendav Hollandlane website
 
-**Version 1.5 · 26 July 2026** — **section 2 now names TWO client-JavaScript
-exceptions rather than one.** The quote form submits by `fetch` and navigates to
-our own thank-you page, because Formspree's `_next` redirect is a paid feature;
-the native POST is unchanged beneath it. Section 6's `QuoteForm` contract said
-"zero client JavaScript … there is no script to disable", which is no longer
-true, and its `_next` paragraph said `/aitah` and `/en/thank-you` were
-unreachable, which is no longer true either. Both are rewritten. Version 1.4
-recorded a live domain rather than a migration in section 9, and the tested email
-address in sections 5 and 6; two dashboard items remain there, the `www` → apex
-redirect and DNSSEC. Version 1.3 settled the business name as **Lendav
-Hollandlane** and the domain as `lendavhollandlane.ee`. Version 1.2 settled
-hosting and analytics (section 1), the sitemap's hreflang and the OG/icon set
-(section 7), and check 6 (section 8).
+**Version 1.6 · 26 July 2026** — **a paragraph in section 6 was false and is
+deleted.** It said Formspree's spam filtering accepted six localhost submissions
+and then silently discarded them; all six were in fact delivered, to a mailbox
+the session that wrote it could not see. What replaces it is the rule that failure actually taught
+— verify your observation channel before drawing a conclusion from silence —
+with both mailboxes named. **There are three dashboard hazards outside this
+repository, not four**, and the other three are unchanged. Version 1.5 named
+**two client-JavaScript exceptions** in section 2 rather than one: the quote form
+submits by `fetch` and navigates to our own thank-you page, because Formspree's
+`_next` redirect is a paid feature, with the native POST unchanged beneath it;
+section 6's `QuoteForm` contract and its `_next` paragraph were rewritten with
+it. Version 1.4 recorded a live domain rather than a migration in section 9, and
+the tested email address in sections 5 and 6; two dashboard items remain there,
+the `www` → apex redirect and DNSSEC. Version 1.3 settled the business name as
+**Lendav Hollandlane** and the domain as `lendavhollandlane.ee`. Version 1.2
+settled hosting and analytics (section 1), the sitemap's hreflang and the OG/icon
+set (section 7), and check 6 (section 8).
 
 ---
 
@@ -421,7 +425,7 @@ unattributed review must not be publishable.
 
   **Two Formspree settings live in their dashboard, outside this repository, and both break a native no-JavaScript POST if enabled: reCAPTCHA, and domain restriction.** reCAPTCHA injects a client-side challenge this form cannot complete; domain restriction rejects submissions whose `Referer` does not match a configured host, which includes `localhost` and any preview deploy. A session debugging a submission that vanishes, 403s, or bounces should check the dashboard before reading a line of code — nothing in this repo can express or detect either setting.
 
-  **A third, and it is the one that looks like success: Formshield accepts a submission with a 200 and then drops it.** Six localhost submissions on 26 July 2026 were each accepted — `{"next":"/thanks","ok":true}`, or a 302 on the native path — and none produced an email; a submission from the live site the same evening did. **So a green wire response is not evidence of delivery, and the network panel cannot tell you the form works.** Test delivery from the deployed site and confirm in the inbox. PLAN's blocked list has the full note, and names this as the fourth instance of one recurring pattern: a setting outside this repository that silently falsifies what the repository believes.
+  **Verify your observation channel before drawing a conclusion from silence. An empty search result is evidence only if you have confirmed you are searching the right place.** The Gmail connector available to a session in this repository is authorised on `johanvanerkel@gmail.com`. **Enquiries do not go there.** They go to `info@lendavhollandlane.ee`, which Cloudflare Email Routing forwards to `jovanerkel@gmail.com` — a different mailbox, three letters apart in the local part. So a session that searches Gmail for Formspree notifications and finds nothing has learned nothing about delivery. Phase 6's test submissions were visible only because Formspree delivered to the connector's own address at the time; the recipient changed afterwards and the instrument did not. This cost a session on 26 July 2026, which concluded from an empty search that six accepted submissions had been silently dropped, and wrote it into both documents as a hazard — every one of the six had in fact arrived. It is the same class of trap as the stale preview server in section 8: about the instruments, not about the code, and invisible precisely because the wrong reading looks like a finding. **Those two personal addresses are named because the note is useless without them, and this repository is private — which is a reason to keep it private.** Two personal mailboxes in a document are unremarkable in a private repo and a small leak in a public one. If this repository is ever opened up — as a portfolio piece, an example, anything — **this paragraph is one of the first things to redact.**
 
   **`_next` is a paid feature and is still ignored by Formspree.** Measured in Phase 6, not assumed: two identical POSTs were each accepted with a 302 to `https://formspree.io/thanks`, never to the `_next` value. Formspree documents the custom "Thank You" redirect as *"Available on: Personal, Professional, Business plans"*, and this account is on the free tier. Everything else on the free tier works — the submission arrives, all seven fields map, `_subject` is honoured, **and AJAX submission works, which is what the enhancement above rests on.**
 
