@@ -43,10 +43,17 @@ export const ui = {
     // calls to action
     'cta.quote': 'Küsi pakkumist',
     /**
-     * The header pill below 48em, and NOTHING ELSE. `cta.quote` is the label
-     * everywhere the width allows it — this exists because the pill does not.
-     * Chosen by measurement at 320px, not by eye: see the note on
-     * `.nav__brand` in `Header.astro`.
+     * The header pill below 22.5em (360px), and NOTHING ELSE. `cta.quote` is
+     * the label everywhere the width allows it — this exists because the pill
+     * does not, and only on the narrowest phones. Chosen by measurement at
+     * 320px, not by eye; the breakpoint is measured too. See the notes on
+     * `.nav__brand` and the CTA media query in `Header.astro`.
+     *
+     * A native speaker has since read it: `Päring` is correct, and `Saada
+     * päring` would be better as a phrase — but it does not fit at all below
+     * 333px and does not clear the 10px bar until 343px, and this slot exists
+     * to survive 320px. The fuller wording cannot live here. She also read
+     * `cta.quote` and preferred it as it stands, so no string moved.
      */
     'cta.quoteShort': 'Päring',
     'cta.call': 'Helista',
@@ -104,6 +111,25 @@ export const ui = {
     'price.from': 'Alates',
     'price.unit': '/m²',
     'price.addon': 'Lisateenusena',
+    /**
+     * THE PRICE-TABLE CELL FOR `priceKind: 'quote'`. Identical in value to
+     * `cta.quote` today, and deliberately a separate key.
+     *
+     * `priceLine()` returned `t('cta.quote')` here until now, which made one
+     * string simultaneously a BUTTON LABEL and a PRICE-COLUMN CELL on four
+     * service entries — solar panels and windows, in both locales. Those are
+     * different registers that will eventually want to diverge, and while they
+     * shared a key, editing the button silently rewrote the price table. This
+     * splits them at equal value, so the divergence costs a string change
+     * rather than a refactor. Nothing visible changed when it was introduced.
+     *
+     * needs-native-review, and specifically in THIS context rather than as a
+     * button. A price column reading "Küsi pakkumist" may want to be something
+     * closer to "hind kokkuleppel" — but that is the native speaker's call and
+     * not ours, and no guess ships in the meantime. The button wording itself
+     * she has now seen and endorsed.
+     */
+    'price.quote': 'Küsi pakkumist',
     /**
      * `{vat}` is replaced by `vatNote()` in `utils.ts` from `site.vatRate`. Do
      * not write the rate into this string: it was typed here until Phase 5
@@ -246,6 +272,8 @@ export const ui = {
     'price.from': 'From',
     'price.unit': '/m²',
     'price.addon': 'As an add-on',
+    /** The price-table cell for `priceKind: 'quote'`. See the Estonian block. */
+    'price.quote': 'Get a quote',
     /** `{vat}` comes from `site.vatRate` via `vatNote()`. See the Estonian block. */
     'price.vatNote': 'Prices exclude {vat} VAT.',
 

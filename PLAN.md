@@ -163,7 +163,9 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 - Thank-you page in both locales, `noindex`, reached via Formspree's `_next`
 
 **No email address is printed on the contact page, or anywhere else on the site.**
-`site.email` is on an unregistered domain. The footer's `mailto:` row and the `email` key
+`site.email` receives no mail — the domain was unregistered when this phase ran, and
+since the rename it is registered but Cloudflare Email Routing is not configured. The
+reason changed; the outcome did not. The footer's `mailto:` row and the `email` key
 in the sitewide `LocalBusiness` JSON-LD both went in this phase; the `mailto:` fallback in
 `Hero`, `Cta` and `Header` went with them rather than being left as an unreachable branch.
 The form is the written channel now. All of it comes back in one line when the domain

@@ -145,7 +145,11 @@ export function priceLine(kind: PriceKind, locale: Locale): string {
     case 'facade':
       return `${t('price.from')} ${formatPrice(site.prices.facadeFrom, locale)}${t('price.unit')}`
     case 'quote':
-      return t('cta.quote')
+      /* `price.quote`, NOT `cta.quote`. This is a price-table cell, not a
+         button, and the two only look interchangeable because they hold the
+         same string today. They were one key until the two registers were
+         split; do not merge them back to save a line. See `ui.ts`. */
+      return t('price.quote')
     case 'addon':
       return t('price.addon')
   }

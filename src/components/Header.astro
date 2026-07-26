@@ -46,9 +46,9 @@ const items = liveNav.map((key) => ({
  */
 /*
  * `short` and `full` differ from here on. They were the same string until the
- * rename, which is why the split looked decorative — it is not. Below 48em the
- * pill cannot hold the wordmark and `cta.quote` at 320px; `short` is the label
- * measured to fit. See the note on `.nav__brand` below.
+ * rename, which is why the split looked decorative — it is not. Below 22.5em
+ * the pill cannot hold the wordmark and `cta.quote` together; `short` is the
+ * label measured to fit. See the note on `.nav__brand` below.
  */
 const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t('cta.quote') }
 ---
@@ -168,6 +168,19 @@ const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t
    * Neither half is sufficient alone — both are required, and -15px is the
    * structural maximum for this page, not a value tuned to scrape past. If you
    * change either the wordmark or `cta.quoteShort`, re-measure at 320px.
+   *
+   * ESTONIAN IS THE BINDING LOCALE FOR THE CTA BREAKPOINT BELOW, NOT ENGLISH.
+   * `Küsi pakkumist` is fourteen characters against `Get a quote`'s eleven, so
+   * the Estonian pill runs out of room 26px later. Measured as the width at
+   * which the FULL label first clears 10px of headroom, wrap already applied:
+   *
+   *     EN "Get a quote" ....... 332px  (20.75em)
+   *     ET "Küsi pakkumist" .... 358px  (22.375em)   <- binding
+   *
+   * Do not assume this stays true. It is a property of the two strings, not of
+   * the layout: with a longer English label and a shorter Estonian one the
+   * roles swap, which is exactly what a trial pair of replacement strings did
+   * before they were rejected. Re-measure BOTH locales whenever either changes.
    */
   .nav__brand {
     font-weight: var(--fw-display);
@@ -318,6 +331,39 @@ const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t
     white-space: nowrap;
   }
 
+  /**
+   * THE FULL CTA LABEL FROM 22.5em (360px). The abbreviated one covers only the
+   * widths that genuinely cannot hold the full string.
+   *
+   * This swap sat in the 48em block until now, which meant `cta.quoteShort`
+   * showed on everything below 767px — every iPhone at 375px and 390px got the
+   * abbreviated label with room to spare. 48em was never measured for this; it
+   * was simply the breakpoint that already existed.
+   *
+   * 22.5em is the smallest clean em value at or above the binding crossing of
+   * 358px — see the ET/EN figures above. At 360px Estonian has 12px of headroom
+   * and English 15px, both past the 10px bar.
+   *
+   * Landing exactly on 360px is deliberate: it is the common small-Android
+   * width, and putting the breakpoint here is what gives those phones the full
+   * label rather than withholding it to 23em. A device reporting a hair under
+   * 360px falls back to `Päring`, which fits everywhere down to 320px — a
+   * cosmetic degradation, not a broken layout.
+   *
+   * Root font size is 16px, verified rather than assumed, so 22.5em is exactly
+   * 360px. The unit stays em so the breakpoint scales with a reader's text-size
+   * preference; the label is what runs out of room, and it scales too.
+   */
+  @media (min-width: 22.5em) {
+    .nav__cta-short {
+      display: none;
+    }
+
+    .nav__cta-full {
+      display: inline;
+    }
+  }
+
   @media (min-width: 48em) {
     /* Above 48em there is room for the wordmark on one line, and wrapping it
        would be a worse result than the constraint that forces it below. */
@@ -327,14 +373,6 @@ const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t
 
     .nav__lang {
       display: block;
-    }
-
-    .nav__cta-short {
-      display: none;
-    }
-
-    .nav__cta-full {
-      display: inline;
     }
   }
 
