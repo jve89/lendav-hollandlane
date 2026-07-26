@@ -7,7 +7,7 @@ priceKind: addon
 priceNote: Rennipuhastust tellitakse lisateenusena koos katusepesuga. Hind sõltub rennide pikkusest ja katuse kõrgusest ning ütleme selle katusepesu pakkumises.
 order: 5
 icon: gutter
-seoTitle: Rennide ja vihmaveetorude puhastus | Lennupesu
+seoTitle: Rennide ja vihmaveetorude puhastus
 seoDescription: Rennide ja sadeveetorude puhastus lisateenusena koos katusepesuga. Kogu Eestis, katusele astumata.
 faqRefs: []
 ---

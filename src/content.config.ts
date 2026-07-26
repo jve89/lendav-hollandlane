@@ -54,8 +54,27 @@ const slug = z
 /** The locale set comes from `i18n/ui.ts`. Adding Russian there covers content too. */
 const locale = z.enum(locales)
 
+/**
+ * `seoTitle` carries ONLY the page-specific part of the <title>. The ` | <brand>`
+ * suffix is composed in `BaseLayout` from `site.brandText`, because the business
+ * name is not settled and was authored in sixteen places before this. See
+ * CLAUDE.md, "The brand name".
+ *
+ * The refine rejects a pipe, which is what a re-added suffix looks like — the
+ * brand would otherwise ship twice in one title. It deliberately does NOT test
+ * for the brand string: if the name settles on something like "Katusepesu OÜ",
+ * a brand check would start rejecting legitimate Estonian titles. A pipe in a
+ * title is meaningless on its own terms, so this is the narrow,
+ * false-positive-free version of the guard.
+ */
 const seo = {
-  seoTitle: z.string().min(1),
+  seoTitle: z
+    .string()
+    .min(1)
+    .refine((v) => !v.includes('|'), {
+      message:
+        'seoTitle carries only the page-specific part — the brand suffix is composed in BaseLayout',
+    }),
   seoDescription: z.string().min(1),
 }
 

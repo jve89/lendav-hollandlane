@@ -7,7 +7,7 @@ priceKind: addon
 priceNote: Gutter clearing is booked as an add-on to a roof clean. The price depends on the length of the guttering and the height of the roof, and we give it in the roof cleaning quote.
 order: 5
 icon: gutter
-seoTitle: Gutter and downpipe clearing | Lennupesu
+seoTitle: Gutter and downpipe clearing
 seoDescription: Gutters and downpipes cleared as an add-on to a roof clean. Across Estonia, without anyone stepping on the roof.
 faqRefs: []
 ---

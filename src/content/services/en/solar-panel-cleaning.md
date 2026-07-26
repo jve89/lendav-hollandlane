@@ -7,7 +7,7 @@ priceKind: quote
 priceNote: The price depends on the number of panels, where they sit and how dirty they are. We give it in the quote once we have looked the site over.
 order: 3
 icon: solar
-seoTitle: Solar panel cleaning by drone | Lennupesu
+seoTitle: Solar panel cleaning by drone
 seoDescription: Solar panel cleaning by drone across Estonia. The panel glass is cleaned without anyone stepping on the roof, and without scaffolding or ladders.
 faqRefs: []
 ---

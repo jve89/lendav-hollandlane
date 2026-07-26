@@ -29,7 +29,40 @@ Contact details, prices, company identifiers and credentials live **only** in `s
 
 If you are about to type a phone number, an email address, a euro amount or a registry code anywhere else in the codebase, you are making a mistake. Import it.
 
-`grep -r "+372" src/ --exclude=config/site.ts` returning anything is a bug.
+`grep -r "+372" src/ --exclude=site.ts` returning anything is a bug.
+
+Note the exclude pattern is the **bare filename**. `--exclude=config/site.ts` looks
+right and excludes nothing: BSD grep matches `--exclude` against the basename, so
+that form reports `site.ts`'s own phone number every time it runs. A guard that
+cries wolf on every run is a guard people stop running, and then it protects
+nothing.
+
+## The brand name
+
+**The business name is not settled.** It lives in `src/config/site.ts` as
+`site.brand` (the wordmark, `LennuPesu`) and `site.brandText` (running text,
+`Lennupesu`), and it is written nowhere else in `src/`.
+
+This is the same rule as the one above and it exists for the same reason: the
+name was authored in sixteen places before Phase 4 closed — the `seoTitle` of all
+ten service content files and six `meta.*.title` strings in `ui.ts` — and every
+later phase would have added more. When the name changes, it must change in one
+line.
+
+**The `<title>` brand suffix is composed, not authored.** `BaseLayout` builds
+` | ${site.brandText}` onto every page title, and every `<title>` on the site
+goes through `BaseLayout` — directly or through `PageLayout`, which only
+forwards. An authored string — a `meta.*.title` key, a `seoTitle` in frontmatter
+— carries **only the page-specific part**. `seoTitle` enforces this in the schema:
+a pipe in it fails the build.
+
+**A page that should not carry the suffix** passes `brandSuffix={false}` to
+`BaseLayout` or `PageLayout` — for a title written brand-first, for instance. That
+prop suppresses the suffix. It does **not** license typing the name into a string;
+the name still comes from `site.brandText`. No page sets it today.
+
+`grep -rn "Lennupesu" src/ --exclude=site.ts` returning anything is a bug. The
+same basename caveat applies.
 
 ## Content rules — these are the important ones
 

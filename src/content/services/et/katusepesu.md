@@ -6,7 +6,7 @@ summary: Sambla, vetika ja mustuse eemaldamine katuselt. Töö tehakse drooniga,
 priceKind: roof
 order: 1
 icon: roof
-seoTitle: Katusepesu droonilt | Lennupesu
+seoTitle: Katusepesu droonilt
 seoDescription: Katusepesu droonilt kogu Eestis. Sammal ja vetikas eemaldatakse katusele astumata, ilma tellingute ja redeliteta. Hinnad on avaldatud.
 faqRefs: []
 ---

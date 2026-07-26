@@ -6,7 +6,7 @@ summary: Moss, algae and grime removed from the roof. The work is done by drone,
 priceKind: roof
 order: 1
 icon: roof
-seoTitle: Roof cleaning by drone | Lennupesu
+seoTitle: Roof cleaning by drone
 seoDescription: Roof cleaning by drone across Estonia. Moss and algae removed without anyone stepping on the roof, and without scaffolding or ladders. Prices published.
 faqRefs: []
 ---

@@ -18,10 +18,14 @@ interface Crumb {
 }
 
 interface Props {
+  /** The page-specific part of the <title>. The brand suffix is composed in
+      BaseLayout — never author it here. See CLAUDE.md, "The brand name". */
   title: string
   description: string
   locale: Locale
   routeKey: RouteKey
+  /** Forwarded to BaseLayout, which owns the suffix. See the contract there. */
+  brandSuffix?: boolean
   /** The visible <h1>. Distinct from `title`, which is the <title> tag. */
   heading: string
   /** Intermediate crumbs. Home is prepended and the current page is not a link. */
@@ -39,6 +43,7 @@ const {
   description,
   locale,
   routeKey,
+  brandSuffix,
   heading,
   crumbs = [],
   lead,
@@ -57,6 +62,7 @@ const trail: Crumb[] = [{ label: t('nav.home'), href: path('home', locale) }, ..
   description={description}
   locale={locale}
   routeKey={routeKey}
+  brandSuffix={brandSuffix}
   ogImage={ogImage}
   noindex={noindex}
   alternates={alternates}

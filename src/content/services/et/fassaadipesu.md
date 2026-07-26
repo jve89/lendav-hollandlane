@@ -7,7 +7,7 @@ priceKind: facade
 priceNote: Hind sõltub seina materjalist, kõrgusest ja määrdumise astmest. Täpse hinna ütleme pärast objekti ülevaatust.
 order: 2
 icon: facade
-seoTitle: Fassaadipesu droonilt | Lennupesu
+seoTitle: Fassaadipesu droonilt
 seoDescription: Fassaadipesu droonilt kogu Eestis. Vetikas ja mustus eemaldatakse seinalt ilma tellingute ja tõstukita. Hinnad on avaldatud.
 faqRefs: []
 ---

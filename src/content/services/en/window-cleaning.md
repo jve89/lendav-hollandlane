@@ -7,7 +7,7 @@ priceKind: quote
 priceNote: The price depends on the area of glass, its height and how easy it is to reach. We give it in the quote once we have looked the property over.
 order: 4
 icon: glass
-seoTitle: Window and glass cleaning by drone | Lennupesu
+seoTitle: Window and glass cleaning by drone
 seoDescription: Exterior cleaning of high windows and glass surfaces by drone, across Estonia. No scaffolding, no lift and no rope access.
 faqRefs: []
 ---

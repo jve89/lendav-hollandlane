@@ -43,13 +43,17 @@ export const ui = {
     'lang.switch': 'In English',
     'lang.label': 'Vaheta keelt',
 
-    // metadata
-    'meta.home.title': 'Katuse- ja fassaadipesu droonilt | Lennupesu',
+    /**
+     * Metadata. A `meta.*.title` carries ONLY the page-specific part — the
+     * ` | <brand>` suffix is composed in `BaseLayout` from `site.brandText`.
+     * Do not type the brand into one of these. See CLAUDE.md, "The brand name".
+     */
+    'meta.home.title': 'Katuse- ja fassaadipesu droonilt',
     'meta.home.description':
       'Katuse-, fassaadi- ja päikesepaneelide pesu droonilt. Ilma tellingute ja redeliteta, katusele astumata. Kogu Eesti.',
-    'meta.notFound.title': 'Lehte ei leitud | Lennupesu',
+    'meta.notFound.title': 'Lehte ei leitud',
     'meta.notFound.description': 'Seda lehte ei ole olemas või on see kolinud.',
-    'meta.services.title': 'Teenused ja hinnad | Lennupesu',
+    'meta.services.title': 'Teenused ja hinnad',
     'meta.services.description':
       'Katusepesu, fassaadipesu, päikesepaneelide pesu, aknad ja vihmaveesüsteemid. Kõik drooniga, katusele astumata. Hinnad on avaldatud.',
 
@@ -128,13 +132,13 @@ export const ui = {
     'lang.switch': 'Eesti keeles',
     'lang.label': 'Switch language',
 
-    // metadata
-    'meta.home.title': 'Roof and facade cleaning by drone | Lennupesu',
+    // metadata — page-specific part only; see the Estonian block
+    'meta.home.title': 'Roof and facade cleaning by drone',
     'meta.home.description':
       'Roof, facade and solar panel cleaning by drone. No scaffolding, no ladders, nobody on your roof. Across Estonia.',
-    'meta.notFound.title': 'Page not found | Lennupesu',
+    'meta.notFound.title': 'Page not found',
     'meta.notFound.description': 'This page does not exist, or it has moved.',
-    'meta.services.title': 'Services and prices | Lennupesu',
+    'meta.services.title': 'Services and prices',
     'meta.services.description':
       'Roof cleaning, facade cleaning, solar panels, windows and guttering. All by drone, with nobody on your roof. Prices published.',
 

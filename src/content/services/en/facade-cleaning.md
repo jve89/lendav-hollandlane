@@ -7,7 +7,7 @@ priceKind: facade
 priceNote: The price depends on the wall material, the height and how dirty it is. We give the exact figure after looking the property over.
 order: 2
 icon: facade
-seoTitle: Facade cleaning by drone | Lennupesu
+seoTitle: Facade cleaning by drone
 seoDescription: Facade cleaning by drone across Estonia. Algae and grime removed from the wall without scaffolding or a lift. Prices published.
 faqRefs: []
 ---

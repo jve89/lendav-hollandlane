@@ -7,7 +7,7 @@ priceKind: quote
 priceNote: Hind sõltub klaaspinna suurusest, kõrgusest ja ligipääsust. Ütleme selle pakkumises, kui oleme objekti üle vaadanud.
 order: 4
 icon: glass
-seoTitle: Akende ja klaaspindade pesu droonilt | Lennupesu
+seoTitle: Akende ja klaaspindade pesu droonilt
 seoDescription: Kõrgel asuvate akende ja klaaspindade välispesu droonilt kogu Eestis. Ilma tellingute, tõstuki ja köietöölisteta.
 faqRefs: []
 ---

@@ -7,7 +7,7 @@ priceKind: quote
 priceNote: Hind sõltub paneelide arvust, nende asukohast ja määrdumise astmest. Ütleme selle pakkumises, kui oleme objekti üle vaadanud.
 order: 3
 icon: solar
-seoTitle: Päikesepaneelide pesu droonilt | Lennupesu
+seoTitle: Päikesepaneelide pesu droonilt
 seoDescription: Päikesepaneelide pesu droonilt kogu Eestis. Paneeliklaas puhastatakse katusele astumata, ilma tellingute ja redeliteta.
 faqRefs: []
 ---
