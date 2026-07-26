@@ -129,7 +129,11 @@ const jsonLd = {
   legalName: site.legalName,
   url: site.domain,
   telephone: site.phone,
-  email: site.email,
+  /* NO `email` KEY. It was here until Phase 6, publishing an address on an
+     unregistered domain as a machine-readable contact — the copy that
+     propagates furthest into aggregators and is hardest to retract. Structured
+     data must not assert what the page will not. Restore it in one line when
+     `site.email` works; see the `unconfirmed:` comment in site.ts. */
   areaServed: { '@type': 'Country', name: 'Estonia' },
   priceRange: '€€',
 }

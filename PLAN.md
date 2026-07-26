@@ -12,15 +12,14 @@ work *after* it.
 
 | Order | Phase | |
 |---|---|---|
-| — | Phases 0–5 | ✅ complete and committed |
-| 1 | **Phase 6 — contact and quote form** | **next** · launch-blocking |
-| 2 | Phase 9 — SEO, performance, launch readiness | launch-blocking |
-| 3 | Phase 10 — real content drop | launch-blocking |
+| — | Phases 0–6 | ✅ complete and committed |
+| 1 | **Phase 9 — SEO, performance, launch readiness** | **next** · launch-blocking |
+| 2 | Phase 10 — real content drop | launch-blocking |
 | — | **LAUNCH** | |
-| 4 | Phase 7 — regional pages | post-launch |
-| 5 | Phase 8 — blog infrastructure | post-launch |
+| 3 | Phase 7 — regional pages | post-launch |
+| 4 | Phase 8 — blog infrastructure | post-launch |
 
-**Phase 6 is next.** After Phase 6 comes Phase 9, not Phase 7.
+**Phase 9 is next.** Then Phase 10, then launch. Phases 7 and 8 come after it.
 
 The integers are kept only because `src/` cites them: **37 comments reference `Phase 10` by
 number across twenty files** — 24 of them in the ten service markdown files, 13 in ten
@@ -154,12 +153,24 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 
 ---
 
-## Phase 6 — Contact and quote form *(next · launch-blocking)*
+## Phase 6 — Contact and quote form ✅ *(launch-blocking · done)*
 
-- `kontakt.astro` with `QuoteForm`, phone, email, service area, season
-- Formspree wired via `PUBLIC_FORMSPREE_ID`
+- `kontakt.astro` with `QuoteForm`, phone, service area, season
+- Formspree wired via `PUBLIC_FORMSPREE_ID`, native `<form method="POST">`, no client JS
 - Works with JavaScript disabled
-- Thank-you page in both locales
+- Thank-you page in both locales, `noindex`, reached via Formspree's `_next`
+
+**No email address is printed on the contact page, or anywhere else on the site.**
+`site.email` is on an unregistered domain. The footer's `mailto:` row and the `email` key
+in the sitewide `LocalBusiness` JSON-LD both went in this phase; the `mailto:` fallback in
+`Hero`, `Cta` and `Header` went with them rather than being left as an unreachable branch.
+The form is the written channel now. All of it comes back in one line when the domain
+resolves.
+
+**Two independent guards against a form that posts nowhere,** because `import.meta.env` is
+inlined at build time and an unset variable would otherwise ship a page that looks right
+and drops every enquiry: `env.schema` in `astro.config.mjs` fails the build, and
+`check-html.mjs` check 5 fails on the built output. Both were confirmed to fire.
 
 **Verify:** gate passes · a real test submission arrives in the inbox · form submits with JS off · required-field validation is native.
 
@@ -167,9 +178,13 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 
 ---
 
-## Phase 9 — SEO, performance, launch readiness *(launch-blocking)*
+## Phase 9 — SEO, performance, launch readiness *(next · launch-blocking)*
 
 Follows Phase 6. Readiness, not the launch event itself — launch is after Phase 10.
+
+Add to this phase's scope: the **privacy policy page**, which the GDPR notice on
+`/kontakt` deliberately keeps short by deferring to. It needs the retention period from
+the blocked list below.
 
 - Sitemap with hreflang — **see the known limitation below, which is the real work in this line**
 - OG images per page type
@@ -310,8 +325,21 @@ whole reason the name is written in one file and nowhere else in `src/`.
 **A working email address.** Blocked on the domain, which is blocked on the name.
 `site.email` is unconfirmed and `Credentials` deliberately does not print it.
 
-**A Formspree account.** Phase 6 builds against `PUBLIC_FORMSPREE_ID` and cannot meet its
-own verify condition — a real test submission arriving in the inbox — without one.
+**A Formspree plan decision — the thank-you redirect is a paid feature.** The account is on
+the free tier, where `_next` is ignored: a submitter is sent to Formspree's own thanks page
+instead of ours. Measured in Phase 6, not assumed — two identical POSTs both 302'd to
+`https://formspree.io/thanks`. Everything else on the free tier works, including delivery
+and `_subject`, so this costs polish rather than enquiries. `/aitah` and `/en/thank-you` are
+built and correct; upgrading the plan is the only remaining step. Prefer keeping `_next`
+over the dashboard's redirect setting, which is one URL per form and would send Estonian and
+English visitors to the same page. **Decide before launch:** upgrade, or accept that the
+visitor's last impression of the enquiry is a Formspree-branded page.
+
+**A data retention period for form submissions.** The GDPR notice on `/kontakt` says what
+is collected, what it is used for, who holds it, that an external form service handles it
+and that it is not passed on — but it does not say for how long the enquiry is kept,
+because nobody has decided. Not invented, per CLAUDE.md. Phase 9's privacy policy needs the
+answer and the inline notice gains a sentence when it exists.
 
 **Google Business Profile verified.** One of the two discovery channels named in SPEC
 section 2.
@@ -321,5 +349,6 @@ unverified. Twelve `needs-native-review` markers; each is cleared by a native sp
 signing the copy off, or the copy is rewritten.
 
 The registry code, the VAT number, the legal name and the phone number came off this list
-when they landed in `site.ts`. The list is only worth reading if it is true, so take an item
-off it the moment it is answered.
+when they landed in `site.ts`. **The Formspree account came off it in Phase 6**, when the
+form was built against a real endpoint and a test submission arrived in the inbox. The list
+is only worth reading if it is true, so take an item off it the moment it is answered.

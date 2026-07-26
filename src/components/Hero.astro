@@ -26,7 +26,6 @@
  */
 import { site } from '../config/site'
 import { homeCopy } from '../i18n/home'
-import { builtRoutes } from '../i18n/routes'
 import { formatPrice, path, useTranslations } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
 
@@ -41,11 +40,13 @@ const t = useTranslations(locale)
 const c = homeCopy[locale].hero
 
 /**
- * Until the quote form exists (Phase 6) the written channel is email, and SPEC
- * section 3 wants a WRITTEN enquiry. Same conditional as `Header.astro`; both
- * flip to the form the moment `contact` joins `builtRoutes`.
+ * The written channel SPEC section 3 asks for. This was a conditional falling
+ * back to `mailto:site.email` until Phase 6 built the form — and that fallback
+ * is now removed, not merely unreachable. The address is on an unregistered
+ * domain and receives nothing; leaving it in a dead branch left a route back to
+ * a broken contact route for anyone who later touched `builtRoutes`.
  */
-const quoteHref = builtRoutes.has('contact') ? path('contact', locale) : `mailto:${site.email}`
+const quoteHref = path('contact', locale)
 ---
 <section class="hero">
   <div class="hero__inner">

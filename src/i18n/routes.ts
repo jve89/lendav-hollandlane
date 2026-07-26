@@ -22,6 +22,13 @@ export const routes = {
   about:    { et: '/meist',       en: '/en/about' },
   faq:      { et: '/kkk',         en: '/en/faq' },
   contact:  { et: '/kontakt',     en: '/en/contact' },
+  /**
+   * Where Formspree redirects after a successful POST, via the `_next` hidden
+   * field. Never linked from anywhere on the site and deliberately absent from
+   * `navOrder`; it exists as a route key so the URL is built by `path()` from
+   * this map like every other, rather than typed into a component.
+   */
+  thanks:   { et: '/aitah',       en: '/en/thank-you' },
   areas:    { et: '/piirkonnad',  en: '/en/areas' },
   blog:     { et: '/blogi',       en: '/en/blog' },
   notFound: { et: '/404',         en: '/en/404' },
@@ -62,6 +69,15 @@ export const builtRoutes: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'pricing',
   'about',
   'faq',
+  /**
+   * Phase 6. Adding `contact` here is what turns every quote CTA on the site
+   * into a link to the form: `Hero`, `Cta` and `Header` each resolve their
+   * target as `builtRoutes.has('contact') ? path('contact', locale) : mailto:…`
+   * and none of the three needed editing. That conditional was written in
+   * Phase 1 for this moment.
+   */
+  'contact',
+  'thanks',
   'notFound',
 ])
 

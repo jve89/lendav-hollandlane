@@ -2,13 +2,12 @@
 /**
  * Cta — direction D's closing band. The last thing on the page is the ask.
  *
- * Same target resolution as `Hero`: email until the quote form exists in
- * Phase 6, at which point `contact` joins `builtRoutes` and both components
- * point at the form without either being edited.
+ * Same target as `Hero`: the quote form, since Phase 6 built it. The
+ * `mailto:site.email` fallback both components carried until then is gone
+ * rather than left unreachable — see the note in `Hero.astro`.
  */
 import { site } from '../config/site'
 import { homeCopy } from '../i18n/home'
-import { builtRoutes } from '../i18n/routes'
 import { path, useTranslations } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
 
@@ -19,7 +18,7 @@ interface Props {
 const { locale } = Astro.props
 const t = useTranslations(locale)
 const c = homeCopy[locale].cta
-const quoteHref = builtRoutes.has('contact') ? path('contact', locale) : `mailto:${site.email}`
+const quoteHref = path('contact', locale)
 ---
 <section class="section cta">
   <div class="wrap">

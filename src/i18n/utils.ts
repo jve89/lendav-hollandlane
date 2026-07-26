@@ -52,6 +52,15 @@ const navLabelKeys = {
   about: 'nav.about',
   faq: 'nav.faq',
   contact: 'nav.contact',
+  /**
+   * Never rendered in navigation — `thanks` is not in `navOrder`, and the page
+   * is `noindex` and linked from nothing. The label exists because this map is
+   * total over `RouteKey`, which is what makes a new route without a label a
+   * compile error rather than a blank link. Do not weaken the map to avoid
+   * writing this line; it is the guard doing its job. It is used by the
+   * breadcrumb trail on the thank-you page itself.
+   */
+  thanks: 'nav.thanks',
   areas: 'nav.areas',
   blog: 'nav.blog',
   notFound: 'nav.notFound',

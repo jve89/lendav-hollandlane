@@ -14,7 +14,7 @@
  */
 import { site } from '../config/site'
 import { navLabel, path, useTranslations } from '../i18n/utils'
-import { builtRoutes, liveNav, type RouteKey } from '../i18n/routes'
+import { liveNav, type RouteKey } from '../i18n/routes'
 import type { Locale } from '../i18n/ui'
 import LangSwitch from './LangSwitch.astro'
 
@@ -37,14 +37,14 @@ const items = liveNav.map((key) => ({
 }))
 
 /**
- * The accent CTA. It becomes the quote link the moment the contact page exists
- * (Phase 6); until then the only way to reach us is the phone, so that is what
- * it offers. Both the label and the number come from site.ts and ui.ts.
+ * The accent CTA — the quote form, since Phase 6 built it.
+ *
+ * This was a conditional on `builtRoutes.has('contact')`, falling back to the
+ * phone while no contact page existed. The bridge came down when the page
+ * landed: the branch could no longer be taken, and a dead branch is a route
+ * back to a state we deliberately left.
  */
-const contactLive = builtRoutes.has('contact')
-const cta = contactLive
-  ? { href: path('contact', locale), short: t('cta.quote'), full: t('cta.quote') }
-  : { href: site.phoneHref, short: t('cta.call'), full: site.phone }
+const cta = { href: path('contact', locale), short: t('cta.quote'), full: t('cta.quote') }
 ---
 <header class:list={['site-header', `site-header--${variant}`]}>
   <div class="wrap">

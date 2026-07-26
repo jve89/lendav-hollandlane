@@ -25,6 +25,8 @@ export const ui = {
     'nav.about': 'Meist',
     'nav.faq': 'KKK',
     'nav.contact': 'Kontakt',
+    /** Never in the menu. See the note on `thanks` in `utils.ts`. */
+    'nav.thanks': 'Aitäh',
     'nav.areas': 'Piirkonnad',
     'nav.blog': 'Blogi',
     'nav.notFound': 'Lehte ei leitud',
@@ -65,6 +67,11 @@ export const ui = {
     'meta.about.title': 'Meist',
     'meta.about.description':
       'Käitamisluba, vastutuskindlustus ja see, kes tööd teeb. Katusele ei astuta ja hinnad on avaldatud.',
+    'meta.contact.title': 'Küsi pakkumist',
+    'meta.contact.description':
+      'Saada objekti aadress ja teenus, mida vajad. Vastame kirjalikult. Katuse- ja fassaadipesu kogu Eestis.',
+    'meta.thanks.title': 'Päring saadetud',
+    'meta.thanks.description': 'Sinu päring jõudis kohale.',
 
     // services index
     'services.heading': 'Teenused',
@@ -111,6 +118,10 @@ export const ui = {
     /** The home page's link to the full FAQ. */
     'faq.all': 'Kõik korduma kippuvad küsimused',
 
+    // contact and thank-you page headings
+    'contact.heading': 'Küsi pakkumist',
+    'thanks.heading': 'Aitäh, päring on saadetud',
+
     // 404
     'notFound.heading': 'Lehte ei leitud',
     'notFound.body':
@@ -152,6 +163,8 @@ export const ui = {
     'nav.about': 'About',
     'nav.faq': 'FAQ',
     'nav.contact': 'Contact',
+    /** Never in the menu. See the note on `thanks` in `utils.ts`. */
+    'nav.thanks': 'Thank you',
     'nav.areas': 'Areas',
     'nav.blog': 'Blog',
     'nav.notFound': 'Page not found',
@@ -188,6 +201,11 @@ export const ui = {
     'meta.about.title': 'About us',
     'meta.about.description':
       'The operational authorisation, the liability insurance, and the person who does the work. Nobody walks on your roof and the prices are published.',
+    'meta.contact.title': 'Get a quote',
+    'meta.contact.description':
+      'Send us the address and the service you need. We reply in writing. Roof and facade cleaning across Estonia.',
+    'meta.thanks.title': 'Enquiry sent',
+    'meta.thanks.description': 'Your enquiry has reached us.',
 
     // services index
     'services.heading': 'Services',
@@ -213,6 +231,10 @@ export const ui = {
     'about.heading': 'The authorisation, the insurance and the person who flies',
     'faq.heading': 'Frequently asked questions',
     'faq.all': 'All frequently asked questions',
+
+    // contact and thank-you page headings
+    'contact.heading': 'Get a quote',
+    'thanks.heading': 'Thank you — your enquiry is on its way',
 
     // 404
     'notFound.heading': 'Page not found',

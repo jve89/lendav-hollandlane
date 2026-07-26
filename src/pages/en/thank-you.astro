@@ -1,0 +1,80 @@
+---
+/**
+ * Where Formspree redirects after a successful POST, English. Identical
+ * composition to `aitah.astro`, different locale — see the notes there,
+ * including why it is `noindex`, why nothing on it promises a timeframe, and
+ * why nobody reaches it yet (Formspree's `_next` redirect is a paid feature).
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import { site } from '../../config/site'
+import { contactContent } from '../../i18n/contact'
+import { path, useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const c = contactContent(locale).thanks
+---
+<PageLayout
+  title={t('meta.thanks.title')}
+  description={t('meta.thanks.description')}
+  locale={locale}
+  routeKey="thanks"
+  heading={t('thanks.heading')}
+  lead={c.lead}
+  noindex={true}
+>
+  <section class="section section--tight">
+    <div class="wrap thanks">
+      <h2>{c.nextHeading}</h2>
+      <ol class="thanks__steps">
+        {c.next.map((step) => <li>{step}</li>)}
+      </ol>
+
+      <p class="thanks__call">
+        {c.callLead} <a href={site.phoneHref}>{site.phone}</a>
+      </p>
+
+      <p><a class="btn btn--ghost" href={path('home', locale)}>{t('nav.home')}</a></p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .thanks h2 {
+    font-size: var(--step-h3);
+    letter-spacing: var(--ls-h3);
+  }
+
+  .thanks__steps {
+    display: grid;
+    gap: var(--sp-4);
+    counter-reset: step;
+    margin-block: var(--sp-6) var(--sp-8);
+    max-width: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .thanks__steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-4);
+    line-height: var(--lh-body);
+  }
+
+  .thanks__steps li::before {
+    content: counter(step);
+    color: var(--accent);
+    font-weight: var(--fw-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .thanks__call {
+    color: var(--ink-2);
+    margin-block-end: var(--sp-8);
+  }
+
+  .thanks__call a {
+    font-weight: var(--fw-strong);
+  }
+</style>

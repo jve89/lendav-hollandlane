@@ -1,0 +1,93 @@
+---
+/**
+ * Contact and quote, English. Identical composition to `kontakt.astro`,
+ * different locale — see the notes there, in particular why no email address
+ * appears on this page.
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import QuoteForm from '../../components/QuoteForm.astro'
+import { site } from '../../config/site'
+import { contactContent } from '../../i18n/contact'
+import { monthRange, useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const c = contactContent(locale)
+const season = monthRange(site.season.fromMonth, site.season.toMonth, locale)
+---
+<PageLayout
+  title={t('meta.contact.title')}
+  description={t('meta.contact.description')}
+  locale={locale}
+  routeKey="contact"
+  heading={t('contact.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap contact">
+      <div class="contact__form">
+        <QuoteForm locale={locale} />
+      </div>
+
+      <aside class="contact__aside">
+        <h2 class="label">{c.aside.heading}</h2>
+        <dl class="contact__list">
+          <dt>{c.aside.phoneLabel}</dt>
+          <dd><a class="contact__phone" href={site.phoneHref}>{site.phone}</a></dd>
+
+          <dt>{c.aside.replyLabel}</dt>
+          <dd>{c.aside.reply}</dd>
+
+          <dt>{c.aside.areaLabel}</dt>
+          <dd>{site.serviceArea.baseEn} · {t('footer.areaAll')}</dd>
+
+          <dt>{c.aside.seasonLabel}</dt>
+          <dd>{season}<br />{c.aside.seasonNote}</dd>
+        </dl>
+      </aside>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--sp-9);
+    align-items: start;
+  }
+
+  .contact__list {
+    display: grid;
+    gap: var(--sp-1);
+    font-size: var(--step-sm);
+    color: var(--ink-2);
+    margin-block-start: var(--sp-4);
+  }
+
+  .contact__list dt {
+    color: var(--muted);
+    font-size: var(--step-xs);
+  }
+
+  .contact__list dt:not(:first-child) {
+    margin-block-start: var(--sp-5);
+  }
+
+  .contact__phone {
+    color: var(--ink);
+    font-weight: var(--fw-strong);
+    font-size: var(--step-lead);
+    text-decoration: none;
+  }
+
+  .contact__phone:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 900px) {
+    .contact {
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+      gap: var(--sp-10);
+    }
+  }
+</style>

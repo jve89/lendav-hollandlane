@@ -51,17 +51,17 @@ Fresh Claude Code session per phase:
 
 Commit on every green phase.
 
-**Phase 6 — the contact page and quote form — is next.** After it comes Phase 9, not
-Phase 7. Phases 7 and 8 are post-launch.
+**Phase 9 — SEO, performance and launch readiness — is next.** Then Phase 10, then launch.
+Phases 7 and 8 are post-launch.
 
 ## Before launch — needs the operator, not code
 
 Equipment and the first flight, which is a controlled job on family property and the source
 of all the footage · the cleaning product decision, and with it the biocide sentence that
 five service pages and the FAQ currently promise · the water and power answer ·
-the `needs-operator-review` claims · the final business name · `lennupesu.ee` registered and
-DNS pointed · a working email · Formspree account · Google Business Profile verified ·
-native-speaker Estonian review of all copy.
+the `needs-operator-review` claims · a data retention period for form submissions ·
+the final business name · `lennupesu.ee` registered and DNS pointed · a working email ·
+Google Business Profile verified · native-speaker Estonian review of all copy.
 
 PLAN's "blocked on the operator" section is the authoritative version of this list, with the
 reasoning and the dependencies between items. Keep the two in step or delete this one.

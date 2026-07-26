@@ -1,0 +1,99 @@
+---
+/**
+ * Where Formspree redirects after a successful POST, Estonian.
+ * `en/thank-you.astro` is its pair.
+ *
+ * `noindex`, and excluded from the sitemap in `astro.config.mjs`. It is only
+ * meaningful directly after a submission and has no standalone value in search
+ * results; a page that is `noindex` in its head and listed in the sitemap tells
+ * a crawler two contradictory things.
+ *
+ * NOTHING HERE PROMISES A TIMEFRAME. The steps are the same commitments
+ * `pricing.ts` already makes — a site visit, then a written binding price —
+ * because those are verifiable conduct. "We reply within X" is not a promise
+ * this business has made. See `i18n/contact.ts`.
+ *
+ * NOBODY REACHES THIS PAGE YET, and that is a Formspree plan limit rather than
+ * a defect here. The custom `_next` redirect is a paid feature, so on the free
+ * tier a submitter lands on Formspree's own thanks page instead. Measured in
+ * Phase 6, not assumed. The page is built and correct so that upgrading the
+ * plan is the only step needed — see the note in `QuoteForm.astro` and the
+ * blocked list in PLAN.
+ *
+ * `lennupesu.ee` does not resolve yet either, so even once the redirect is
+ * issued it will not load until the domain exists. Two separate blockers, both
+ * on the operator, neither fixable in code.
+ */
+import PageLayout from '../layouts/PageLayout.astro'
+import { site } from '../config/site'
+import { contactContent } from '../i18n/contact'
+import { path, useTranslations } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+const c = contactContent(locale).thanks
+---
+<PageLayout
+  title={t('meta.thanks.title')}
+  description={t('meta.thanks.description')}
+  locale={locale}
+  routeKey="thanks"
+  heading={t('thanks.heading')}
+  lead={c.lead}
+  noindex={true}
+>
+  <section class="section section--tight">
+    <div class="wrap thanks">
+      <h2>{c.nextHeading}</h2>
+      <ol class="thanks__steps">
+        {c.next.map((step) => <li>{step}</li>)}
+      </ol>
+
+      <p class="thanks__call">
+        {c.callLead} <a href={site.phoneHref}>{site.phone}</a>
+      </p>
+
+      <p><a class="btn btn--ghost" href={path('home', locale)}>{t('nav.home')}</a></p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .thanks h2 {
+    font-size: var(--step-h3);
+    letter-spacing: var(--ls-h3);
+  }
+
+  .thanks__steps {
+    display: grid;
+    gap: var(--sp-4);
+    counter-reset: step;
+    margin-block: var(--sp-6) var(--sp-8);
+    max-width: var(--measure);
+    color: var(--ink-2);
+  }
+
+  .thanks__steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-4);
+    line-height: var(--lh-body);
+  }
+
+  .thanks__steps li::before {
+    content: counter(step);
+    color: var(--accent);
+    font-weight: var(--fw-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .thanks__call {
+    color: var(--ink-2);
+    margin-block-end: var(--sp-8);
+  }
+
+  .thanks__call a {
+    font-weight: var(--fw-strong);
+  }
+</style>

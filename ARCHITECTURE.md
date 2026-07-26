@@ -104,7 +104,8 @@ lennupesu/
 └── src/
     ├── content.config.ts           # zod schemas for every collection
     ├── config/
-    │   └── site.ts                 # SINGLE SOURCE: phone, email, prices, company details, service area
+    │   ├── site.ts                 # SINGLE SOURCE: phone, email, prices, company details, service area
+    │   └── formspree.ts            # the form endpoint; the only place `formspree.io` is typed
     ├── i18n/
     │   ├── ui.ts                   # UI strings per locale
     │   ├── routes.ts               # static route map, built routes, nav order
@@ -114,7 +115,8 @@ lennupesu/
     │   ├── home.ts                 # home page copy — lists, not UI strings
     │   ├── pricing.ts              # pricing page copy; contains no figure at all
     │   ├── faq.ts                  # the FAQ, its id space, and the token resolver
-    │   └── about.ts                # credentials page copy; the one place SORA/SAIL II render
+    │   ├── about.ts                # credentials page copy; the one place SORA/SAIL II render
+    │   └── contact.ts              # contact + form copy, the GDPR notice, which fields are required
     ├── styles/
     │   ├── tokens.css              # colours, spacing, type scale, radii
     │   └── global.css              # element defaults, layout primitives
@@ -157,6 +159,7 @@ lennupesu/
         ├── meist.astro
         ├── kkk.astro
         ├── kontakt.astro
+        ├── aitah.astro                        # Formspree `_next` target; noindex, not in sitemap
         ├── teenused/
         │   ├── index.astro
         │   └── [slug].astro
@@ -172,6 +175,7 @@ lennupesu/
             ├── about.astro
             ├── faq.astro
             ├── contact.astro
+            ├── thank-you.astro
             ├── services/{index,[slug]}.astro
             ├── areas/[slug].astro
             └── blog/{index,[slug]}.astro
@@ -311,7 +315,13 @@ unattributed review must not be publishable.
 - **`BaseLayout`** — props `{ title, description, locale, routeKey, brandSuffix?, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, Open Graph, and `LocalBusiness` JSON-LD built from `site.ts`. Every page goes through it. **It also owns the `<title>` brand suffix**: `title` is the page-specific part only, and ` | ${site.brandText}` is composed here, in the one expression every page title passes through — `PageLayout` forwards and composes nothing. `<title>` and `og:title` are both built from that string so they cannot drift apart. `brandSuffix={false}` suppresses the suffix for a page whose title already carries the brand; it does not license authoring the name, which still comes from `site.brandText`. No page sets it today. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
 - **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
-- **`QuoteForm`** — props `{ locale, defaultService? }`. Posts to Formspree via `PUBLIC_FORMSPREE_ID`. Native HTML validation only. Progressive enhancement: works with JavaScript disabled. Note that `import.meta.env` values are inlined as strings and never coerced.
+- **`QuoteForm`** — props `{ locale, defaultService? }`. A native `<form action method="POST">` posting straight to Formspree. **Zero client JavaScript**, which is the requirement and not an optimisation: it works with JavaScript disabled because there is no script to disable. `@formspree/ajax` and `@formspree/react` are both rejected — they are dependencies, and the list in section 1 is closed. Native HTML validation only: `required`, `type="email"`, `inputmode`, `autocomplete`, no scripted checks and no `novalidate`. **Required: name, email, address. Optional: phone, area, message** — the reasoning is in `src/i18n/contact.ts` and is deliberate; a required area field a homeowner cannot answer is a field they abandon. The service options come from `servicesFor()`, never from a list in the component, so they cannot drift from the service pages. Spam is Formspree's `_gotcha` honeypot only — no CAPTCHA, no third-party script — hidden from sight, from the tab order and from assistive tech. `_next` must be an **absolute** URL, built from `site.domain` and the route map.
+
+  **The endpoint comes from `src/config/formspree.ts`, which imports the id from `astro:env/client` — not from `import.meta.env`.** That is the difference between a guard and a comment. `import.meta.env` is inlined at build time in a static build, so an unset variable becomes `undefined`, the form posts nowhere, and `npm run verify` passes: the page builds and every link resolves. `astro.config.mjs` declares `PUBLIC_FORMSPREE_ID` required in `env.schema`, and Astro coerces an empty string to missing before validating, so **both a missing and an empty value fail `astro build`**. `scripts/check-html.mjs` check 5 is the second, independent guard, asserting on the built output. Do not simplify the import back.
+
+  **Two Formspree settings live in their dashboard, outside this repository, and both break a native no-JavaScript POST if enabled: reCAPTCHA, and domain restriction.** reCAPTCHA injects a client-side challenge this form cannot complete; domain restriction rejects submissions whose `Referer` does not match a configured host, which includes `localhost` and any preview deploy. A session debugging a submission that vanishes, 403s, or bounces should check the dashboard before reading a line of code — nothing in this repo can express or detect either setting.
+
+  **`_next` is a paid feature and is currently ignored.** Measured in Phase 6, not assumed: two identical POSTs were each accepted with a 302 to `https://formspree.io/thanks`, never to the `_next` value. Formspree documents the custom "Thank You" redirect as *"Available on: Personal, Professional, Business plans"*, and this account is on the free tier. Everything else on the free tier works — the submission arrives, all seven fields map, `_subject` is honoured. So `/aitah` and `/en/thank-you` are built, correct and unreachable until the plan is upgraded; the field stays because it costs nothing and starts working that day. This is a third dashboard/plan concern outside the repo, in the same class as the two above. Note also that the dashboard's redirect setting is **one URL per form** and cannot vary by locale, whereas `_next` is per-submission — which is why this form sends each locale to its own page and why the dashboard setting is not an equivalent substitute.
 - **`PriceTable`** — props `{ locale, entries }`, where `entries` are `services` collection entries. It reads prices from `site.ts` and **never takes a price**: each row's figure comes from resolving that entry's `priceKind` through `priceLine()`, and the minimum job comes from `site.prices.minimumJob`. Taking entries rather than rows is what stops the table disagreeing with the service page it links to. It **always renders the ex-VAT note**, and that is not a prop — CLAUDE.md requires every displayed price to be labelled excluding VAT, and a caller that could switch the label off would eventually be a caller that did. No total, no estimate, no calculator: SPEC section 4.
 - **`Faq` / `FaqList` / `FaqGroups`** — `FaqList` is the `<details>` list and owns the disclosure markup; `Faq` is the home page's three-question excerpt around it; `FaqGroups` is the whole set in its three groups for `/kkk`. All three read `i18n/faq.ts` through `faqEntries()`, which resolves `{season}`, `{minimum}`, `{area}` and `{authority}` from `site.ts` — and because the FAQ page's `FAQPage` JSON-LD is built from the same resolved objects it renders, the structured data cannot drift from the visible answer.
 - **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. It prints no email address, because `site.email` is unconfirmed.
@@ -357,7 +367,9 @@ Media queries on `<source>` are evaluated once at page load and never re-evaluat
 2. **Poster only** — a real still from our own footage. Served to phones, to reduced-motion visitors, and to anyone whose video fails.
 3. **No footage at all** — no video, no poster. Renders a designed, image-free hero: the headline, the sub, and the price and credentials block, carried by type and the tokens in `tokens.css`. Not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon".
 
-State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empty state does. It must look finished, because it is what the site launches with and may be what it runs on for months. A hero that looks broken without footage will ship looking broken.
+State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empty state does. It must look finished, for two reasons: it is the state every preview build and every review renders in until the first flight lands its footage, and it is what launch falls back to if that footage slips or turns out unusable. A hero that looks broken without footage will ship looking broken.
+
+*(Corrected in Phase 6. This line said "it is what the site launches with and may be what it runs on for months", which was true only under the old ordering, where launch preceded the content drop. SPEC section 9 was corrected first; this was the last copy of the old launch order in the documents. The design decision is unchanged — state 3 is still built first and is still the default path.)*
 
 **What state 3 must not become.** It must not acquire a stock image, a stock video, an illustration of a drone we do not own, or a photograph of someone else's roof. SPEC section 4 and CLAUDE.md apply to the hero identically. The `TODO:` marker for missing footage lives in the repo, not rendered onto the production home page — the visitor sees a complete image-free hero, and the marker exists so a future session does not mistake the empty state for a finished one.
 
@@ -382,7 +394,7 @@ State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empt
 "build":   "astro build",
 "preview": "astro preview",
 "check":   "astro check",
-"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments
+"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments, forms
 "sync":    "astro sync --force",            // evict the content cache; see below
 "verify":  "npm run sync && npm run check && npm run build && npm run links"
 ```
@@ -429,6 +441,31 @@ Two deliberate details:
 - **Astro preserves `<!-- -->` in `.astro` templates and strips `{/* */}`.** A comment
   in a template is therefore a build failure now. Use `{/* */}` or a frontmatter
   comment. Three templates already do; none used the HTML form.
+
+### Why `check-html` fails on a form that posts nowhere
+
+Check 5, added in Phase 6 with the quote form. Every `<form>` in the built output must
+have an `action` that is an absolute `https` URL and a `method` of `POST`, and any
+`_next` hidden field must be an absolute URL.
+
+`import.meta.env` is inlined at build time in a static build. A deploy host with no
+`PUBLIC_FORMSPREE_ID` set therefore emits a contact page whose form action is empty or
+contains the literal `undefined` — **and `npm run verify` passes**, because the page
+builds, the JSON-LD parses and every internal link resolves. The result is a contact
+page that looks correct and silently discards every enquiry, which for a site whose one
+job is to produce a written enquiry is the worst failure available. It is invisible
+until somebody asks why nobody is calling.
+
+`astro.config.mjs` declares the variable required in `env.schema` and that fails the
+build first — verified against Astro 7.1.3's own source, which coerces `''` to
+`undefined` before validating, so an empty value fails exactly as an absent one does.
+**Check 5 is not redundant with it.** It asserts on the built artefact rather than on
+the config, so it still fires if a future session deletes the schema entry, changes form
+provider, or breaks the action some other way. Same reasoning as check 4: guard the
+class — a form that posts nowhere — not the name of one environment variable.
+
+All three failure modes were confirmed to fail the gate, not assumed: an empty action,
+an action containing `undefined`, and a relative `_next`.
 
 ## 9. Deployment
 

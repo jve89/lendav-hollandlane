@@ -5,6 +5,7 @@
  *  2. every application/ld+json block parses AND is not an unevaluated template literal
  *  3. every page has exactly one <h1>, a <title> and a meta description
  *  4. no HTML comment survives into any built page
+ *  5. no <form> posts to nowhere
  *
  * Check 2 exists because a build can pass while emitting structured data as literal
  * text. It did, once. See the Phase 0 notes.
@@ -15,6 +16,20 @@
  * Estonian customer pages. The markers are a repo convention (CLAUDE.md) and belong
  * in the repo only. This guards the whole class rather than the words in use today,
  * so the next convention marker cannot leak the same way.
+ *
+ * Check 5 exists because `import.meta.env` is inlined at build time: a deploy host
+ * with no `PUBLIC_FORMSPREE_ID` set would emit a contact form whose `action` is
+ * empty or `undefined`, and every other check here would pass. A contact page that
+ * looks right and silently drops every enquiry is the worst failure this site can
+ * have — it is invisible until someone asks why nobody is calling.
+ *
+ * `astro.config.mjs` declares that variable required in `env.schema`, which fails
+ * the build first. This is the SECOND, INDEPENDENT guard, and it is not redundant:
+ * it asserts on the built artefact rather than on the config, so it still fires if
+ * a future session deletes the schema entry, swaps the form provider, or breaks the
+ * action some other way. It guards the class — a form that posts nowhere — not the
+ * name of one environment variable, which is the same reasoning that made check 4
+ * catch every comment rather than the word `unconfirmed`.
  */
 import { readdir, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
@@ -103,6 +118,33 @@ for (const f of files) {
   if (/<!--(?![\s\S]*?-->)/.test(markup)) {
     errors.push(`${f}: unterminated HTML comment in output`)
   }
+
+  // 5. no form posts to nowhere
+  for (const m of html.matchAll(/<form\b([^>]*)>/gi)) {
+    const attrs = m[1]
+    const action = /\baction="([^"]*)"/i.exec(attrs)?.[1]
+    const method = /\bmethod="([^"]*)"/i.exec(attrs)?.[1]
+
+    if (!action) {
+      errors.push(`${f}: <form> has no action — it would post to this page`)
+    } else if (!/^https:\/\/\S+$/.test(action) || /\bundefined\b|\bnull\b/.test(action)) {
+      errors.push(`${f}: <form> action is not a usable absolute https URL -> "${action}"`)
+    }
+
+    if (!method || method.toLowerCase() !== 'post') {
+      errors.push(`${f}: <form> method is "${method ?? 'unset'}", expected POST`)
+    }
+  }
+
+  /* Formspree rejects a relative `_next`, and a redirect that silently fails is
+     invisible from the build. The URL is expected not to RESOLVE yet — the domain
+     is unregistered — but it must be absolute and well formed. */
+  for (const m of html.matchAll(/<input\b[^>]*\bname="_next"[^>]*>/gi)) {
+    const value = /\bvalue="([^"]*)"/i.exec(m[0])?.[1]
+    if (!value || !/^https:\/\/\S+$/.test(value) || /\bundefined\b/.test(value)) {
+      errors.push(`${f}: _next must be an absolute https URL -> "${value ?? 'unset'}"`)
+    }
+  }
 }
 
 if (errors.length) {
@@ -110,4 +152,6 @@ if (errors.length) {
   for (const e of errors) console.error(`  ${e}`)
   process.exit(1)
 }
-console.log(`check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta, no comments`)
+console.log(
+  `check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta, no comments, forms post somewhere`,
+)

@@ -1,0 +1,279 @@
+---
+/**
+ * QuoteForm — the written enquiry SPEC section 1 says is this site's whole job.
+ *
+ * A NATIVE `<form action method="POST">`, POSTING STRAIGHT TO FORMSPREE. No
+ * `@formspree/ajax`, no `@formspree/react`, no fetch handler, no validation
+ * script — not one byte of client JavaScript in this file. Both Formspree
+ * client libraries are dependencies and the list in ARCHITECTURE section 1 is
+ * closed; more to the point, a form that works with JavaScript disabled is why
+ * this stack was chosen. On success the browser follows Formspree's redirect to
+ * `_next`. That is the entire mechanism.
+ *
+ * VALIDATION IS THE BROWSER'S. `required`, `type="email"`, `type="tel"`,
+ * `inputmode`, `autocomplete`. No custom messages, no scripted checks, no
+ * `novalidate`. A field that cannot be expressed in HTML is not enforced — see
+ * the note on "phone OR email" in `i18n/contact.ts`.
+ *
+ * REQUIRED: name, email, address. OPTIONAL: phone, area, message. The reasoning
+ * is in `i18n/contact.ts` and it is deliberate, not an omission.
+ *
+ * THE SERVICE OPTIONS COME FROM THE COLLECTION, never from a list typed here,
+ * so they cannot drift from the five service pages. `servicesFor()` runs the
+ * same locale guard and cross-locale assertion the nav, the grid and the price
+ * table run.
+ *
+ * SPAM IS `_gotcha` AND NOTHING ELSE. No CAPTCHA, no third-party script, no
+ * challenge — every one of those is client JavaScript and most are a
+ * third-party request. The honeypot is hidden from people AND from screen
+ * readers: off-screen alone would still be tabbable and announced, so it also
+ * carries `tabindex="-1"` and `aria-hidden="true"`.
+ */
+import { formspreeAction } from '../config/formspree'
+import { site } from '../config/site'
+import { contactContent } from '../i18n/contact'
+import { servicesFor } from '../i18n/services'
+import { path } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+  /** Preselects a service. The select is never empty — there is no blank option. */
+  defaultService?: string
+}
+
+const { locale, defaultService } = Astro.props
+const c = contactContent(locale)
+const f = c.form
+const services = await servicesFor(locale)
+
+/**
+ * Formspree needs an ABSOLUTE url in `_next` — a relative path is rejected.
+ * Built from `site.domain` and the route map, never typed.
+ *
+ * `_next` IS CURRENTLY IGNORED BY FORMSPREE, AND THE REASON IS THE PLAN, NOT
+ * THIS CODE. Measured in Phase 6: two identical POSTs were both accepted (302)
+ * and both redirected to `https://formspree.io/thanks` rather than here. The
+ * custom "Thank You" redirect is a paid feature — Formspree's own docs list it
+ * as "Available on: Personal, Professional, Business plans" — and this account
+ * is on the free tier. Everything else works: the submission arrives, all seven
+ * fields map correctly, `_subject` is honoured.
+ *
+ * So the visitor currently lands on Formspree's page instead of ours. The field
+ * stays because it is correct and costs nothing, and it starts working the day
+ * the plan is upgraded. Note this is NOT the "domain does not resolve" problem
+ * — that would be a redirect issued and failing to load; this is no redirect to
+ * us being issued at all.
+ *
+ * Do not point this at a host that happens to resolve today. A thank-you URL
+ * baked to the wrong origin outlives the convenience, and it would not help:
+ * the redirect is not being made regardless of the target.
+ *
+ * If the paid plan is taken via the DASHBOARD redirect setting rather than
+ * `_next`, note that setting is one URL per form and cannot vary by locale —
+ * both Estonian and English visitors would land on the same page. `_next` is
+ * per-submission and is why this form can send each locale to its own.
+ */
+const nextUrl = new URL(path('thanks', locale), site.domain).href
+
+/** The select always has a value, so `defaultService` only chooses which. */
+const selected = defaultService ?? services[0]?.data.slug
+---
+<form class="quote" action={formspreeAction} method="POST" aria-labelledby="quote-heading">
+  <h2 id="quote-heading">{f.heading}</h2>
+
+  <input type="hidden" name="_next" value={nextUrl} />
+  <input type="hidden" name="_subject" value={f.subject} />
+
+  {/* Honeypot. Hidden from sight, from the tab order and from assistive tech.
+      A bot fills it; Formspree then discards the submission. */}
+  <div class="quote__gotcha" aria-hidden="true">
+    <label for="quote-gotcha">{f.gotcha}</label>
+    <input id="quote-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="quote__grid">
+    <p class="field">
+      <label for="quote-name">{f.fields.name.label}</label>
+      <input id="quote-name" type="text" name="name" autocomplete="name" required />
+    </p>
+
+    <p class="field">
+      <label for="quote-email">{f.fields.email.label}</label>
+      <input id="quote-email" type="email" name="email" autocomplete="email"
+             aria-describedby="quote-email-hint" required />
+      <span class="field__hint" id="quote-email-hint">{f.fields.email.hint}</span>
+    </p>
+
+    <p class="field">
+      <label for="quote-phone">
+        {f.fields.phone.label} <span class="field__optional">{f.optional}</span>
+      </label>
+      <input id="quote-phone" type="tel" name="phone" autocomplete="tel"
+             aria-describedby="quote-phone-hint" />
+      <span class="field__hint" id="quote-phone-hint">{f.fields.phone.hint}</span>
+    </p>
+
+    <p class="field field--wide">
+      <label for="quote-address">{f.fields.address.label}</label>
+      <input id="quote-address" type="text" name="address" autocomplete="street-address"
+             aria-describedby="quote-address-hint" required />
+      <span class="field__hint" id="quote-address-hint">{f.fields.address.hint}</span>
+    </p>
+
+    <p class="field">
+      <label for="quote-service">{f.fields.service.label}</label>
+      <select id="quote-service" name="service">
+        {services.map((entry) => (
+          <option value={entry.data.title} selected={entry.data.slug === selected}>
+            {entry.data.title}
+          </option>
+        ))}
+      </select>
+    </p>
+
+    <p class="field">
+      <label for="quote-area">
+        {f.fields.area.label} <span class="field__optional">{f.optional}</span>
+      </label>
+      {/* `inputmode` brings up a numeric keypad without `type="number"`, whose
+          spinner and locale-dependent decimal handling are wrong for "about 180". */}
+      <input id="quote-area" type="text" name="area" inputmode="numeric"
+             aria-describedby="quote-area-hint" />
+      <span class="field__hint" id="quote-area-hint">{f.fields.area.hint}</span>
+    </p>
+
+    <p class="field field--wide">
+      <label for="quote-message">
+        {f.fields.message.label} <span class="field__optional">{f.optional}</span>
+      </label>
+      <textarea id="quote-message" name="message" rows="5"
+                aria-describedby="quote-message-hint"></textarea>
+      <span class="field__hint" id="quote-message-hint">{f.fields.message.hint}</span>
+    </p>
+  </div>
+
+  <div class="quote__submit">
+    <button class="btn btn--accent" type="submit">{f.submit}</button>
+    <p class="fineprint quote__privacy">
+      <strong>{f.privacyLead}</strong>{' '}
+      {f.privacy.join(' ')}
+    </p>
+  </div>
+</form>
+
+<style>
+  .quote {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: var(--sp-7);
+  }
+
+  .quote h2 {
+    font-size: var(--step-h3);
+    letter-spacing: var(--ls-h3);
+    margin-block-end: var(--sp-6);
+  }
+
+  /* Off-screen rather than display:none — a field the browser will not render
+     at all is one some bots learn to skip. Not tabbable, not announced. */
+  .quote__gotcha {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .quote__grid {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  /* `align-content: start` is load-bearing, not tidying. Side-by-side fields
+     are grid items of equal row height, and a field with no hint has two rows
+     to fill it where its neighbour has three — so its input stretched and sat
+     visibly lower than the one next to it. Packing the rows to the top makes
+     labels and inputs line up across the columns whether a hint exists or not. */
+  .field {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+  }
+
+  .field label {
+    font-size: var(--step-sm);
+    font-weight: var(--fw-strong);
+    color: var(--ink-2);
+  }
+
+  .field__optional {
+    font-weight: var(--fw-medium);
+    color: var(--muted);
+  }
+
+  .field__hint {
+    font-size: var(--step-xs);
+    line-height: var(--lh-tight);
+    color: var(--muted);
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xs);
+    padding: var(--sp-3) var(--sp-4);
+    color: var(--ink);
+  }
+
+  .field textarea {
+    resize: vertical;
+    line-height: var(--lh-body);
+  }
+
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  /* The browser's own "please fill in this field" bubble is the validation UI.
+     This only makes an invalid field visible once the browser has judged it —
+     :user-invalid, not :invalid, so an untouched required field is not red on
+     first paint. */
+  .field input:user-invalid,
+  .field textarea:user-invalid {
+    border-color: var(--accent);
+  }
+
+  .quote__submit {
+    display: grid;
+    gap: var(--sp-5);
+    margin-block-start: var(--sp-7);
+    justify-items: start;
+  }
+
+  .quote__privacy {
+    max-width: var(--measure);
+  }
+
+  .quote__privacy strong {
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 640px) {
+    .quote__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field--wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
