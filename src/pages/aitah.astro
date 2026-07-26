@@ -13,17 +13,16 @@
  * because those are verifiable conduct. "We reply within X" is not a promise
  * this business has made. See `i18n/contact.ts`.
  *
- * NOBODY REACHES THIS PAGE YET, and that is a Formspree plan limit rather than
- * a defect here. The custom `_next` redirect is a paid feature, so on the free
- * tier a submitter lands on Formspree's own thanks page instead. Measured in
- * Phase 6, not assumed. The page is built and correct so that upgrading the
- * plan is the only step needed — see the note in `QuoteForm.astro` and the
- * blocked list in PLAN.
+ * NOBODY REACHES THIS PAGE YET, and there is exactly ONE reason: the custom
+ * `_next` redirect is a Formspree paid feature, so on the free tier a submitter
+ * lands on Formspree's own thanks page instead. Measured in Phase 6, not
+ * assumed. It is a plan limit rather than a defect here — the page is built and
+ * correct, and upgrading the plan is the only step needed. See the note in
+ * `QuoteForm.astro` and the blocked list in PLAN.
  *
- * `lendavhollandlane.ee` does not resolve yet either — it is registered and
- * owned, but its DNS is still migrating to Cloudflare — so even once the
- * redirect is issued it will not load. Two separate blockers, neither fixable
- * in code.
+ * `lendavhollandlane.ee` resolves and serves the site as of 26 July 2026, so
+ * the URL this page sits at is a working one. That used to be a second blocker
+ * and it no longer is.
  */
 import PageLayout from '../layouts/PageLayout.astro'
 import { site } from '../config/site'

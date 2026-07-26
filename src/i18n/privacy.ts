@@ -11,10 +11,17 @@ import type { Locale } from './ui'
  *
  * NO COMPANY NAME, REGISTRY CODE, PHONE NUMBER OR EMAIL IS TYPED BELOW. `{company}`
  * and `{regCode}` resolve from `site.ts` in `privacyContent()`, the same mechanism
- * `contactContent()` and `faqEntries()` use. No email address appears at all: the
- * one in `site.ts` is on an unregistered domain, so the routes offered for a
- * deletion or access request are the phone number and the quote form, both of
- * which work today.
+ * `contactContent()` and `faqEntries()` use. The routes offered for a deletion or
+ * access request are the phone number and the quote form, and both work.
+ *
+ * No email address appears at all, and as of 26 July 2026 that is no longer
+ * because the address is broken — `site.email` works. Whether this page should
+ * now ALSO offer it is an open question rather than a settled one: email is the
+ * conventional route for a GDPR request, and a policy offering only a phone
+ * number and a web form may read as offering no route at all. It is Estonian
+ * copy on the one page with consequences outside this repository, so it is
+ * paired with the legal read of this policy on PLAN's blocked list. Do not
+ * resolve it by adding the address here on a tidy-up.
  *
  * ────────────────────────────────────────────────────────────────────────────
  * TWO CLAIMS ON THIS PAGE CAN BE FALSIFIED FROM A DASHBOARD, WITH NO COMMIT.

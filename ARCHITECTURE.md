@@ -1,9 +1,11 @@
 # ARCHITECTURE.md — Lendav Hollandlane website
 
-**Version 1.3 · 26 July 2026** — the business name was settled as **Lendav
-Hollandlane** and the domain became `lendavhollandlane.ee`. Section 5's `site.ts`
-example, section 7's icon note and section 9's DNS section moved with it; no
-architectural decision changed. Version 1.2 settled hosting and analytics
+**Version 1.4 · 26 July 2026** — **section 9's DNS section now records a live
+domain rather than a migration**, and the email address is tested and published,
+so section 6's `Credentials` contract and section 5's `site.ts` example move with
+it. Two dashboard items remain in section 9: the `www` → apex redirect and
+DNSSEC. Version 1.3 settled the business name as **Lendav Hollandlane** and the
+domain as `lendavhollandlane.ee`. Version 1.2 settled hosting and analytics
 (section 1), the sitemap's hreflang and the OG/icon set (section 7), and check 6
 (section 8).
 
@@ -281,7 +283,7 @@ export const site = {
   vatNumber: 'EE102744992',
   phone: '+372 5400 4610',
   phoneHref: 'tel:+37254004610',
-  email: 'info@lendavhollandlane.ee', // unconfirmed: mail forwarding not configured
+  email: 'info@lendavhollandlane.ee', // receives mail; tested 26 July 2026
   domain: 'https://lendavhollandlane.ee',
   vatRate: 0.24,
   prices: {
@@ -404,7 +406,7 @@ unattributed review must not be publishable.
   **`_next` is a paid feature and is currently ignored.** Measured in Phase 6, not assumed: two identical POSTs were each accepted with a 302 to `https://formspree.io/thanks`, never to the `_next` value. Formspree documents the custom "Thank You" redirect as *"Available on: Personal, Professional, Business plans"*, and this account is on the free tier. Everything else on the free tier works — the submission arrives, all seven fields map, `_subject` is honoured. So `/aitah` and `/en/thank-you` are built, correct and unreachable until the plan is upgraded; the field stays because it costs nothing and starts working that day. This is a third dashboard/plan concern outside the repo, in the same class as the two above. Note also that the dashboard's redirect setting is **one URL per form** and cannot vary by locale, whereas `_next` is per-submission — which is why this form sends each locale to its own page and why the dashboard setting is not an equivalent substitute.
 - **`PriceTable`** — props `{ locale, entries }`, where `entries` are `services` collection entries. It reads prices from `site.ts` and **never takes a price**: each row's figure comes from resolving that entry's `priceKind` through `priceLine()`, and the minimum job comes from `site.prices.minimumJob`. Taking entries rather than rows is what stops the table disagreeing with the service page it links to. It **always renders the ex-VAT note**, and that is not a prop — CLAUDE.md requires every displayed price to be labelled excluding VAT, and a caller that could switch the label off would eventually be a caller that did. No total, no estimate, no calculator: SPEC section 4.
 - **`Faq` / `FaqList` / `FaqGroups`** — `FaqList` is the `<details>` list and owns the disclosure markup; `Faq` is the home page's three-question excerpt around it; `FaqGroups` is the whole set in its three groups for `/kkk`. All three read `i18n/faq.ts` through `faqEntries()`, which resolves `{season}`, `{minimum}`, `{area}` and `{authority}` from `site.ts` — and because the FAQ page's `FAQPage` JSON-LD is built from the same resolved objects it renders, the structured data cannot drift from the visible answer.
-- **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. It prints no email address, because `site.email` is unconfirmed.
+- **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. **The identifiers block prints the email address** alongside the registry and VAT numbers, restored on 26 July 2026 when the address was tested — this is the page a KÜ board comes to for documents, and a written route belongs beside them.
 
 ### `Hero` — the contract
 
@@ -691,14 +693,28 @@ is the Phase 6 guard working as designed, not a misconfiguration — see section
 first deploy that errors on a missing environment variable is the intended outcome;
 the alternative is a contact page that looks right and drops every enquiry.
 
-### DNS — registered, mid-migration
+### DNS — live
 
-**`lendavhollandlane.ee` is registered and owned.** The name and the domain both
-came off PLAN's blocked list on 26 July 2026. What remains is the migration:
-**DNS is being moved to Cloudflare and does not resolve yet**, so the site has no
-working address today and neither does its email.
+**`lendavhollandlane.ee` resolves and serves the site.** Confirmed by test on
+26 July 2026, the same day the migration finished. What is done:
 
-`lendavhollandlane.ee` apex, plus `www` redirecting to apex.
+- Nameservers delegated from the Estonian registrar to Cloudflare.
+- The apex and `www` both attached as custom domains on the Pages project.
+- TLS live on both.
+- **Cloudflare Email Routing active**, forwarding `info@lendavhollandlane.ee` to
+  the operator's mailbox. A test message was sent and arrived.
+
+**Two items remain, both dashboard work:**
+
+- **`www` → apex.** `www` is attached to the Pages project, so it serves the site
+  rather than failing — but serving it and redirecting it are not the same thing,
+  and two hostnames serving identical HTML is a duplicate-content problem the
+  canonical tag mitigates rather than solves. **Whether the custom-domain
+  attachment already issues the redirect was not verified**; check it before
+  writing a Redirect Rule, and do not assume either way from this line.
+- **DNSSEC re-enabled from the Cloudflare side.** Delegating the nameservers
+  broke the chain of trust that was signed at the registrar. Re-signing is a
+  Cloudflare toggle plus a DS record at the registrar.
 
 **A `.com` redirect is NOT confirmed.** This section previously specified a `.com`
 → `.ee` redirect under the old name, and no one has said whether a `.com` under
@@ -714,11 +730,11 @@ something is wrong. Delegating the nameservers is also what makes apex CNAME
 flattening available, which is what lets the apex point at a `pages.dev` project at
 all.
 
-**Email routing rides on the same migration.** `site.email` is
-`info@lendavhollandlane.ee` and receives nothing: Cloudflare Email Routing is not
-configured. That is why `Footer.astro`'s email row and the `email` key in the
-sitewide `LocalBusiness` JSON-LD are both still suppressed — see the comments in
-both files, which now cite mail forwarding rather than an unregistered domain.
+**Email routing came up with the migration, and the suppressions are gone.**
+`site.email` receives mail, tested. The three places that withheld it are
+restored: `Footer.astro`'s email row, the `email` key in the sitewide
+`LocalBusiness` JSON-LD, and the identifiers block in `Credentials`. That was the
+whole of the "one line when it works" promise those files carried from Phase 6.
 
 **Both redirects are dashboard and DNS work, not repository files.** A `_redirects`
 file in `public/` matches on path, not on host, so it cannot express either of

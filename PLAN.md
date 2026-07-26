@@ -162,14 +162,20 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 - Works with JavaScript disabled
 - Thank-you page in both locales, `noindex`, reached via Formspree's `_next`
 
-**No email address is printed on the contact page, or anywhere else on the site.**
-`site.email` receives no mail — the domain was unregistered when this phase ran, and
-since the rename it is registered but Cloudflare Email Routing is not configured. The
-reason changed; the outcome did not. The footer's `mailto:` row and the `email` key
-in the sitewide `LocalBusiness` JSON-LD both went in this phase; the `mailto:` fallback in
-`Hero`, `Cta` and `Header` went with them rather than being left as an unreachable branch.
-The form is the written channel now. All of it comes back in one line when the domain
-resolves.
+**No email address was printed anywhere on the site when this phase ran**, because
+`site.email` received no mail: the domain was unregistered then, and after the rename
+it was registered but Cloudflare Email Routing was not configured. The footer's
+`mailto:` row and the `email` key in the sitewide `LocalBusiness` JSON-LD both went in
+this phase, and the `mailto:` fallback in `Hero`, `Cta` and `Header` went with them
+rather than being left as an unreachable branch.
+
+**That was undone on 26 July 2026**, when Email Routing was configured and a test
+message arrived. The footer row, the JSON-LD key and the identifiers block on `/meist`
+all print the address now. The `Hero`, `Cta` and `Header` fallbacks did **not** come
+back and are not owed: they were removed because a dead conditional anyone could
+revive is worse than no conditional, and every one of those three asks for the form.
+The contact page still prints no address either, and that is now a choice about what
+converts rather than a suppression.
 
 **Two independent guards against a form that posts nowhere,** because `import.meta.env` is
 inlined at build time and an unset variable would otherwise ship a page that looks right
@@ -198,7 +204,9 @@ Readiness, not the launch event itself — launch is after Phase 10.
   factors, localhost. Numbers in the phase report; the run that counts is post-deploy
   and is on the launch checklist below.
 - **Link check** — clean. Every external URL in the built output is our own domain.
-- **Redirects — NOT DONE, blocked on DNS.** Deliberately not half-built; see below.
+- **Redirects — NOT DONE.** They were blocked on DNS when this phase ran; the
+  migration finished on 26 July 2026, so what remains is the dashboard work itself.
+  Deliberately not half-built in the repo; see below.
 
 ### The sitemap limitation, and how it was actually resolved
 
@@ -303,12 +311,16 @@ that the site is not broken — see SPEC section 6. The gate is the list below b
    `PUBLIC_FORMSPREE_ID` set as a build variable. **The build failing on a missing
    `PUBLIC_FORMSPREE_ID` is the guard working, not a misconfiguration** —
    ARCHITECTURE section 9.
-2. **Finish the DNS migration** — `lendavhollandlane.ee` is registered and owned,
-   but its nameservers are still moving to Cloudflare and it does not resolve.
-   Then `www` → apex. A `.com` → `.ee` redirect is listed only *if* a `.com`
-   under the new name turns out to be ours; nobody has said it is, so do not
-   assume it and do not buy one on the strength of this line. Dashboard work —
-   ARCHITECTURE section 9.
+2. **DNS — the migration is DONE.** `lendavhollandlane.ee` resolves and serves
+   the site as of 26 July 2026: nameservers delegated to Cloudflare, apex and
+   `www` attached to the Pages project, TLS live, Email Routing active. Two
+   dashboard items remain: **`www` → apex**, which may or may not already be
+   handled by the custom-domain attachment — check, do not assume — and
+   **DNSSEC re-enabled from the Cloudflare side**, since delegating the
+   nameservers broke the chain signed at the registrar. A `.com` → `.ee`
+   redirect is listed only *if* a `.com` under the new name turns out to be
+   ours; nobody has said it is, so do not assume it and do not buy one on the
+   strength of this line. ARCHITECTURE section 9.
 3. **Re-run Lighthouse against the deployed site.** The Phase 9 pass was 100 across
    the board but it was localhost, with no CDN, no TLS handshake and no real
    latency. Those are not the numbers SPEC section 6 gates on.
@@ -419,14 +431,6 @@ claim made anywhere on the site. **Not in this commit, and not by guessing which
 is.** It is blocked on the operator's product decision and the rewrite belongs to the phase
 that has the answer.
 
-**A working email address.** `site.email` is `info@lendavhollandlane.ee` and receives
-nothing: **Cloudflare Email Routing is not configured.** That is now the whole of the
-blocker — the name is settled and the domain is registered, so this no longer waits on
-either. `Credentials` deliberately does not print it, `Footer.astro`'s email row is
-suppressed and the `email` key is absent from the sitewide `LocalBusiness` JSON-LD;
-all three come back in one line once a test message actually arrives. Configure the
-routing, send one, and only then restore them.
-
 **A Formspree plan decision — the thank-you redirect is a paid feature.** The account is on
 the free tier, where `_next` is ignored: a submitter is sent to Formspree's own thanks page
 instead of ours. Measured in Phase 6, not assumed — two identical POSTs both 302'd to
@@ -446,17 +450,30 @@ true today, it invents nothing, and it survives a real policy being written late
 `src/i18n/privacy.ts` and `src/i18n/contact.ts`** — but nothing is waiting on it, and
 a future session must not substitute a guessed number for the criterion.
 
-**A legal read of the privacy policy.** The page is drafted by an AI. Every sentence
-is a statement about our own conduct that is true as far as this repository can tell,
-and it claims no certification, no audit and no DPO — but that is not the same as a
-lawyer having read it. Cheap to fix, and it is the one page on the site with
-consequences outside the repository.
+**A legal read of the privacy policy — and, paired with it, whether the policy should
+offer the email address as a route for an access or deletion request.** The page is
+drafted by an AI. Every sentence is a statement about our own conduct that is true as
+far as this repository can tell, and it claims no certification, no audit and no DPO —
+but that is not the same as a lawyer having read it. Cheap to fix, and it is the one
+page on the site with consequences outside the repository.
 
-**Google Search Console verification.** No longer blocked on the domain being
-registered — it is. It now waits only on the DNS migration to Cloudflare finishing, so
-that `lendavhollandlane.ee` resolves and can be verified. It is the ranking half of the
-analytics decision (ARCHITECTURE section 1), so the site has no answer to "which
-searches find us" until it is done. Submit `/sitemap-index.xml` at the same time.
+The email question arrived on 26 July 2026 with the working address, and it is
+**deliberately one item with the legal read rather than two.** `/privaatsus` offers the
+phone number and the quote form and no address at all; that was because `site.email`
+received nothing, and that reason is gone. **The considered view is that it probably
+should offer it**: email is the conventional route for a GDPR request, and a policy
+offering only a phone number and a web form is unusual enough that a reader may assume
+there is no route at all. It is not done here because it is Estonian copy on a legal
+page, which is precisely the change that should not be made without the read it is
+paired with. A future session must not resolve it by adding the address on a tidy-up —
+`src/i18n/privacy.ts` says the same beside the copy.
+
+**Google Search Console verification — NO LONGER BLOCKED.** It waited on the domain
+being registered, then on the DNS migration; both are done and
+`lendavhollandlane.ee` resolves, so nothing is holding it. It is now launch-checklist
+step 4 rather than a blocker. It is the ranking half of the analytics decision
+(ARCHITECTURE section 1), so the site has no answer to "which searches find us" until
+it is done. Submit `/sitemap-index.xml` at the same time.
 
 **Google Business Profile verified.** One of the two discovery channels named in SPEC
 section 2, and the local-discovery half of the same analytics decision.
@@ -477,9 +494,23 @@ retention period came off it in Phase 9, replaced by a criterion rather than a n
   name did not change.
 - **`lendavhollandlane.ee` registered.** Registered and owned at an Estonian
   registrar — **`.ee` is not a TLD Cloudflare Registrar sells**, so do not go looking
-  for it in that dashboard. Pointing the nameservers at Cloudflare is in progress and
-  is a launch-checklist step, not a blocker on the operator: the decision is made and
-  the money is spent. ARCHITECTURE section 9.
+  for it in that dashboard. ARCHITECTURE section 9.
+
+**Two more came off later the same day, both confirmed by test rather than assumed:**
+
+- **A working email address.** `info@lendavhollandlane.ee` receives mail: Cloudflare
+  Email Routing forwards it to the operator's mailbox, and a test message was sent and
+  arrived. The three suppressions it was holding down are restored — `Footer.astro`'s
+  email row, the `email` key in the sitewide `LocalBusiness` JSON-LD, and the
+  identifiers block in `Credentials` on `/meist`. That was the whole of the "one line
+  when it works" promise. **The `Hero`, `Cta` and `Header` `mailto:` fallbacks are not
+  owed and did not come back** — they were removed in Phase 6 because a dead
+  conditional is worse than none, and all three ask for the form.
+- **The DNS migration.** `lendavhollandlane.ee` resolves and serves the site:
+  nameservers delegated to Cloudflare, apex and `www` attached to the Pages project,
+  TLS live. This was already a launch-checklist step rather than a blocker; it is
+  recorded here because **Google Search Console was blocked on it and no longer is.**
+  Two dashboard items remain and are on the checklist: `www` → apex, and DNSSEC.
 
 The list is only worth reading if it is true, so take an item off it the moment it is
 answered.

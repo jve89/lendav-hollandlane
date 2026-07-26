@@ -46,9 +46,10 @@ const c = homeCopy[locale].hero
 /**
  * The written channel SPEC section 3 asks for. This was a conditional falling
  * back to `mailto:site.email` until Phase 6 built the form — and that fallback
- * is now removed, not merely unreachable. The address is on an unregistered
- * domain and receives nothing; leaving it in a dead branch left a route back to
- * a broken contact route for anyone who later touched `builtRoutes`.
+ * is removed, not merely unreachable, because a dead branch anyone could revive
+ * by touching `builtRoutes` is worse than no branch. That reasoning stands on
+ * its own and does not depend on the address: `site.email` works as of 26 July
+ * 2026, and the hero's ask is still the form.
  */
 const quoteHref = path('contact', locale)
 ---

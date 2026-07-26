@@ -45,25 +45,16 @@ export const site = {
   phoneHref: 'tel:+37254004610',
 
   /**
-   * unconfirmed: the domain is registered and owned, but Cloudflare Email
-   * Routing is not configured — this address receives nothing today and has
-   * never been tested. Do not print it as a working contact route on any page,
-   * and do not invent a different one. The suppressions in `Footer.astro` and
-   * the `LocalBusiness` JSON-LD in `BaseLayout.astro` both point here and both
-   * come back in one line once a test message arrives. PLAN, blocked on the
-   * operator.
-   *
-   * (The reason changed with the rename. It used to be that the domain was
-   * unregistered and the name was not final; both are now settled. The rule is
-   * unchanged — an address that receives nothing is not published.)
+   * Working and tested on 26 July 2026: Cloudflare Email Routing forwards it to
+   * the operator's mailbox, and a test message was sent and arrived. It is an
+   * ordinary value now, like `phone` — it needs no more explanation than that.
    */
   email: 'info@lendavhollandlane.ee',
 
   /**
-   * The address the site WILL live at. `lendavhollandlane.ee` is registered and
-   * owned; DNS is mid-migration to Cloudflare and does not resolve yet. This
-   * has always been the future address rather than the current one, so nothing
-   * here waits on the migration.
+   * The site's address. `lendavhollandlane.ee` resolves and serves the site as
+   * of 26 July 2026 — nameservers delegated to Cloudflare, apex and `www`
+   * attached to the Pages project, TLS live.
    *
    * NOT SINGLE-SOURCED, and that is a known gap rather than an oversight:
    * `astro.config.mjs` and `public/robots.txt` each hold their own copy and

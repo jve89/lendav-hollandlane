@@ -169,9 +169,9 @@ for (const f of files) {
   }
 
   /* Formspree rejects a relative `_next`, and a redirect that silently fails is
-     invisible from the build. The URL is expected not to RESOLVE yet — the domain
-     is registered but its DNS is still migrating to Cloudflare — but it must be
-     absolute and well formed. */
+     invisible from the build. This asserts that the URL is absolute and well
+     formed, which is all a build can know — whether it resolves is not a
+     question for this check, and never was. */
   for (const m of html.matchAll(/<input\b[^>]*\bname="_next"[^>]*>/gi)) {
     const value = /\bvalue="([^"]*)"/i.exec(m[0])?.[1]
     if (!value || !/^https:\/\/\S+$/.test(value) || /\bundefined\b/.test(value)) {

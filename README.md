@@ -65,14 +65,16 @@ from the integers — the phases do not run in numerical order.
 Equipment and the first flight, which is a controlled job on family property and the source
 of all the footage · the cleaning product decision, and with it the biocide sentence that
 five service pages and the FAQ currently promise · the water and power answer ·
-the `needs-operator-review` claims · a working email, blocked on Cloudflare Email
-Routing not being configured · Google Business Profile verified · native-speaker
-Estonian review of all copy.
+the `needs-operator-review` claims · Google Business Profile verified · native-speaker
+Estonian review of all copy · a legal read of the privacy policy, paired with whether
+it should offer the email address as a route for a GDPR request.
 
 **Settled on 26 July 2026 and no longer blocking:** the business name (Lendav
-Hollandlane) and the domain (`lendavhollandlane.ee`, registered and owned; its DNS
-migration to Cloudflare is a launch-checklist step, not a blocker). A data retention
-period came off in Phase 9, replaced by a criterion.
+Hollandlane) · the domain — `lendavhollandlane.ee` is registered, resolves and serves
+the site, with `www` → apex and DNSSEC left as launch-checklist dashboard items · a
+working email address, `info@lendavhollandlane.ee`, tested through Cloudflare Email
+Routing, which unblocked Google Search Console verification. A data retention period
+came off in Phase 9, replaced by a criterion.
 
 PLAN's "blocked on the operator" section is the authoritative version of this list, with the
 reasoning and the dependencies between items. Keep the two in step or delete this one.

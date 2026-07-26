@@ -20,6 +20,11 @@ export const defaultLocale: Locale = 'et'
  * width constraint. `Päring` is a noun where `cta.quote` is an imperative; if a
  * native speaker has a better six-character answer, take it, but re-measure at
  * 320px before committing it.
+ *
+ * `footer.emailTitle` was added when the address started working. It is the one
+ * Estonian string here that is a dictionary word rather than drafted prose —
+ * `E-post` is the standard term — and it is a visually-hidden label in the
+ * footer and a visible one on `/meist`.
  */
 export const ui = {
   et: {
@@ -175,6 +180,7 @@ export const ui = {
     // footer
     'footer.navTitle': 'Lehed',
     'footer.contactTitle': 'Kontakt',
+    'footer.emailTitle': 'E-post',
     'footer.companyTitle': 'Ettevõte',
     'footer.label': 'Jaluse menüü',
     'footer.regCode': 'Registrikood',
@@ -304,6 +310,7 @@ export const ui = {
     // footer
     'footer.navTitle': 'Pages',
     'footer.contactTitle': 'Contact',
+    'footer.emailTitle': 'Email',
     'footer.companyTitle': 'Company',
     'footer.label': 'Footer navigation',
     'footer.regCode': 'Registry code',

@@ -61,13 +61,9 @@ const services = await servicesFor(locale)
  *
  * So the visitor currently lands on Formspree's page instead of ours. The field
  * stays because it is correct and costs nothing, and it starts working the day
- * the plan is upgraded. Note this is NOT the "domain does not resolve" problem
- * — that would be a redirect issued and failing to load; this is no redirect to
- * us being issued at all.
- *
- * Do not point this at a host that happens to resolve today. A thank-you URL
- * baked to the wrong origin outlives the convenience, and it would not help:
- * the redirect is not being made regardless of the target.
+ * the plan is upgraded. The target is not the problem: `lendavhollandlane.ee`
+ * resolves and serves the site as of 26 July 2026, so this URL loads. No
+ * redirect to us is being issued at all, which is the plan and not the address.
  *
  * If the paid plan is taken via the DASHBOARD redirect setting rather than
  * `_next`, note that setting is one URL per form and cannot vary by locale —

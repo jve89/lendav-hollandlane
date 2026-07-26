@@ -158,13 +158,12 @@ const jsonLd = {
   legalName: site.legalName,
   url: site.domain,
   telephone: site.phone,
-  /* NO `email` KEY. It was here until Phase 6, publishing an address that
-     receives no mail as a machine-readable contact — the copy that propagates
-     furthest into aggregators and is hardest to retract. Structured data must
-     not assert what the page will not. The domain is registered now, but
-     Cloudflare Email Routing is not configured, so the address still works
-     nowhere. Restore it in one line when it does; see the `unconfirmed:`
-     comment in site.ts. */
+  /* Absent from Phase 6 until 26 July 2026, because structured data must not
+     assert what the page will not: this key is the copy of an address that
+     propagates furthest into aggregators and is hardest to retract, and the
+     address received no mail. Cloudflare Email Routing is configured and tested
+     now, and the footer prints it on every page, so it belongs here again. */
+  email: site.email,
   areaServed: { '@type': 'Country', name: 'Estonia' },
   priceRange: '€€',
 }
