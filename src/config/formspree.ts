@@ -23,8 +23,15 @@ import { PUBLIC_FORMSPREE_ID } from 'astro:env/client'
  * Where the quote form POSTs.
  *
  * Native `<form action method="POST">` — no `@formspree/ajax`, no
- * `@formspree/react`. Both are client-side JavaScript dependencies, the
- * dependency list in ARCHITECTURE section 1 is closed, and a form that works
- * with JavaScript disabled is the reason this stack was chosen at all.
+ * `@formspree/react`. Both are client-side JavaScript dependencies and the
+ * dependency list in ARCHITECTURE section 1 is closed.
+ *
+ * `QuoteForm.astro` DOES submit this endpoint by `fetch`, and that rejection
+ * stands rather than being softened by it: the whole AJAX path is 23
+ * inline lines with no package behind them, which is the argument against both
+ * libraries made concrete. The native POST remains the baseline — a form that
+ * still works with JavaScript disabled is the reason this stack was chosen at
+ * all, and the script is an enhancement on top of it, not a replacement for it.
+ * See ARCHITECTURE section 2, "the second named exception".
  */
 export const formspreeAction = `https://formspree.io/f/${PUBLIC_FORMSPREE_ID}`

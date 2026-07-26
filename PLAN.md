@@ -162,6 +162,25 @@ Roof cleaning · facade cleaning · solar panels · windows and glass · gutters
 - Works with JavaScript disabled
 - Thank-you page in both locales, `noindex`, reached via Formspree's `_next`
 
+**AMENDED 26 JULY 2026 — "no client JS" is no longer true of this form, and it is the
+only bullet above that moved.** The thank-you pages this phase built were unreachable,
+because `_next` is a Formspree paid feature. Formspree accepts AJAX on the free tier, so
+`QuoteForm.astro` gained a 23-line `is:inline` script that POSTs with `fetch` and navigate to
+our own page. The native POST is untouched and runs whenever the script does not. This is
+recorded here as an amendment rather than as a phase of its own, because it changes a
+Phase 6 deliverable and does not move the order table at the top; Phase 10 is still next.
+ARCHITECTURE section 2 names it as the second client-JavaScript exception, and the blocked
+list below records what is left of the plan-upgrade question.
+
+**"Works with JavaScript disabled" was tested BY PROXY, and that is not the same thing.**
+What was done: the form node was replaced with a clone, which drops its event listeners,
+and the resulting native submit was accepted with a 302 to Formspree's own page — plus a
+`curl` POST of the same body, which also 302'd to `/thanks`, and a census confirming the
+only executable `<script>` in the built site is this one. That is strong, and it is still a
+proxy: **nobody has run the form with Chrome's "Disable JavaScript" actually switched on.**
+Somebody should, once, from DevTools → ⋮ → Settings → Debugger. Until then this bullet is
+inferred rather than observed, and it should not be written up as verified.
+
 **No email address was printed anywhere on the site when this phase ran**, because
 `site.email` received no mail: the domain was unregistered then, and after the rename
 it was registered but Cloudflare Email Routing was not configured. The footer's
@@ -431,15 +450,65 @@ claim made anywhere on the site. **Not in this commit, and not by guessing which
 is.** It is blocked on the operator's product decision and the rewrite belongs to the phase
 that has the answer.
 
-**A Formspree plan decision — the thank-you redirect is a paid feature.** The account is on
-the free tier, where `_next` is ignored: a submitter is sent to Formspree's own thanks page
-instead of ours. Measured in Phase 6, not assumed — two identical POSTs both 302'd to
-`https://formspree.io/thanks`. Everything else on the free tier works, including delivery
-and `_subject`, so this costs polish rather than enquiries. `/aitah` and `/en/thank-you` are
-built and correct; upgrading the plan is the only remaining step. Prefer keeping `_next`
-over the dashboard's redirect setting, which is one URL per form and would send Estonian and
-English visitors to the same page. **Decide before launch:** upgrade, or accept that the
-visitor's last impression of the enquiry is a Formspree-branded page.
+**A Formspree plan decision — MOSTLY SOLVED ON 26 JULY 2026, and what is left is a much
+smaller question.** The account is on the free tier, where `_next` is ignored: measured in
+Phase 6, two identical POSTs both 302'd to `https://formspree.io/thanks`.
+
+**What was done instead of upgrading.** Formspree accepts AJAX on the free tier — only the
+server-side redirect is gated. `QuoteForm.astro` now intercepts the submit, POSTs with
+`fetch`, and navigates to `/aitah` or `/en/thank-you` itself, reading the target out of the
+same `_next` field. Twenty-three inline lines, no dependency, and the native POST is
+untouched beneath it. **So every visitor with JavaScript already gets our thank-you page, in their own
+language.** This was the second named client-JS exception; ARCHITECTURE section 2.
+
+**What is left: do we care about the no-JS minority.** A visitor with JavaScript disabled
+still lands on Formspree's page — which is what every visitor did before, so nothing
+regressed, and the enquiry arrives either way. That is the entire remaining value of the
+upgrade, against a paid plan. **Decide before launch,** but decide it as that question and
+not as the old one: it is no longer "our page or a Formspree-branded page", it is "our page
+for everyone, or our page for all but the no-JS minority". Keep `_next` in the form either
+way — it costs nothing, the script depends on it, and it starts working server-side the day
+the plan is upgraded. Do not swap it for the dashboard's redirect setting, which is one URL
+per form and would send Estonian and English visitors to the same page.
+
+**FORMSHIELD ACCEPTS A SUBMISSION WITH A 200 AND THEN DROPS IT. A GREEN WIRE RESPONSE IS
+NOT EVIDENCE OF DELIVERY, AND THIS IS THE ONE THAT WILL WASTE A SESSION.** Observed on
+26 July 2026 while testing the AJAX submit: six submissions from `localhost`, every one
+accepted — `{"next":"/thanks","ok":true}` with HTTP 200 on the AJAX path, HTTP 302 to
+`/thanks` on the native path — and **not one of the six produced an email**, checked
+across inbox, spam and trash for thirty-five minutes. A submission from the live site the
+same evening, same recipient and same routing, did arrive. Formspree's spam filtering
+silently discarding localhost test traffic is the working hypothesis, to be confirmed in
+their dashboard, which shows submissions and their spam classification.
+
+**What this costs a future session: the obvious test of the contact form is not a test of
+the contact form.** Submitting from `localhost` or a preview build and getting a 200 tells
+you the request was well formed and the endpoint is right. It tells you *nothing* about
+whether the enquiry was delivered — which is the only thing SPEC section 6 actually gates
+on. **Test delivery from the deployed site, and confirm in the inbox rather than in the
+network panel.** Launch checklist step 5 already says to send one real enquiry through the
+deployed form; this is why it says *deployed*.
+
+**This is the fourth instance of one pattern, and it is worth naming as a pattern rather
+than as four unrelated notes: a setting outside this repository that silently falsifies
+something the repository believes.** The other three, all already recorded:
+
+1. **Formspree reCAPTCHA** (their dashboard) — would break the native no-JavaScript POST.
+   ARCHITECTURE section 6.
+2. **Formspree domain restriction** (their dashboard) — rejects submissions whose `Referer`
+   does not match, including `localhost` and every preview deploy. ARCHITECTURE section 6.
+3. **Cloudflare Web Analytics injection** (their dashboard) — would make `/privaatsus`'s
+   no-analytics, no-cookies claims false with no commit and no build. ARCHITECTURE section 1,
+   duplicated at the top of `src/i18n/privacy.ts`, and launch checklist step 6.
+4. **Formshield dropping accepted submissions** — this entry.
+
+None of the four is detectable from inside the repository, and no gate in `npm run verify`
+can ever catch one. What they have in common is that the repository's own evidence looks
+green while the thing it describes is false — which is the same shape as the twenty pages
+with no hreflang and the thirty-seven HTML comments in production, except that those two
+were fixable with a check and these are not. **The only defence is to distrust a green
+signal that came from anywhere other than the deployed site**, and to check the dashboards
+when something that should work does not.
 
 **A data retention period for form submissions — NO LONGER BLOCKING, and here is what
 was done instead.** Phase 9 stated a **criterion** rather than a number, on both

@@ -2,13 +2,30 @@
 /**
  * QuoteForm — the written enquiry SPEC section 1 says is this site's whole job.
  *
- * A NATIVE `<form action method="POST">`, POSTING STRAIGHT TO FORMSPREE. No
- * `@formspree/ajax`, no `@formspree/react`, no fetch handler, no validation
- * script — not one byte of client JavaScript in this file. Both Formspree
- * client libraries are dependencies and the list in ARCHITECTURE section 1 is
- * closed; more to the point, a form that works with JavaScript disabled is why
- * this stack was chosen. On success the browser follows Formspree's redirect to
- * `_next`. That is the entire mechanism.
+ * A NATIVE `<form action method="POST">`, POSTING STRAIGHT TO FORMSPREE. That
+ * is the baseline and it is what runs when the script at the foot of this file
+ * does not. No `@formspree/ajax`, no `@formspree/react`, no validation script:
+ * both Formspree client libraries are dependencies, the list in ARCHITECTURE
+ * section 1 is closed, and the AJAX submit below costs 23 lines without
+ * either of them.
+ *
+ * THE ONE PIECE OF CLIENT JAVASCRIPT ON THIS SITE LIVES AT THE FOOT OF THIS
+ * FILE, AND IT IS A DELIBERATE, NAMED EXCEPTION — ARCHITECTURE section 2 and
+ * CLAUDE.md both name it. Do not read it as a violation of the zero-JS rule and
+ * delete it. Why it exists: Formspree's `_next` redirect is a PAID feature, so
+ * on the free tier a visitor who submits lands on Formspree's own English,
+ * Formspree-branded thanks page — the last screen a customer sees at the moment
+ * they have committed — while `/aitah` and `/en/thank-you` sit built and
+ * correct. Formspree DOES accept AJAX on the free tier; only the server-side
+ * redirect is gated. So the script POSTs with `fetch` and navigates to our own
+ * page itself.
+ *
+ * IT IS PROGRESSIVE ENHANCEMENT, NOT A DEPENDENCY. With JavaScript disabled
+ * there is no listener, nothing calls `preventDefault()`, and the browser
+ * performs exactly the native POST it performed before the script existed —
+ * landing on Formspree's page, which is what happens today. The enquiry arrives
+ * either way. Degrading to TODAY'S BEHAVIOUR rather than to broken is the whole
+ * basis on which the exception was taken.
  *
  * VALIDATION IS THE BROWSER'S. `required`, `type="email"`, `type="tel"`,
  * `inputmode`, `autocomplete`. No custom messages, no scripted checks, no
@@ -24,10 +41,17 @@
  * table run.
  *
  * SPAM IS `_gotcha` AND NOTHING ELSE. No CAPTCHA, no third-party script, no
- * challenge — every one of those is client JavaScript and most are a
- * third-party request. The honeypot is hidden from people AND from screen
- * readers: off-screen alone would still be tabbable and announced, so it also
- * carries `tabindex="-1"` and `aria-hidden="true"`.
+ * challenge. **The script below does not reopen this.** Its argument was never
+ * "we ship no JavaScript" — it is that a challenge is a third-party dependency
+ * and a third-party request, and that it BREAKS THE NO-JS BASELINE: a visitor
+ * without JavaScript can complete this form today and could not complete a
+ * CAPTCHA. The honeypot survives with the script exactly as it did without it,
+ * because `new FormData(form)` carries every named control — `_gotcha`
+ * included, confirmed on the wire rather than assumed.
+ *
+ * The honeypot is hidden from people AND from screen readers: off-screen alone
+ * would still be tabbable and announced, so it also carries `tabindex="-1"` and
+ * `aria-hidden="true"`.
  */
 import { formspreeAction } from '../config/formspree'
 import { site } from '../config/site'
@@ -51,19 +75,25 @@ const services = await servicesFor(locale)
  * Formspree needs an ABSOLUTE url in `_next` — a relative path is rejected.
  * Built from `site.domain` and the route map, never typed.
  *
- * `_next` IS CURRENTLY IGNORED BY FORMSPREE, AND THE REASON IS THE PLAN, NOT
- * THIS CODE. Measured in Phase 6: two identical POSTs were both accepted (302)
- * and both redirected to `https://formspree.io/thanks` rather than here. The
- * custom "Thank You" redirect is a paid feature — Formspree's own docs list it
- * as "Available on: Personal, Professional, Business plans" — and this account
- * is on the free tier. Everything else works: the submission arrives, all seven
+ * `_next` IS STILL IGNORED BY FORMSPREE, AND THE REASON IS THE PLAN, NOT THIS
+ * CODE. Measured in Phase 6: two identical POSTs were both accepted (302) and
+ * both redirected to `https://formspree.io/thanks` rather than here. The custom
+ * "Thank You" redirect is a paid feature — Formspree's own docs list it as
+ * "Available on: Personal, Professional, Business plans" — and this account is
+ * on the free tier. Everything else works: the submission arrives, all seven
  * fields map correctly, `_subject` is honoured.
  *
- * So the visitor currently lands on Formspree's page instead of ours. The field
- * stays because it is correct and costs nothing, and it starts working the day
- * the plan is upgraded. The target is not the problem: `lendavhollandlane.ee`
- * resolves and serves the site as of 26 July 2026, so this URL loads. No
- * redirect to us is being issued at all, which is the plan and not the address.
+ * WHAT CHANGED IS THAT THE PAGE NOW READS THIS FIELD AND NAVIGATES ITSELF. The
+ * script at the foot of this file takes the value out of the rendered `_next`
+ * input rather than from a second copy of `nextUrl`, which is what keeps this
+ * one expression the single source for both mechanisms. A visitor with
+ * JavaScript therefore reaches our thank-you page; only a visitor without it
+ * still lands on Formspree's.
+ *
+ * THE FIELD STAYS REGARDLESS. It is correct, it costs nothing, and it starts
+ * working server-side the day the plan is upgraded — at which point the no-JS
+ * visitor gets our page too. The target is not the problem: `lendavhollandlane.ee`
+ * resolves and serves the site as of 26 July 2026, so this URL loads.
  *
  * If the paid plan is taken via the DASHBOARD redirect setting rather than
  * `_next`, note that setting is one URL per form and cannot vary by locale —
@@ -274,3 +304,47 @@ const selected = defaultService ?? services[0]?.data.slug
     }
   }
 </style>
+
+{/* The named exception. Reasoning is in the header comment above, which Astro
+    discards rather than shipping; only what is needed to read the code is kept
+    inline. `is:inline` leaves the script exactly here — Astro neither bundles
+    nor hoists it, so it costs no extra request.
+
+    ONE `QuoteForm` PER PAGE TODAY (`kontakt.astro`, `en/contact.astro`). A
+    second on one page would render a second copy of this script and bind both
+    forms twice; add a guard then rather than carrying a dead one now. */}
+<script is:inline>
+  for (const form of document.querySelectorAll('form.quote')) {
+    const next = form.querySelector('input[name="_next"]')?.value
+    const button = form.querySelector('button[type="submit"]')
+    // No `_next` to navigate to means nothing to enhance: leave the native POST alone.
+    if (!next) continue
+    form.addEventListener('submit', async (event) => {
+      // preventDefault FIRST, then bail. Returning before it would hand the
+      // event back to the browser and fire a second, native POST mid-flight.
+      event.preventDefault()
+      if (button?.disabled) return
+      if (button) button.disabled = true
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          // Without this Formspree answers with the HTML redirect, not JSON.
+          headers: { Accept: 'application/json' },
+        })
+        if (!res.ok) throw new Error('formspree ' + res.status)
+        // Same-origin path, so a preview build stays on the preview build.
+        location.assign(new URL(next, location.origin).pathname)
+      } catch (error) {
+        // A throw means the request never reached Formspree; a non-ok means
+        // Formspree refused it. Neither leaves a submission on their server, so
+        // re-posting natively cannot duplicate the enquiry. The exception is a
+        // response lost AFTER they accepted it, which would — and that is
+        // accepted: a duplicate enquiry is survivable, a lost one is not.
+        console.error('quote form: AJAX submit failed, falling back to native', error)
+        if (button) button.disabled = false
+        form.submit()
+      }
+    })
+  }
+</script>

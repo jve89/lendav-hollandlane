@@ -19,7 +19,9 @@ Read this first, every session. These rules override convenience, speed and your
 - **No new dependencies without asking.** Not a package, not a font, not a CDN script, not an icon library. If you think one is needed, stop and make the case. The dependency list in `ARCHITECTURE.md` is closed until explicitly reopened.
 - **No Tailwind, no CSS framework, no component library.** Plain CSS with the tokens in `src/styles/tokens.css`.
 - **Do not restructure files that are not part of the current phase**, however tempting.
-- Keep client-side JavaScript at zero unless a phase explicitly calls for it. The mobile nav toggle is the only expected exception.
+- Keep client-side JavaScript at zero unless a phase explicitly calls for it. **There are exactly two named exceptions, and the list is closed the same way the dependency list is.** Anything not on it needs approval; anything on it must not be deleted as a violation:
+  1. **The mobile nav toggle** (and FAQ disclosure). Both are a native `<details>`, so this exception has never actually been taken — it costs zero bytes. It stays named because the toggle is where a session would reach for a script first.
+  2. **The quote form's Formspree submit** — one `is:inline` script in `QuoteForm.astro`, 23 lines of code. **This is the only client JavaScript the site ships.** It exists because Formspree's `_next` redirect is a paid feature, so without it a visitor who submits lands on Formspree's own English, Formspree-branded page at the moment they have committed. It is **progressive enhancement, not a dependency**: with JavaScript disabled there is no listener and the browser performs the same native POST it always did, landing on Formspree's page. It degrades to yesterday's behaviour rather than to broken, and the enquiry arrives either way — that is the whole basis on which the exception was taken, and it is the test any third exception must pass. Reasoning in ARCHITECTURE section 2; contract in section 6.
 - TypeScript strict. No `any`. A content schema violation must fail the build, not degrade silently.
 - Semantic HTML. One `<h1>` per page. Headings in order. Every image has meaningful alt text.
 

@@ -13,12 +13,18 @@
  * because those are verifiable conduct. "We reply within X" is not a promise
  * this business has made. See `i18n/contact.ts`.
  *
- * NOBODY REACHES THIS PAGE YET, and there is exactly ONE reason: the custom
- * `_next` redirect is a Formspree paid feature, so on the free tier a submitter
- * lands on Formspree's own thanks page instead. Measured in Phase 6, not
- * assumed. It is a plan limit rather than a defect here — the page is built and
- * correct, and upgrading the plan is the only step needed. See the note in
- * `QuoteForm.astro` and the blocked list in PLAN.
+ * PEOPLE REACH THIS PAGE. That was not true until the quote form was given its
+ * AJAX submit: the custom `_next` redirect is a Formspree paid feature, so on
+ * the free tier a submitter landed on Formspree's own thanks page instead —
+ * measured in Phase 6, not assumed. `QuoteForm.astro` now intercepts the submit,
+ * POSTs with `fetch`, and navigates here itself, reading the target out of the
+ * same `_next` field.
+ *
+ * WHO STILL DOES NOT GET HERE: a visitor with JavaScript disabled, whose native
+ * POST is still redirected by Formspree to its own page. That is the no-JS
+ * minority and it is all that is left of the plan-upgrade question — see the
+ * blocked list in PLAN. Do not delete this page on the belief that it is
+ * unreachable; it is the ordinary destination now.
  *
  * `lendavhollandlane.ee` resolves and serves the site as of 26 July 2026, so
  * the URL this page sits at is a working one. That used to be a second blocker

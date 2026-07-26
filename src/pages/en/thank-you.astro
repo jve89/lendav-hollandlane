@@ -1,9 +1,11 @@
 ---
 /**
- * Where Formspree redirects after a successful POST, English. Identical
- * composition to `aitah.astro`, different locale — see the notes there,
- * including why it is `noindex`, why nothing on it promises a timeframe, and
- * why nobody reaches it yet (Formspree's `_next` redirect is a paid feature).
+ * Where a successful submission lands, English. Identical composition to
+ * `aitah.astro`, different locale — see the notes there, including why it is
+ * `noindex`, why nothing on it promises a timeframe, and how visitors reach it:
+ * `QuoteForm.astro` POSTs by `fetch` and navigates here itself, because
+ * Formspree's own `_next` redirect is a paid feature and is still ignored. A
+ * visitor with JavaScript disabled still lands on Formspree's page instead.
  */
 import PageLayout from '../../layouts/PageLayout.astro'
 import { site } from '../../config/site'
