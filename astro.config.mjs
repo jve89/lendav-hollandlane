@@ -3,7 +3,7 @@ import { defineConfig, envField } from 'astro/config'
 import sitemap from '@astrojs/sitemap'
 import { satteri } from '@astrojs/markdown-satteri'
 
-/** `https://lennupesu.ee/teenused/` -> `https://lennupesu.ee/teenused`. The root keeps its slash. */
+/** `https://lendavhollandlane.ee/teenused/` -> `.../teenused`. The root keeps its slash. */
 const stripTrailingSlash = (url) =>
   url.endsWith('/') && new URL(url).pathname !== '/' ? url.slice(0, -1) : url
 
@@ -129,7 +129,7 @@ async function alternatesFromBuiltPage(url) {
  * decides what to do about it.
  */
 const stripHtmlComments = {
-  name: 'lennupesu-strip-html-comments',
+  name: 'lendav-hollandlane-strip-html-comments',
   comment: (node, ctx) => ctx.removeNode(node),
   raw: (node, ctx) => {
     if (node.value.replace(/<!--[\s\S]*?-->/g, '').trim() === '') ctx.removeNode(node)
@@ -137,7 +137,19 @@ const stripHtmlComments = {
 }
 
 export default defineConfig({
-  site: 'https://lennupesu.ee',
+  /**
+   * SECOND COPY OF `site.domain`. It must equal the value in
+   * `src/config/site.ts`, which is what every canonical, hreflang and `_next`
+   * URL is built from — this one only names the site to `@astrojs/sitemap`.
+   *
+   * This config cannot import that file today: whether Astro's config loader
+   * transforms a `.ts` import from an `.mjs` config is unverified. Check 6 in
+   * `scripts/check-html.mjs` compares the sitemap's URLs against each page's
+   * own canonical, so a drift between these two fails the build rather than
+   * shipping. `public/robots.txt` holds a THIRD copy that nothing guards.
+   * PLAN Phase 11.
+   */
+  site: 'https://lendavhollandlane.ee',
   output: 'static',
   trailingSlash: 'ignore',
   // Stated, not inherited. Astro 7 changed the default from true to 'jsx',

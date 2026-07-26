@@ -7,9 +7,25 @@
  *
  * See CLAUDE.md, "The single-source rule".
  */
+/**
+ * THE BUSINESS NAME IS SETTLED: Lendav Hollandlane.
+ *
+ * Both words are always capitalised. Ordinary Estonian prose would lowercase
+ * the idiom, but this is a proper business name and Estonian convention
+ * capitalises those — Vana Tallinn, Must Puudel.
+ *
+ * `brand` and `brandText` hold the SAME STRING. The wordmark/running-text split
+ * is retired; both keys stay because the wordmark may be styled differently
+ * later and keeping them costs nothing. Neither is written anywhere else in
+ * `src/` or `public/` — see CLAUDE.md, "The brand name".
+ *
+ * IT IS A TRADING NAME, NOT THE LEGAL NAME. `legalName` below is unchanged and
+ * stays AIF OÜ. That the two are separate fields is exactly why this rename
+ * touched four values instead of the whole repository.
+ */
 export const site = {
-  brand: 'LennuPesu',              // wordmark only; running text uses "Lennupesu"
-  brandText: 'Lennupesu',
+  brand: 'Lendav Hollandlane',
+  brandText: 'Lendav Hollandlane',
   legalName: 'AIF OÜ',
 
   /**
@@ -29,14 +45,32 @@ export const site = {
   phoneHref: 'tel:+37254004610',
 
   /**
-   * unconfirmed: lennupesu.ee is not registered and the business name is not
-   * final, so this address does not yet receive mail. Do not print it as a
-   * working contact route on any page, and do not invent a different one —
-   * replace it only when the domain exists. PLAN, blocked on the operator.
+   * unconfirmed: the domain is registered and owned, but Cloudflare Email
+   * Routing is not configured — this address receives nothing today and has
+   * never been tested. Do not print it as a working contact route on any page,
+   * and do not invent a different one. The suppressions in `Footer.astro` and
+   * the `LocalBusiness` JSON-LD in `BaseLayout.astro` both point here and both
+   * come back in one line once a test message arrives. PLAN, blocked on the
+   * operator.
+   *
+   * (The reason changed with the rename. It used to be that the domain was
+   * unregistered and the name was not final; both are now settled. The rule is
+   * unchanged — an address that receives nothing is not published.)
    */
-  email: 'info@lennupesu.ee',
+  email: 'info@lendavhollandlane.ee',
 
-  domain: 'https://lennupesu.ee',
+  /**
+   * The address the site WILL live at. `lendavhollandlane.ee` is registered and
+   * owned; DNS is mid-migration to Cloudflare and does not resolve yet. This
+   * has always been the future address rather than the current one, so nothing
+   * here waits on the migration.
+   *
+   * NOT SINGLE-SOURCED, and that is a known gap rather than an oversight:
+   * `astro.config.mjs` and `public/robots.txt` each hold their own copy and
+   * neither can import this file today. Check 6 in `scripts/check-html.mjs`
+   * catches the first if it drifts; NOTHING catches the second. PLAN Phase 11.
+   */
+  domain: 'https://lendavhollandlane.ee',
 
   /** Estonian standard rate. Every displayed price is EXCLUDING this. */
   vatRate: 0.24,

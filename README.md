@@ -1,7 +1,14 @@
-# Lennupesu
+# Lendav Hollandlane
 
-Marketing website for Lennupesu — drone roof, facade and solar panel cleaning in Estonia.
-Consumer brand of AIF OÜ.
+Marketing website for Lendav Hollandlane — drone roof, facade and solar panel cleaning
+in Estonia. Trading name of AIF OÜ.
+
+**The repository, the git remote, the local folder and `package.json`'s `name` field
+all keep their original name, which predates the rename.** They name the repository,
+not the business; none of them reaches the build or is seen by a visitor, and renaming
+them would risk a broken remote for nothing. The rule is: anything naming the repo
+stays, anything naming the business changes. **The business name lives in
+`src/config/site.ts` and nowhere else** — see CLAUDE.md, "The brand name".
 
 ## Read these before doing anything
 
@@ -59,9 +66,14 @@ Phases 7 and 8 are post-launch.
 Equipment and the first flight, which is a controlled job on family property and the source
 of all the footage · the cleaning product decision, and with it the biocide sentence that
 five service pages and the FAQ currently promise · the water and power answer ·
-the `needs-operator-review` claims · a data retention period for form submissions ·
-the final business name · `lennupesu.ee` registered and DNS pointed · a working email ·
-Google Business Profile verified · native-speaker Estonian review of all copy.
+the `needs-operator-review` claims · a working email, blocked on Cloudflare Email
+Routing not being configured · Google Business Profile verified · native-speaker
+Estonian review of all copy.
+
+**Settled on 26 July 2026 and no longer blocking:** the business name (Lendav
+Hollandlane) and the domain (`lendavhollandlane.ee`, registered and owned; its DNS
+migration to Cloudflare is a launch-checklist step, not a blocker). A data retention
+period came off in Phase 9, replaced by a criterion.
 
 PLAN's "blocked on the operator" section is the authoritative version of this list, with the
 reasoning and the dependencies between items. Keep the two in step or delete this one.

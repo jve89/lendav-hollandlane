@@ -1,7 +1,11 @@
-# ARCHITECTURE.md — LennuPesu website
+# ARCHITECTURE.md — Lendav Hollandlane website
 
-**Version 1.2 · 26 July 2026** — Phase 9 settled hosting and analytics (section 1),
-the sitemap's hreflang and the OG/icon set (section 7), and check 6 (section 8).
+**Version 1.3 · 26 July 2026** — the business name was settled as **Lendav
+Hollandlane** and the domain became `lendavhollandlane.ee`. Section 5's `site.ts`
+example, section 7's icon note and section 9's DNS section moved with it; no
+architectural decision changed. Version 1.2 settled hosting and analytics
+(section 1), the sitemap's hreflang and the OG/icon set (section 7), and check 6
+(section 8).
 
 ---
 
@@ -144,8 +148,15 @@ Pairing across locales therefore needs a key the entries share. For `services` t
 
 ## 4. File tree
 
+The root is written `<repo root>/` rather than named. The repository, the git
+remote, the local folder and `package.json`'s `name` field all keep their
+original name, which predates the rename — they name the repository, not the
+business, and renaming them would buy nothing and risk a broken remote. None of
+them reaches the build. Writing the root neutrally here is what keeps a copy of
+either name out of a diagram that does not need one.
+
 ```
-lennupesu/
+<repo root>/
 ├── SPEC.md
 ├── ARCHITECTURE.md
 ├── CLAUDE.md
@@ -265,16 +276,16 @@ in section 6.
 
 ```ts
 export const site = {
-  brand: 'LennuPesu',                 // wordmark only; running text uses brandText
-  brandText: 'Lennupesu',
-  legalName: 'AIF OÜ',
+  brand: 'Lendav Hollandlane',        // same string as brandText; the split is retired
+  brandText: 'Lendav Hollandlane',
+  legalName: 'AIF OÜ',                // the LEGAL name; the brand above is a trading name
   operator: 'Johan van Erkel',        // sole operator; holds the remote pilot competency
   regCode: '16654436',
   vatNumber: 'EE102744992',
   phone: '+372 5400 4610',
   phoneHref: 'tel:+37254004610',
-  email: 'info@lennupesu.ee',         // unconfirmed: domain not registered yet
-  domain: 'https://lennupesu.ee',
+  email: 'info@lendavhollandlane.ee', // unconfirmed: mail forwarding not configured
+  domain: 'https://lendavhollandlane.ee',
   vatRate: 0.24,
   prices: {
     roofFrom: 3.0,                    // EUR per m², EXCLUDING VAT
@@ -301,7 +312,9 @@ this project three sessions. Keep it in step or delete it; do not let it rot.
 
 Nothing else in the codebase hardcodes a phone number, an email address or a price. A grep for `+372` outside this file is a bug.
 
-**The brand name is on the same footing**, and for the same reason: it is not settled. `brand` is the wordmark, `brandText` is the running-text form, and neither string is written anywhere else in `src/`. The ` | Lennupesu` suffix on a page title is composed in `BaseLayout` — see the contract in section 6 — so an authored `meta.*.title` or `seoTitle` carries only the page-specific part, and `seoTitle` fails the build if it contains a pipe. A grep for `Lennupesu` outside this file is a bug. See CLAUDE.md, "The brand name".
+**The brand name is on the same footing**, and the rule paid for itself on 26 July 2026: the business was renamed to `Lendav Hollandlane` by editing two lines here. `brand` and `brandText` now hold the same string — the wordmark/running-text split is retired, though both keys stay — and neither is written anywhere else in `src/` or `public/`. `legalName` is separate and unchanged, because the brand is a trading name of AIF OÜ. The ` | <brand>` suffix on a page title is composed in `BaseLayout` — see the contract in section 6 — so an authored `meta.*.title` or `seoTitle` carries only the page-specific part, and `seoTitle` fails the build if it contains a pipe. `grep -rni "Lendav Hollandlane" src/ public/ --exclude=site.ts` returning anything is a bug. See CLAUDE.md, "The brand name".
+
+**`domain` is the one value on this list that is NOT single-sourced.** `astro.config.mjs` and `public/robots.txt` each hold their own copy, and neither can import this file today. Check 6 fails the build if the config's copy drifts from the canonical URLs built here; **nothing at all guards `robots.txt`**, whose `Sitemap:` line would point at a dead domain silently. Tracked as Phase 11 in PLAN.
 
 ### Content collections (`src/content.config.ts`)
 
@@ -317,7 +330,7 @@ version of this document said rehype plugins merely needed that package added, w
 was true of Astro 6 and is now stale in the direction that wastes a session.
 
 The supported extension point is `markdown.processor: satteri({ hastPlugins, mdastPlugins, features })`.
-`astro.config.mjs` uses it for exactly one plugin, `lennupesu-strip-html-comments`,
+`astro.config.mjs` uses it for exactly one plugin, `lendav-hollandlane-strip-html-comments`,
 which removes HTML comments from rendered markdown so the `<!-- unconfirmed: ... -->`
 and `<!-- needs-native-review -->` markers required by CLAUDE.md stay in the repo
 instead of shipping. Setting `processor` explicitly costs nothing: Astro appends its
@@ -512,8 +525,19 @@ hand:**
 | `public/favicon-32.png`, `public/apple-touch-icon.png`, `public/images/og/default.png` | rebuilt from the SVGs above |
 
 The mark is the droplet that was already in `public/favicon.svg`; nothing was
-invented for it, and it is not wordmark-derived, so the unsettled business name does
-not reach any of these. **Rasterise with Chrome, not with ImageMagick alone** — IM's
+invented for it, and it is not wordmark-derived, so the business name does not
+reach any of these.
+
+**That sentence was false until the rename, and this is how.** `public/favicon.svg`
+carried `role="img"` with the old business name in its `aria-label` — the mark was
+not wordmark-derived, but
+the file still held a copy of the name, and it sat outside the `src/`-only brand
+guard where no session could see it. The `aria-label` and its `role` were removed
+rather than translated: the SVG is referenced only from `<link rel="icon">`, where an
+accessible name is never surfaced, so nothing is lost, and leaving the name in would
+have made the guard fire on its own file. The guard in CLAUDE.md now covers `public/`.
+
+**Rasterise with Chrome, not with ImageMagick alone** — IM's
 built-in SVG renderer ignored the radial gradient and faceted the curves. The exact
 commands are in the header comment of each SVG source.
 
@@ -670,11 +694,21 @@ is the Phase 6 guard working as designed, not a misconfiguration — see section
 first deploy that errors on a missing environment variable is the intended outcome;
 the alternative is a contact page that looks right and drops every enquiry.
 
-### DNS, and why it is blocked
+### DNS — registered, mid-migration
 
-`lennupesu.ee` apex plus `www` redirecting to apex; `lennupesu.com` redirects to
-`.ee`. **None of it can be done yet — the domain is not registered**, which is in
-turn blocked on the business name being settled. See PLAN's blocked list.
+**`lendavhollandlane.ee` is registered and owned.** The name and the domain both
+came off PLAN's blocked list on 26 July 2026. What remains is the migration:
+**DNS is being moved to Cloudflare and does not resolve yet**, so the site has no
+working address today and neither does its email.
+
+`lendavhollandlane.ee` apex, plus `www` redirecting to apex.
+
+**A `.com` redirect is NOT confirmed.** This section previously specified a `.com`
+→ `.ee` redirect under the old name, and no one has said whether a `.com` under
+the new name is registered. Do not assume it is and do not buy one on the strength of this
+line: if `lendavhollandlane.com` is or becomes ours, it redirects to the `.ee`
+exactly as the old one would have; if it is not, there is nothing to configure
+and the launch checklist item is a no-op.
 
 **`.ee` is not a TLD Cloudflare Registrar sells.** The domain is registered at an
 Estonian registrar and its **nameservers are pointed at Cloudflare**. Whoever does
@@ -682,6 +716,12 @@ this work should not go looking for `.ee` in the Cloudflare dashboard and conclu
 something is wrong. Delegating the nameservers is also what makes apex CNAME
 flattening available, which is what lets the apex point at a `pages.dev` project at
 all.
+
+**Email routing rides on the same migration.** `site.email` is
+`info@lendavhollandlane.ee` and receives nothing: Cloudflare Email Routing is not
+configured. That is why `Footer.astro`'s email row and the `email` key in the
+sitewide `LocalBusiness` JSON-LD are both still suppressed — see the comments in
+both files, which now cite mail forwarding rather than an unregistered domain.
 
 **Both redirects are dashboard and DNS work, not repository files.** A `_redirects`
 file in `public/` matches on path, not on host, so it cannot express either of

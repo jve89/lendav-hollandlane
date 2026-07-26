@@ -1,12 +1,15 @@
-# SPEC.md — LennuPesu website
+# SPEC.md — Lendav Hollandlane website
 
-**Version 1.1 · 25 July 2026**
+**Version 1.2 · 26 July 2026** — the business name was settled as **Lendav
+Hollandlane** and the site's domain became `lendavhollandlane.ee`. Nothing else
+in this document moved: the audience, the scope, the content constraints and the
+hero decision are unchanged. The legal name behind the brand is still AIF OÜ.
 
 ---
 
 ## 1. What this is
 
-The marketing website for **LennuPesu**, the consumer-facing brand of AIF OÜ: drone-based roof, facade and solar panel cleaning in Estonia.
+The marketing website for **Lendav Hollandlane**, the consumer-facing trading name of AIF OÜ: drone-based roof, facade and solar panel cleaning in Estonia.
 
 Its single job is to turn a stranger into a written enquiry with an address and an approximate area. It is not a shop, not a booking system, and not a portfolio for its own sake.
 

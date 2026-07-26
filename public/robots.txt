@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://lennupesu.ee/sitemap-index.xml
+Sitemap: https://lendavhollandlane.ee/sitemap-index.xml

@@ -8,10 +8,10 @@
  * KÜ small print, not in a footer a homeowner reads.
  *
  * `regCode`, `vatNumber` and `phone` are real. `email` is not, and since Phase 6
- * it is NOT PRINTED HERE — the domain is not registered, so the address receives
- * nothing, and a footer is on every page. Do not restore the row until
- * `site.email` is a working address; see the `unconfirmed:` comment on it in
- * site.ts. The written contact route is the quote form on `/kontakt`.
+ * it is NOT PRINTED HERE — the address receives nothing, and a footer is on
+ * every page. Do not restore the row until `site.email` is a working address;
+ * see the `unconfirmed:` comment on it in site.ts. The written contact route is
+ * the quote form on `/kontakt`.
  */
 import { site } from '../config/site'
 import { navLabel, path, useTranslations, monthRange, vatNote } from '../i18n/utils'
@@ -53,11 +53,12 @@ const year = new Date().getFullYear()
         <dl class="site-footer__list">
           <dt class="visually-hidden">{t('cta.call')}</dt>
           <dd><a href={site.phoneHref}>{site.phone}</a></dd>
-          {/* NO EMAIL ROW. `site.email` sits on an unregistered domain and
-              receives nothing, and this footer is on every page — it was the
-              largest surviving copy of an address that does not work. The
-              written channel is the quote form; the row comes back in one line
-              the day the domain resolves. See site.ts. Removed in Phase 6. */}
+          {/* NO EMAIL ROW. The domain is registered now, but Cloudflare Email
+              Routing is not configured, so `site.email` still receives nothing
+              — and this footer is on every page, which made it the largest
+              surviving copy of an address that does not work. The written
+              channel is the quote form; the row comes back in one line the day
+              a test message arrives. See site.ts. Removed in Phase 6. */}
           <dt>{t('footer.areaTitle')}</dt>
           <dd>{serviceBase} · {t('footer.areaAll')}</dd>
           <dt>{t('footer.seasonTitle')}</dt>

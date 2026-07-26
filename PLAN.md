@@ -18,6 +18,7 @@ work *after* it.
 | — | **LAUNCH** | |
 | 2 | Phase 7 — regional pages | post-launch |
 | 3 | Phase 8 — blog infrastructure | post-launch |
+| 4 | Phase 11 — single-source the domain | post-launch · splittable |
 
 **Phase 10 is next, and it is blocked on equipment rather than on code** — see the
 blocked list. Then launch. Phases 7 and 8 come after it.
@@ -47,7 +48,7 @@ The thinnest possible end-to-end slice: one route in two locales, rendered from 
 - `src/config/site.ts` with real structure and TODO values
 - `src/i18n/{ui,routes,utils}.ts` with two locales wired
 - `BaseLayout.astro` emitting head, hreflang, JSON-LD
-- `/` and `/en/` rendering "LennuPesu" and a language switch that works
+- `/` and `/en/` rendering the brand from `site.ts` and a language switch that works
 - `scripts/check-html.mjs`
 - Scripts in `package.json`; `.gitignore`; `.env.example`
 
@@ -277,7 +278,11 @@ that the site is not broken — see SPEC section 6. The gate is the list below b
    `PUBLIC_FORMSPREE_ID` set as a build variable. **The build failing on a missing
    `PUBLIC_FORMSPREE_ID` is the guard working, not a misconfiguration** —
    ARCHITECTURE section 9.
-2. DNS and the two redirects (`www` → apex, `.com` → `.ee`) — dashboard work, see
+2. **Finish the DNS migration** — `lendavhollandlane.ee` is registered and owned,
+   but its nameservers are still moving to Cloudflare and it does not resolve.
+   Then `www` → apex. A `.com` → `.ee` redirect is listed only *if* a `.com`
+   under the new name turns out to be ours; nobody has said it is, so do not
+   assume it and do not buy one on the strength of this line. Dashboard work —
    ARCHITECTURE section 9.
 3. **Re-run Lighthouse against the deployed site.** The Phase 9 pass was 100 across
    the board but it was localhost, with no CDN, no TLS handshake and no real
@@ -311,6 +316,47 @@ First posts, when there is time and something real to say, target informational 
 **Verify:** gate passes · empty state renders · adding one draft post appears in dev and is excluded from the production build.
 
 **Commit:** `feat: blog infrastructure`
+
+---
+
+## Phase 11 — single-source the domain *(post-launch · take it in halves)*
+
+**`site.domain` is the one value in `site.ts` that is not actually single-sourced.**
+The rename commit on 26 July 2026 had to hand-edit the same domain in three files,
+which is exactly the sweep the single-source rule exists to prevent. Recorded as work
+rather than as a note, because a note in a session report scrolls away.
+
+**The safe half — `public/robots.txt`, and do this one first.** Convert it to
+`src/pages/robots.txt.ts`, an endpoint returning the same two directives plus a
+`Sitemap:` line built from `site.domain`. A standard, well-trodden Astro pattern; low
+risk.
+
+**This is the copy that nothing guards, which is why it is the urgent one.** Check 6
+in `scripts/check-html.mjs` compares the sitemap's URLs against each page's own
+canonical, so `astro.config.mjs`'s copy drifting from `site.ts` fails the build. But
+**nothing in this repository reads `robots.txt` at all.** A `Sitemap:` line left
+pointing at a dead domain would fail silently and invisibly — no error, no failing
+gate, just a crawler that never finds the sitemap. That is the exact failure class
+this project has already paid for twice: the twenty pages with no hreflang, and the
+thirty-seven HTML comments in production.
+
+**The half that needs investigation — `astro.config.mjs`.** Importing
+`src/config/site.ts` into it would close the last copy. It is plausible, since Astro
+supports `astro.config.ts` at all, but **it is unverified** whether its config loader
+transforms a `.ts` import from an `.mjs` config. Verify that against the installed
+source in `node_modules` before writing anything, exactly as the sitemap and
+`env.schema` questions were verified. If it does not work, say so here and leave the
+copy in place with its comment — a documented second copy that check 6 guards is an
+acceptable outcome, and better than a config that fails to load.
+
+Doing the halves separately is the point: the safe one closes the unguarded gap
+without taking on the risky one.
+
+**Verify:** gate passes · `dist/robots.txt` carries the `Sitemap:` line built from
+`site.domain` · changing `site.domain` alone moves every canonical, every hreflang,
+every sitemap `<loc>`, the `_next` field **and** `robots.txt`.
+
+**Commit:** `refactor: single-source the domain`
 
 ---
 
@@ -348,16 +394,13 @@ claim made anywhere on the site. **Not in this commit, and not by guessing which
 is.** It is blocked on the operator's product decision and the rewrite belongs to the phase
 that has the answer.
 
-**The final business name.** `site.brand` and `site.brandText` are provisional. This is the
-whole reason the name is written in one file and nowhere else in `src/`.
-
-**`lennupesu.ee` registered and DNS pointed.** Blocked in turn on the name being settled.
-**`.ee` is not a TLD Cloudflare Registrar sells** — register at an Estonian registrar and
-point the nameservers at Cloudflare. The `www` → apex and `.com` → `.ee` redirects hang off
-this and are dashboard work, not repository files. ARCHITECTURE section 9.
-
-**A working email address.** Blocked on the domain, which is blocked on the name.
-`site.email` is unconfirmed and `Credentials` deliberately does not print it.
+**A working email address.** `site.email` is `info@lendavhollandlane.ee` and receives
+nothing: **Cloudflare Email Routing is not configured.** That is now the whole of the
+blocker — the name is settled and the domain is registered, so this no longer waits on
+either. `Credentials` deliberately does not print it, `Footer.astro`'s email row is
+suppressed and the `email` key is absent from the sitewide `LocalBusiness` JSON-LD;
+all three come back in one line once a test message actually arrives. Configure the
+routing, send one, and only then restore them.
 
 **A Formspree plan decision — the thank-you redirect is a paid feature.** The account is on
 the free tier, where `_next` is ignored: a submitter is sent to Formspree's own thanks page
@@ -384,10 +427,11 @@ and it claims no certification, no audit and no DPO — but that is not the same
 lawyer having read it. Cheap to fix, and it is the one page on the site with
 consequences outside the repository.
 
-**Google Search Console verification.** Blocked on the domain, like everything else
-in that chain. It is the ranking half of the analytics decision (ARCHITECTURE section
-1), so the site has no answer to "which searches find us" until it is done. Submit
-`/sitemap-index.xml` at the same time.
+**Google Search Console verification.** No longer blocked on the domain being
+registered — it is. It now waits only on the DNS migration to Cloudflare finishing, so
+that `lendavhollandlane.ee` resolves and can be verified. It is the ranking half of the
+analytics decision (ARCHITECTURE section 1), so the site has no answer to "which
+searches find us" until it is done. Submit `/sitemap-index.xml` at the same time.
 
 **Google Business Profile verified.** One of the two discovery channels named in SPEC
 section 2, and the local-discovery half of the same analytics decision.
@@ -398,5 +442,19 @@ signing the copy off, or the copy is rewritten.
 
 The registry code, the VAT number, the legal name and the phone number came off this list
 when they landed in `site.ts`. **The Formspree account came off it in Phase 6**, when the
-form was built against a real endpoint and a test submission arrived in the inbox. The list
-is only worth reading if it is true, so take an item off it the moment it is answered.
+form was built against a real endpoint and a test submission arrived in the inbox. A data
+retention period came off it in Phase 9, replaced by a criterion rather than a number.
+
+**Two more came off on 26 July 2026, in the rename commit:**
+
+- **The final business name.** Settled as **Lendav Hollandlane**, a trading name of
+  AIF OÜ. `site.brand` and `site.brandText` hold it and nothing else does. The legal
+  name did not change.
+- **`lendavhollandlane.ee` registered.** Registered and owned at an Estonian
+  registrar — **`.ee` is not a TLD Cloudflare Registrar sells**, so do not go looking
+  for it in that dashboard. Pointing the nameservers at Cloudflare is in progress and
+  is a launch-checklist step, not a blocker on the operator: the decision is made and
+  the money is spent. ARCHITECTURE section 9.
+
+The list is only worth reading if it is true, so take an item off it the moment it is
+answered.

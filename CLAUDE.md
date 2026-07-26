@@ -39,15 +39,30 @@ nothing.
 
 ## The brand name
 
-**The business name is not settled.** It lives in `src/config/site.ts` as
-`site.brand` (the wordmark, `LennuPesu`) and `site.brandText` (running text,
-`Lennupesu`), and it is written nowhere else in `src/`.
+**The business name is settled: `Lendav Hollandlane`.** It lives in
+`src/config/site.ts` as `site.brand` and `site.brandText`, and it is written
+nowhere else in `src/` or `public/`.
+
+**Both words are always capitalised.** Ordinary Estonian prose would lowercase
+the idiom, but this is a proper business name and Estonian convention
+capitalises those — Vana Tallinn, Must Puudel. There is no lowercase form and no
+`LendavHollandlane` wordmark spelling.
+
+**`brand` and `brandText` now hold the same string.** The wordmark/running-text
+split is retired. Both keys stay because the wordmark may be styled differently
+later and keeping them costs nothing — but neither may be given a different
+value without a reason written down here.
+
+**It is a trading name, not the legal name.** `site.legalName` is `AIF OÜ` and
+did not change with the rename. That the two are separate fields is precisely
+why the rename touched four values instead of the whole repository.
 
 This is the same rule as the one above and it exists for the same reason: the
 name was authored in sixteen places before Phase 4 closed — the `seoTitle` of all
 ten service content files and six `meta.*.title` strings in `ui.ts` — and every
-later phase would have added more. When the name changes, it must change in one
-line.
+later phase would have added more. **The rule was paid off on 26 July 2026**, when
+the business was renamed by editing two lines in `site.ts`. Do not undo it by
+typing the name somewhere convenient.
 
 **The `<title>` brand suffix is composed, not authored.** `BaseLayout` builds
 ` | ${site.brandText}` onto every page title, and every `<title>` on the site
@@ -61,8 +76,22 @@ a pipe in it fails the build.
 prop suppresses the suffix. It does **not** license typing the name into a string;
 the name still comes from `site.brandText`. No page sets it today.
 
-`grep -rn "Lennupesu" src/ --exclude=site.ts` returning anything is a bug. The
-same basename caveat applies.
+`grep -rni "Lendav Hollandlane" src/ public/ --exclude=site.ts` returning
+anything is a bug. The same basename caveat applies.
+
+**`public/` is in that guard because a leak got past it.** `public/favicon.svg`
+carried the old business name in an `aria-label` from Phase 0 to the rename — a
+copy of the name in a file the guard never scanned, invisible to every session
+that ran it. The `aria-label` is gone (the SVG is only ever referenced from
+`<link rel="icon">`, where an accessible name is never surfaced), and the guard
+now covers the directory rather than that one file.
+
+**The guard matches the spaced brand only, deliberately.** The domain form
+`lendavhollandlane` is a different string, and it has two known copies outside
+`site.ts` — `astro.config.mjs` and `public/robots.txt`, neither of which can
+import it today. Folding the unspaced form into this grep would make it fire on
+every run, which is the cry-wolf failure described above. Those copies are
+tracked as PLAN Phase 11 instead.
 
 ## Content rules — these are the important ones
 
@@ -150,7 +179,7 @@ Note that `reference/direction-d.html` predates this rule and still carries `Tra
 
 - **Estonian is the source of truth.** Write Estonian first, then translate to English. Never write English first and translate outward.
 - Estonian copy is written for Estonian homeowners: short sentences, no marketing English, no borrowed idiom. If a phrase would only make sense to someone who thinks in English, rewrite it.
-- The brand is written **Lennupesu** in running text. **LennuPesu** is permitted only in the logo wordmark.
+- The brand is written **Lendav Hollandlane**, both words capitalised, everywhere. Estonian would lowercase the bare idiom; a business name is capitalised, as in Vana Tallinn and Must Puudel. It is never declined in copy — phrase the sentence so the nominative is grammatical, as `site.operator` already requires.
 - Slugs are localised. Never share a slug across locales. The map in `src/i18n/routes.ts` is authoritative.
 - A UI string missing from a locale is a type error, not a fallback.
 - Estonian copy in this repo has been drafted by an AI and must be treated as unverified until a native speaker signs it off. Mark new Estonian copy with `<!-- needs-native-review -->` in the content file.
