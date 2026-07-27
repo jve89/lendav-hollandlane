@@ -1,6 +1,14 @@
 ---
 /**
- * ServiceCard — one card in a services grid, on the paper section.
+ * ServiceCard — one card in a services grid.
+ *
+ * Phase 10 moved that grid off the paper section onto --bg-2, and this card
+ * onto --panel with a --line hairline. The rules below had to move with it
+ * rather than being left for the dead-code commit: they name --paper-muted,
+ * --paper-line, --accent-wash and --accent-on-paper DIRECTLY, not through the
+ * `.section--paper` re-map, so nothing would have re-pointed them. Left alone
+ * they would have rendered a near-white icon chip and 3.1:1 body text on a
+ * near-black card. The tokens they used to name are unreferenced now.
  *
  * Since Phase 4 the data comes from the `services` content collection rather
  * than an array in `i18n/home.ts`, on both the home pages and the services
@@ -95,8 +103,10 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3'
     transition: border-color 0.15s ease;
   }
 
+  /* The hairline is what draws the card at all, so hover lifts that same line
+     to the accent rather than introducing a fill or a shadow. */
   .service:hover {
-    border-color: var(--accent-wash-line);
+    border-color: var(--accent);
   }
 
   @media (min-width: 760px) {
@@ -134,15 +144,18 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3'
     border-radius: inherit;
   }
 
+  /* --pill-fill / --pill-line are the existing chip-on-dark pair, already used
+     by `.pill`. They are translucent white, so the chip sits a step above
+     whatever surface it lands on without a second token per surface. */
   .service__icon {
     display: grid;
     place-items: center;
     inline-size: 40px;
     block-size: 40px;
     border-radius: var(--r-chip);
-    background: var(--accent-wash);
-    border: 1px solid var(--accent-wash-line);
-    color: var(--accent-on-paper);
+    background: var(--pill-fill);
+    border: 1px solid var(--pill-line);
+    color: var(--accent);
     margin-block-end: var(--sp-4);
   }
 
@@ -153,7 +166,7 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3'
 
   .service__body {
     margin-block-start: var(--sp-2);
-    color: var(--paper-muted);
+    color: var(--muted);
     font-size: var(--step-sm);
     /* Pushes the price to the foot of the card, so a short body and a long one
        still line their prices up across the row. */
@@ -163,8 +176,11 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3'
   .service__price {
     margin-block-start: var(--sp-5);
     padding-block-start: var(--sp-4);
-    border-block-start: 1px dashed var(--paper-line);
-    color: var(--accent-on-paper);
+    border-block-start: 1px dashed var(--line);
+    /* --accent-text, not --accent: this is the surface-aware alias every other
+       price on the site reads, and PriceTable and the service pages read it
+       too. Naming --accent here would be the one price that stops tracking. */
+    color: var(--accent-text);
     font-weight: var(--fw-display);
   }
 </style>

@@ -124,9 +124,23 @@ h3 {
   border-block: 1px solid var(--line);
 }
 
-/* The one deliberate inversion in the page. Re-maps the on-dark tokens to
-   their paper equivalents, so anything nested inside inverts without needing
-   a light-mode variant of its own. */
+/* Two raised bands in a row share one hairline instead of stacking two. This
+   could not arise before Phase 10's palette change: the paper services section
+   always sat between the trust strip and the evidence band, so no two raised
+   sections were ever siblings. Now all three are, on both home pages. */
+.section--raised + .section--raised {
+  border-block-start: 0;
+}
+
+/* UNUSED as of Phase 10's palette change — no element carries this class any
+   more, and it is kept for one commit only so the change reverts cleanly.
+   The next commit deletes it together with the --paper-* tokens it reads.
+   Do not reach for it: the services sections it used to invert are now
+   .section--raised, and a light surface anywhere is a fresh decision.
+
+   What it did: the one deliberate inversion in the page. Re-mapped the on-dark
+   tokens to their paper equivalents, so anything nested inside inverted
+   without needing a light-mode variant of its own. */
 .section--paper {
   background: var(--paper);
   color: var(--paper-ink);
@@ -139,7 +153,9 @@ h3 {
   --accent-text: var(--accent-on-paper);
 }
 
-/* Accent as *text* differs by surface: cyan on dark, deep teal on paper. */
+/* Accent as *text*. One surface family since Phase 10, so this resolves to
+   --accent everywhere; the indirection stays because it is what components
+   already reference and because a second surface would need it again. */
 :root {
   --accent-text: var(--accent);
 }
@@ -282,10 +298,15 @@ h3 {
   border-radius: var(--r-pill);
 }
 
-/* ---------- card, on paper ---------- */
+/* ---------- card ----------
+   Elevated surface, one step LIGHTER than the band it sits on: --panel on
+   --bg-2. That is the whole of the Phase 10 palette decision — the card grid
+   carries the weight, not the section, which is how a dark interface reads
+   elevation. The luminance step is small by construction (1.05:1), so the
+   hairline is what actually draws the card edge and is not decoration. */
 .card {
-  background: var(--paper);
-  border: 1px solid var(--paper-line);
+  background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: var(--r-card);
   padding: var(--sp-7);
 }

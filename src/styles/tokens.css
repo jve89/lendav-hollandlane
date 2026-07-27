@@ -39,7 +39,13 @@
   --accent-wash: #ecfeff;        /* icon chip fill on paper */
   --accent-wash-line: #cffafe;
 
-  /* ---- paper: the one deliberate inversion, for the services section ---- */
+  /* ---- paper: UNREFERENCED as of Phase 10's palette change ----
+   * These were Direction D's "one deliberate inversion": a white services
+   * section with its own ink, muted and line. The four sections that used it
+   * are --bg-2 with --panel cards now, so nothing reads these five, nor
+   * --accent-on-paper / --accent-wash / --accent-wash-line above.
+   * Kept for one commit so the change reverts in one command; the next commit
+   * deletes them with the `.section--paper` block in global.css. */
   --paper: #ffffff;
   --paper-ink: #0b1220;
   --paper-muted: #5a6675;        /* 5.8:1 on white — passes */
