@@ -14,14 +14,15 @@ work *after* it.
 |---|---|---|
 | — | Phases 0–6 | ✅ complete and committed |
 | — | Phase 9 — SEO, performance, launch readiness | ✅ complete and committed |
-| 1 | **Phase 10 — real content drop** | **next** · launch-blocking · blocked on the operator |
+| 1 | **Phase 10 — real content drop, and the visual decisions** | **next** · launch-blocking · the footage half is blocked on the operator, the palette half is not |
 | — | **LAUNCH** | |
 | 2 | Phase 7 — regional pages | post-launch |
 | 3 | Phase 8 — blog infrastructure | post-launch |
 | 4 | Phase 11 — single-source the domain | post-launch · splittable |
 
-**Phase 10 is next, and it is blocked on equipment rather than on code** — see the
-blocked list. Then launch. Phases 7 and 8 come after it.
+**Phase 10 is next, and its content half is blocked on equipment rather than on code** — see
+the blocked list. **Its palette half is blocked on nothing and can be taken first** — see
+"The visual decisions" inside Phase 10. Then launch. Phases 7 and 8 come after it.
 
 The integers are kept only because `src/` cites them: **37 comments reference `Phase 10` by
 number across twenty files** — 24 of them in the ten service markdown files, 13 in ten
@@ -312,6 +313,100 @@ stays absent until an arm's-length customer has paid for a job and agreed to be 
 `testimonialAuthor` fields stay empty, and the schema's both-or-neither rule keeps them
 that way.
 
+### The visual decisions — taken 27 July 2026
+
+**The reasoning lives in the Claude Project doc `launch/footage-and-visual-plan.md` — in the
+"AIF Drone Services" project, NOT in this repository.** That path looks like a repo path and
+is not one; do not go looking for it here and do not conclude it is missing.
+
+**The split is deliberate and the two are not copies of each other: PLAN.md holds the
+binding constraints, the project doc holds the reasoning behind them.** What is below is
+only what a session must not violate, deliberately without the argument for it. If you want
+to know *why*, read that document rather than re-deriving it here — and if you disagree with
+a constraint, that document is where the disagreement is settled, not this one.
+
+**Phase 10 splits into two independent pieces, and only one of them waits on the footage.**
+The palette change has no dependency on the flight and can be done first, on its own commit,
+while the equipment is still in transit.
+
+#### Piece one — the palette. Not blocked. Take it first.
+
+**Move every `.section--paper` section off `--paper` (`#ffffff`) to `--panel` (`#11161f`),
+with hairline-bordered cards.** The site then stays inside one dark family instead of
+stepping ~18:1 in luminance between adjacent sections.
+
+**This is all four usages, not the home page alone.** `src/pages/index.astro`,
+`src/pages/en/index.astro`, `src/pages/teenused/index.astro` and
+`src/pages/en/services/index.astro` — both home pages **and** both service index pages.
+**Do not read this as a home-page change.** Leaving the service pages white does not
+preserve a considered inversion, it **relocates the seam onto the pages that do the
+selling** — a visitor who follows the home page's services grid to `/teenused` would cross
+the same ~18:1 step, one click further in and on the page where they are choosing what to
+buy. Removing the seam means removing it everywhere it occurs.
+
+**The cost is explicit, and it is why this is not a token swap.** Phase 1 built a complete
+parallel light-surface token set — Direction D's "one deliberate inversion" — and this
+change makes most of it dead code: `--paper`, `--paper-ink`, `--paper-muted`, `--paper-line`,
+`--accent-on-paper`, `--accent-wash`, `--accent-wash-line`, the `.section--paper` re-map
+block in `global.css`, and `ServiceCard`'s paper-specific rules. **Removing it needs a
+contrast audit, not a find-and-replace**: every pair validated against `#ffffff` has to be
+re-validated against `#11161f`, and SPEC section 6 gates Lighthouse accessibility at ≥95.
+
+**Because the decision covers every usage, the change belongs at the class rather than at
+four call sites.** `.section--paper` either stops being a light surface or stops existing;
+what must not happen is two of the four moving and the class surviving to invert the other
+two.
+
+**Two things are not deleted on sight.** `--ink-on-glass` exists *because* `.section--paper`
+re-maps `--ink`, and `BeforeAfter` carries comments on how one component survives both
+surfaces. Both may survive the change or may not; neither goes as an obvious leftover.
+
+**Text-heavy pages are a separate decision and are not covered by this.** `/hinnakiri`,
+`/kkk` and `/privaatsus` may legitimately be answered the other way — a lighter surface is
+worth more for long reading than for a card grid. Do not fold them in on the grounds of
+consistency.
+
+#### Piece two — the hero video. Blocked on the footage. Do not build it speculatively.
+
+**The pattern is approved; the code is not written until there is footage to put in it.**
+Building it against a stand-in is what SPEC section 9 exists to prevent, and the no-footage
+hero is a finished design rather than a hole waiting for an asset.
+
+Hard constraints, all of them:
+
+- **A scrimmed background loop at 55–65% opacity.** Background, not foreground.
+- **The poster still is the LCP element and must stand alone.** The page is finished with
+  the poster and no video ever arriving.
+- **`preload="none"`, with playback triggered on viewport entry.**
+- **No audio track in the file at all** — stripped at encode, not muted at playback.
+- **Under 1.5 MB total, for 8–12 seconds at 1080p.** Tighter than SPEC section 9's 2 MB and
+  12-second ceilings on both counts. **The tighter number governs**; the SPEC caps are not a
+  licence to spend up to them.
+- **`prefers-reduced-motion` honoured**, under both guards in the Hero contract
+  (ARCHITECTURE section 6). Neither guard is dropped because the other exists.
+
+**Reconcile with the Hero contract before writing anything.** ARCHITECTURE section 6
+specifies `autoplay muted loop playsinline` with `<source media="...">` and **no script**.
+Viewport-entry playback needs one. This list does not silently override that contract — the
+session that builds the hero updates it in the same commit.
+
+**The acceptance gate is a number, not a judgement.** The deployed site scores **99 on
+PageSpeed mobile today**. **If it drops below 90 after the hero ships, revert to the still
+frame.** Not "investigate", not "optimise it later" — revert. The poster-only state is a
+finished design, so reverting to it costs nothing but the video.
+
+**Viewport-entry playback is a third client-JavaScript exception, and the second actually
+taken.** It is recorded in ARCHITECTURE section 2 as a *planned* entry, so it arrives as a
+decision that was taken rather than as a script that turned up. It is not a precedent for a
+fourth.
+
+#### Rejected, recorded so it is not re-proposed
+
+- **A drag-slider for before/after images.** Needs JavaScript, and adds nothing over the two
+  images side by side that `BeforeAfter` already renders.
+- **Scroll-triggered reveals.** Decorative, needs an observer, and a bad trade against a
+  zero-JS static site with a ≥95 Lighthouse gate.
+
 Also in this phase, because it gates launch rather than the footage: the **native-speaker
 Estonian review**, clearing every `needs-native-review` marker.
 
@@ -460,7 +555,8 @@ every sitemap `<loc>`, the `_next` field **and** `robots.txt`.
 
 **Every item here blocks launch.** Phases 6 and 9 are done and none of these blocked
 them. The first three block Phase 10, which is now the next phase — so this list is
-no longer background reading.
+no longer background reading. **They block its footage half only**; the palette
+decision inside Phase 10 is blocked on nothing and can be taken while this list stands.
 
 **Equipment, and the first flight.** Ordered within the week; delivered roughly a week after
 that; flown on family property as soon as it arrives. Phase 10 has no input at all until

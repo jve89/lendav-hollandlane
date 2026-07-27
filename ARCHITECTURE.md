@@ -1,5 +1,26 @@
 # ARCHITECTURE.md — Lendav Hollandlane website
 
+**Version 1.8 · 27 July 2026** — **section 2 names a third client-JavaScript
+exception, and it is planned rather than built**: the hero video's viewport-entry
+playback, approved with the rest of the visual decisions now written into PLAN's
+Phase 10. It is listed before it exists so it arrives as a decision rather than as
+a script in a diff, and nothing may be written against it until there is real
+footage. The paragraph in section 2 that said the hero needs no script is amended
+rather than deleted — `<source media="...">` still decides what is *fetched*, and
+both reduced-motion guards stand. **The Hero contract in section 6 is marked
+SUPERSEDED-PENDING in place rather than rewritten**, with a box naming what it
+contradicts and what still stands; the session that holds the footage reconciles
+it, because writing the replacement now would specify a hero against footage
+nobody has seen. **The palette decision in the same batch — every
+`.section--paper` section moving off `--paper` to `--panel`, all four of them, both
+home pages and both service index pages — is recorded in PLAN only**, because it
+changes no architecture: it is a token and contrast question.
+The full reasoning for both halves is in the Claude Project doc
+`launch/footage-and-visual-plan.md` — in the "AIF Drone Services" project, **not in
+this repository**, despite reading like a repo path. The split is deliberate: PLAN
+holds the binding constraints, that doc holds the reasoning, and neither is a copy
+of the other. No code changed with this version.
+
 **Version 1.7 · 27 July 2026** — **records live infrastructure that existed only
 in external dashboards and was written down nowhere.** Four changes, all in
 section 9: the **`www` → apex redirect** and **DNSSEC**, which section 9 had
@@ -139,10 +160,11 @@ No other runtime dependencies. Adding one requires explicit approval — see CLA
 
 `compressHTML: true` is set explicitly. Astro 7 changed the default to `'jsx'`, which strips whitespace between elements — including the significant space in markup like `<a>x</a> <a>y</a>`. The behaviour we want is stated in the config, not inherited from a default that has already changed once.
 
-**Client-side JavaScript is permitted only for two named exceptions, and this list is closed the same way the dependency list is.** Anything not on it is a violation; anything on it must not be deleted as one.
+**Client-side JavaScript is permitted only for three named exceptions, one of which is planned rather than built, and this list is closed the same way the dependency list is.** Anything not on it is a violation; anything on it must not be deleted as one.
 
 1. **The mobile navigation toggle, and FAQ disclosure.** Both use native `<details>`, so **this exception has never actually been taken** — it costs zero bytes. It stays named because the toggle is where a future session would reach for a script first.
-2. **The quote form's Formspree submit** — `QuoteForm.astro`, one `is:inline` script, 23 lines of code. **This is the only client JavaScript the site ships.** Full contract in section 6; the reasoning is below.
+2. **The quote form's Formspree submit** — `QuoteForm.astro`, one `is:inline` script, 23 lines of code. **This is the only client JavaScript the site ships today.** Full contract in section 6; the reasoning is below.
+3. **The hero video's viewport-entry playback — PLANNED, not built.** Approved on 27 July 2026 with the rest of the visual decisions in PLAN's Phase 10, where the constraints are. The hero loads `preload="none"` and starts playback when the media band enters the viewport, which needs a script; the constraint list, the budget and the acceptance gate are in PLAN and are not repeated here. **It is named on this list now, before it exists, precisely so it arrives as a decision that was taken rather than as a script that turned up in a diff.** Nothing may be written against it until there is real footage — SPEC section 9.
 
 The language switch is a link to a real URL, not a JS toggle — this matters for indexing.
 
@@ -154,7 +176,7 @@ The language switch is a link to a real URL, not a JS toggle — this matters fo
 
 **Why it is progressive enhancement rather than a dependency, which is the whole basis on which it was taken.** With JavaScript disabled there is no listener, nothing calls `preventDefault()`, and the browser performs exactly the native POST it performed before the script existed — landing on Formspree's page, which is precisely what happened before. **It degrades to yesterday's behaviour, not to broken, and the enquiry arrives either way.** Any failure of the enhanced path — `fetch` throwing, CORS refused, a non-ok response — falls back to `form.submit()` for the same reason. A form that stops working when a script fails would not have been permitted here whatever it bought.
 
-The hero video is deliberately inside that budget: `<video>` with `autoplay muted loop playsinline` needs no script, and `<source media="...">` can decide per-viewport and per-motion-preference which file is fetched, if any. A hero that needs JavaScript to decide what to load is a design that has gone wrong, and a third-party video player is a dependency decision, not an implementation detail. See the Hero contract in section 6.
+The hero video was originally specified inside that budget with no script at all: `<video>` with `autoplay muted loop playsinline`, and `<source media="...">` deciding per-viewport and per-motion-preference which file is fetched, if any. **The 27 July 2026 decision above changes what starts playback and nothing else** — `preload="none"` plus a viewport-entry trigger, which is exception 3. What does not change: `<source media="...">` still decides *what is fetched*, both reduced-motion guards in section 6 still stand, and a third-party video player is still a dependency decision rather than an implementation detail. **The rule underneath is unchanged too — a hero that needs JavaScript to decide what to *load* is a design that has gone wrong**; deferring when it *plays* is a different thing, and it is the only thing that was permitted. The Hero contract in section 6 still describes the no-script form and **is marked SUPERSEDED-PENDING at its head** rather than rewritten — it is reconciled by the session that holds the footage, not by this note.
 
 ## 3. Internationalisation
 
@@ -438,7 +460,7 @@ unattributed review must not be publishable.
 
 - **`BaseLayout`** — props `{ title, description, locale, routeKey, brandSuffix?, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, the icon and `theme-color` tags, Open Graph and Twitter card, and `LocalBusiness` JSON-LD built from `site.ts`. **`ogImage` now has a default** — the one sitewide image, section 7 — so a page that passes nothing still emits a card; no page overrides it today. `theme-color` is resolved from `tokens.css` rather than typed, and throws if the token is gone. Every page goes through it. **It also owns the `<title>` brand suffix**: `title` is the page-specific part only, and ` | ${site.brandText}` is composed here, in the one expression every page title passes through — `PageLayout` forwards and composes nothing. `<title>` and `og:title` are both built from that string so they cannot drift apart. `brandSuffix={false}` suppresses the suffix for a page whose title already carries the brand; it does not license authoring the name, which still comes from `site.brandText`. No page sets it today. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
-- **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below.
+- **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below — **and it is marked SUPERSEDED-PENDING**: the 27 July 2026 visual decisions contradict part of it, PLAN's Phase 10 holds the binding list, and the box at the head of that contract says exactly which parts still stand.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. A native `<form action method="POST">` posting straight to Formspree. **That native POST is the baseline, and it is the requirement rather than an optimisation: it works with JavaScript disabled, and it is what runs when the enhancement does not.** On top of it sits one `is:inline` script — the second named exception in section 2, and the only client JavaScript on the site — which intercepts the submit, POSTs by `fetch` with `Accept: application/json`, and navigates to our own thank-you page, because Formspree's `_next` redirect is a paid feature. **It reads the redirect target out of the rendered `_next` field rather than from a second copy of the expression that built it**, so the two mechanisms cannot disagree, and it navigates by same-origin path so a preview build stays on the preview build. Any failure — `fetch` throwing, CORS refused, a non-ok response — logs and calls `form.submit()`, so the browser posts natively; none of those failure modes leaves a submission on Formspree, so the re-post cannot duplicate an enquiry. *(This bullet said "**Zero client JavaScript** … because there is no script to disable" until 26 July 2026. There is now a script to disable, and disabling it returns the form to the native POST rather than breaking it — which is the honest version of the same guarantee.)* `@formspree/ajax` and `@formspree/react` are still rejected — they are dependencies, the list in section 1 is closed, and the AJAX path needs neither. Native HTML validation only: `required`, `type="email"`, `inputmode`, `autocomplete`, no scripted checks and no `novalidate`. **Required: name, email, address. Optional: phone, area, message** — the reasoning is in `src/i18n/contact.ts` and is deliberate; a required area field a homeowner cannot answer is a field they abandon. The service options come from `servicesFor()`, never from a list in the component, so they cannot drift from the service pages. Spam is Formspree's `_gotcha` honeypot only — no CAPTCHA, no third-party script — hidden from sight, from the tab order and from assistive tech. `_next` must be an **absolute** URL, built from `site.domain` and the route map.
 
   **The endpoint comes from `src/config/formspree.ts`, which imports the id from `astro:env/client` — not from `import.meta.env`.** That is the difference between a guard and a comment. `import.meta.env` is inlined at build time in a static build, so an unset variable becomes `undefined`, the form posts nowhere, and `npm run verify` passes: the page builds and every link resolves. `astro.config.mjs` declares `PUBLIC_FORMSPREE_ID` required in `env.schema`, and Astro coerces an empty string to missing before validating, so **both a missing and an empty value fail `astro build`**. `scripts/check-html.mjs` check 5 is the second, independent guard, asserting on the built output. Do not simplify the import back.
@@ -454,7 +476,31 @@ unattributed review must not be publishable.
 - **`Faq` / `FaqList` / `FaqGroups`** — `FaqList` is the `<details>` list and owns the disclosure markup; `Faq` is the home page's three-question excerpt around it; `FaqGroups` is the whole set in its three groups for `/kkk`. All three read `i18n/faq.ts` through `faqEntries()`, which resolves `{season}`, `{minimum}`, `{area}` and `{authority}` from `site.ts` — and because the FAQ page's `FAQPage` JSON-LD is built from the same resolved objects it renders, the structured data cannot drift from the visible answer.
 - **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. **The identifiers block prints the email address** alongside the registry and VAT numbers, restored on 26 July 2026 when the address was tested — this is the page a KÜ board comes to for documents, and a written route belongs beside them.
 
-### `Hero` — the contract
+### `Hero` — the contract *(SUPERSEDED-PENDING as of 27 July 2026 — read this box first)*
+
+> **This contract is not current truth, and it is not yet replaced.** The visual decisions
+> taken on 27 July 2026 contradict part of what is written below, and the replacement is
+> **deliberately not written here**: rewriting it is design work for the session that holds
+> the real footage, and doing it in advance would be specifying a hero against footage
+> nobody has seen.
+>
+> **What is contradicted.** This contract specifies `autoplay muted loop playsinline` with
+> **no script**. The approved hero instead loads `preload="none"` and **triggers playback on
+> viewport entry**, which needs one — the third client-JavaScript exception in **section 2**.
+> It also adds constraints this contract does not carry: a scrimmed background loop at
+> 55–65% opacity, no audio track at encode, and a budget of **under 1.5 MB for 8–12 seconds
+> at 1080p**, tighter than the 2 MB / 12-second caps stated further down.
+>
+> **What still stands, unaffected.** The three-state fallback chain and state 3 as the
+> default path; both reduced-motion guards, neither dropped because the other exists;
+> `<source media="...">` deciding what is *fetched*; `aria-hidden` and no player library;
+> the poster as the LCP element; self-hosting in `public/video/`. The decision changed *when
+> the video plays*, not *what the page loads*.
+>
+> **The binding constraint list is PLAN's Phase 10, "The visual decisions".** Where that
+> list and the text below disagree, the list wins, and **the session that builds the hero
+> reconciles this section in the same commit** — at which point this box comes out. Do not
+> quote the paragraphs below as settled while it is still here.
 
 **Structure.** One `<section>` containing the media band, then the price and credentials block. Nothing sits between them and the block is not a separate component boundary — the pairing is the point. The block reads its price from `site.ts` via `PriceTable`'s rules (from-price, `alates` prefix, excluding VAT, labelled) and its credentials from `site.credentials`. The Hero never takes a price, a phone number or a credential as a prop.
 
