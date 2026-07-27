@@ -18,6 +18,14 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* THE STICKY HEADER'S CLEARANCE FOR IN-PAGE ANCHORS. Without it every `#`
+     target lands underneath the header — including `#main`, which is what the
+     skip link does on all 28 pages, and the fourteen `#kkk-*` ids on the FAQ.
+     Measured header height: 117px below 48em, where the wordmark wraps to two
+     lines, and 103px above it. 136px clears the taller of the two with 19px to
+     spare and leaves 33px at desktop, which reads as breathing room rather
+     than as waste. Re-measure if the pill's height changes. */
+  scroll-padding-block-start: calc(var(--sp-12) + var(--sp-8));
 }
 
 body {
@@ -98,9 +106,13 @@ h3 {
   border-radius: var(--r-xs);
 }
 
-:target {
-  scroll-margin-top: var(--sp-12);
-}
+/* `:target { scroll-margin-top: var(--sp-12) }` stood here until the header
+   became sticky, and it is DELETED rather than kept alongside the
+   scroll-padding above. The two do not overlap, they ADD: scroll-padding
+   shrinks the scrollport's optimal viewing region and scroll-margin grows the
+   target's own box, so keeping both would have pushed every anchor 232px down
+   the page instead of 136px. One mechanism, on the scroll container, and it
+   covers targets that `:target` never matches. */
 
 /* ---------- layout primitives ---------- */
 .wrap {

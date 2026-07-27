@@ -115,34 +115,110 @@ const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t
 </header>
 
 <style>
+  /**
+   * STICKY, AND STILL ZERO JAVASCRIPT. No scroll listener, no IntersectionObserver,
+   * no class toggled on scroll — `position: sticky` and `position: fixed` are the
+   * whole mechanism. This is deliberately NOT a fourth client-JS exception and must
+   * not become one: a header that changes appearance on scroll is where that would
+   * start, and the answer to wanting it is that we do not.
+   *
+   * THE TWO VARIANTS PIN BY DIFFERENT MEANS, AND THAT IS NOT AN OVERSIGHT.
+   * `solid` is in normal flow, so `sticky` is a drop-in that changes no layout.
+   * `overlay` is OUT of flow already (it was `absolute`), and the hero's
+   * `padding-block-start` of 128px exists precisely to clear it. Making that one
+   * `sticky` would put it back INTO the flow, push the hero down by the header's
+   * own height, and cut the hero's radial glow off below the pill instead of
+   * letting it bleed behind it — direction D's whole opening image. `fixed` keeps
+   * it out of flow and pins it, which is the same result `sticky` gives the other
+   * pages. Both take `inset-block-start: 0` from the base rule below.
+   */
+  /**
+   * NO BACKGROUND ON THE HEADER ITSELF. The header is a transparent box whose
+   * only job is to position the pill; the pill is the entire visible header, and
+   * page content is meant to scroll to the top of the viewport above it and to
+   * either side of it. A full-width bar behind it was tried and removed: it reads
+   * as a browser chrome bar rather than as depth, and it is not what direction D
+   * or the reference does.
+   *
+   * What makes that safe is the pill's own opacity and blur, not a scrim — see
+   * the note on `.nav` below. Content passing beside the pill is meant to be
+   * fully visible; content passing BEHIND it must be unreadable.
+   */
   .site-header {
+    position: sticky;
+    inset-block-start: 0;
     z-index: 60;
     padding-block: var(--sp-5);
   }
 
-  /* Direction D's placement: floating over the hero, no background of its own. */
+  /* Out of flow, so the hero still starts at the top of the viewport and its
+     radial glow still runs up behind the pill. See the note above on why this
+     one is `fixed` rather than `sticky`. */
   .site-header--overlay {
-    position: absolute;
-    inset-block-start: 0;
+    position: fixed;
     inset-inline: 0;
   }
 
-  .site-header--solid {
-    position: relative;
-    background: var(--bg);
-  }
+  /**
+   * THERE IS NO `.site-header--solid` RULE, AND ITS ABSENCE IS THE DECISION.
+   *
+   * Interior pages carried a full-width glass bar with a hairline for one
+   * revision, which gave the site two header identities: a bar on `/kkk` and a
+   * floating pill on `/`. They are unified on the pill. `solid` now means only
+   * "takes the base rule" — `sticky`, transparent, in normal flow — and the
+   * class is still emitted so the variant is legible in the DOM and has a hook
+   * if one is ever needed.
+   *
+   * `background: var(--bg)` is what stood on that selector before the header was
+   * pinned, and it must not come back: an opaque bar the same colour as the page
+   * is invisible at rest and, once content scrolls under it, makes text vanish
+   * at an edge that is not drawn. The pill's own opacity is what prevents that
+   * now, on every page — see `.nav` below.
+   */
 
+  /**
+   * THE PILL IS THE HEADER, AND ITS OWN BACKGROUND IS THE ONLY THING STANDING
+   * BETWEEN SCROLLING TEXT AND THE NAVIGATION ON TOP OF IT.
+   *
+   * It carried `--glass` and `blur(14px)` from Phase 1 with NO fallback, which
+   * did not matter while the page behind it never moved. It moves now, on every
+   * page. Two things changed with that:
+   *
+   * `--glass` went from 55% to 40% and the blur from 14px to 20px — measured, in
+   * that direction deliberately. The blur is what destroys legibility; the alpha
+   * only dims. A 20px radius smears a 16px glyph past reconstruction, so the
+   * lighter fill costs nothing in readability and buys back the translucency that
+   * makes the pill read as glass rather than as a solid chip. Figures and the
+   * measurement are in tokens.css next to `--glass`.
+   *
+   * Opaque `--bg-2` is the FALLBACK, stated first, for browsers with no
+   * `backdrop-filter`. `--glass` is that same colour at 40%: translucent with no
+   * blur behind it is the one combination that is worse than no glass at all,
+   * because the page text and the nav labels overlap at full contrast.
+   */
   .nav {
     position: relative;
     display: flex;
     align-items: center;
     gap: var(--sp-2);
-    background: var(--glass);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: var(--bg-2);
     border: 1px solid var(--glass-line);
     border-radius: var(--r-pill);
     padding: 9px 9px 9px 22px;
+  }
+
+  /* The condition and the property are BOTH unprefixed, deliberately. Writing
+     the `-webkit-` alias alongside them made Lightning CSS keep only the alias
+     while rewriting the condition to the standard name — a browser that passed
+     the test would then have got the translucent background with no blur behind
+     it, which is the exact failure this @supports exists to prevent. One name in
+     both places cannot drift; the minifier adds whatever prefixes its targets
+     need, to the property and the condition together. Verified in `dist/`. */
+  @supports (backdrop-filter: blur(1px)) {
+    .nav {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+    }
   }
 
   /**
@@ -283,6 +359,31 @@ const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t
     background: var(--accent-ink);
   }
 
+  /**
+   * THE PANEL MUST BE ABLE TO SCROLL, BECAUSE THE HEADER NO LONGER SCROLLS AWAY.
+   *
+   * Before it was sticky, an open menu taller than the viewport was still
+   * reachable: the whole page scrolled and the panel came with it. Pinned, the
+   * panel is pinned too, and anything past the bottom edge — the last links, the
+   * phone number, the language switch — is unreachable with no scrollbar to hint
+   * that it is there. Six links plus the foot is ~356px, which fits a 568px
+   * phone upright and does NOT fit one in landscape, or a 480px-tall Android.
+   *
+   * 125px is measured, in the same spirit as the 22.5em figures above: the
+   * panel's top edge sits 105px below the viewport top at this width (20px of
+   * header padding + a 77px pill + the 8px gap), and the remaining 20px is
+   * clearance at the foot so the panel does not butt against the screen edge.
+   *
+   * `dvh` rather than `vh`, so a collapsing mobile URL bar cannot leave the panel
+   * taller than the visible viewport. The `vh` floor for browsers that predate
+   * `dvh` is in its own @supports block below rather than as a preceding
+   * declaration — written the usual way, Lightning CSS deduplicates the pair and
+   * only the `dvh` line survives into `dist/`, so the fallback that looked
+   * present in this file would not have shipped at all.
+   *
+   * `overscroll-behavior` stops a flick at the end of the list from scrolling the
+   * page underneath.
+   */
   .nav__panel {
     position: absolute;
     inset-inline: 0;
@@ -292,6 +393,15 @@ const cta = { href: path('contact', locale), short: t('cta.quoteShort'), full: t
     border-radius: var(--r-card);
     box-shadow: var(--shadow-1);
     padding: var(--sp-4);
+    max-block-size: calc(100dvh - 125px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  @supports not (max-block-size: 100dvh) {
+    .nav__panel {
+      max-block-size: calc(100vh - 125px);
+    }
   }
 
   .nav__panel ul {

@@ -51,9 +51,68 @@
   --paper-muted: #5a6675;        /* 5.8:1 on white — passes */
   --paper-line: #e4e8ee;
 
-  /* ---- glass: the floating pill navigation ---- */
-  --glass: rgba(12, 16, 23, 0.55);
+  /* ---- glass: the floating pill navigation ----
+   * 0.55 until the header was pinned, when the page started moving behind the
+   * pill and the fill became the only thing between scrolling text and the
+   * navigation on top of it. It went DOWN to 0.4, with the blur up from 14px to
+   * 20px, and that direction is measured rather than assumed: the blur is what
+   * destroys legibility, the alpha only dims.
+   *
+   * Letter-scale detail surviving behind the pill, worst case (the 70px/800 h1
+   * on the home page), as a share of the unobscured text:
+   *
+   *     0.55 / blur 14 ...... 13.1%   <- before
+   *     0.40 / blur 20 ......  9.8%   <- now; smooth gradient, no glyph structure
+   *     0.50 / blur 20 ......  8.1%
+   *     0.40 / blur 28 ......  4.8%
+   *
+   * So the lighter fill reads MORE opaque, not less, and buys back the
+   * translucency that makes the pill glass rather than a solid chip.
+   *
+   * The cost is at the other end and it is the binding constraint: at 0.4 the
+   * brightest composite the pill can reach is rgb(82,85,90), where --ink-2 nav
+   * links sit at 4.89:1. That is above the 4.5:1 floor with 0.39 to spare, and
+   * it is why this did not go lower. --ink is 6.84:1, --accent 4.14:1.
+   * Re-measure both ends together if either number moves.
+   *
+   * The blur radius lives in Header.astro, not here — it is a filter length, not
+   * a colour, and tokens.css holds no lengths that are not spacing or type. */
+  --glass: rgba(12, 16, 23, 0.4);
   --glass-line: rgba(255, 255, 255, 0.09);
+
+  /* ---- glass over MEDIA: a second token, because it answers a different
+   * question from --glass above.
+   *
+   * --glass sits on a surface this repository controls, and its alpha is set by
+   * what the nav needs against the page scrolling behind it. This one sits on a
+   * PHOTOGRAPH — BeforeAfter's Enne/Pärast tags — where the backdrop is whatever
+   * the camera saw, and its alpha is set by contrast alone. One token could not
+   * serve both without one of them losing.
+   *
+   * DERIVED, NOT CHOSEN. The worst case a photograph can present is pure white,
+   * so the requirement is --ink-on-glass at >= 4.5:1 over white. Solving for the
+   * alpha that reaches exactly 4.5:1 gives 0.59588; 0.6 is the nearest clean
+   * value at or above it, and lands on 4.57:1. Measured:
+   *
+   *     white highlight #ffffff .....  4.57:1  PASS  (the worst case; 0.07 spare)
+   *     bright sky      #d9dee6 .....  5.57:1  PASS
+   *     mid grey        #808080 .....  9.99:1  PASS
+   *     dark roof       #3c3c3c ..... 14.64:1  PASS
+   *
+   * For comparison, the tags read --glass until now: 3.85:1 over white at the
+   * old 0.55, and 2.41:1 at today's 0.4. Both fail, and the first failed before
+   * any of this — it is not a regression introduced by the nav's retune.
+   *
+   * NO PHOTOGRAPH EXISTS YET. Every figure above is a synthetic worst case
+   * against a flat fill; none of it has been checked against a real image.
+   *
+   * TUNABLE ONCE REAL PHOTOGRAPHS EXIST, WITH ONE BOUND. If the actual before /
+   * after images turn out to have no near-white highlight under the tag, this
+   * may be relaxed for the sake of the photograph — but never past the alpha
+   * that holds --ink-on-glass at 4.5:1 against the brightest region those images
+   * actually contain. Re-derive against that region; do not eyeball it, and do
+   * not assume the pure-white bound stops applying because one photo is dark. */
+  --glass-media: rgba(12, 16, 23, 0.6);
   /* Text on a --glass fill. Always light, because the glass is always dark —
      even inside .section--paper, which re-maps --ink to near-black ink and would
      otherwise put dark text on a dark pill. Added in Phase 3 for BeforeAfter's

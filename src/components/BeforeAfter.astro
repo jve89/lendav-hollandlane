@@ -150,11 +150,30 @@ const caption = job
     block-size: auto;
   }
 
+  /* --glass-media, NOT --glass. The nav's glass is tuned against a surface this
+     repository controls; this tag sits on a photograph, where the backdrop is
+     whatever the camera saw. The alpha is derived from the pure-white worst case
+     so --ink-on-glass holds 4.5:1 — the derivation and the bound on tuning it
+     are in tokens.css beside the token.
+
+     The blur does NOT help that contrast, and is not there for it: averaging
+     detail leaves mean brightness where it was. What it removes is the
+     high-frequency texture — foliage, roof tiles, gravel — that makes 11px text
+     hard to read even at an adequate ratio. 8px flattens that scale of detail
+     while staying well inside the tag's own height, so it pulls in nothing from
+     beyond the tag's edges.
+
+     No @supports fallback here, unlike `.nav` in Header.astro, and the
+     difference is real rather than an oversight: the tag's contrast comes from
+     the fill alone, so a browser that ignores `backdrop-filter` still gets every
+     ratio above. The nav could not say that — there the blur is what makes the
+     fill sufficient, so there the fallback is load-bearing. */
   .ba__tag {
     position: absolute;
     inset-block-start: var(--sp-3);
     inset-inline-start: var(--sp-3);
-    background: var(--glass);
+    background: var(--glass-media);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--glass-line);
     border-radius: var(--r-pill);
     padding: var(--sp-1) var(--sp-3);
