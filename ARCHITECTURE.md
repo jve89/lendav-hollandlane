@@ -1,12 +1,25 @@
 # ARCHITECTURE.md — Lendav Hollandlane website
 
+**Version 1.7 · 27 July 2026** — **records live infrastructure that existed only
+in external dashboards and was written down nowhere.** Four changes, all in
+section 9: the **`www` → apex redirect** and **DNSSEC**, which section 9 had
+listed as the two items still outstanding and which are now done; **Cloudflare's
+Managed robots.txt**, which was on by default, was rewriting the served
+`/robots.txt`, and has been turned off — **a fourth instance of the
+external-dashboard hazard pattern**, so the count in the 1.6 note below is
+superseded; and **Google Search Console and Bing Webmaster Tools** registration.
+Section 9 also gains the **email limitation** — Cloudflare Email Routing is
+receive-only, and outbound mail is not domain-aligned — and section 10 gains the
+mailbox upgrade as a deferred decision. No code changed with this version.
+
 **Version 1.6 · 26 July 2026** — **a paragraph in section 6 was false and is
 deleted.** It said Formspree's spam filtering accepted six localhost submissions
 and then silently discarded them; all six were in fact delivered, to a mailbox
 the session that wrote it could not see. What replaces it is the rule that failure actually taught
 — verify your observation channel before drawing a conclusion from silence —
-with both mailboxes named. **There are three dashboard hazards outside this
-repository, not four**, and the other three are unchanged. Version 1.5 named
+with both mailboxes named. **There were three dashboard hazards outside this
+repository at that point, not four** — the fourth arrived with 1.7 above, and
+the three named here are unchanged. Version 1.5 named
 **two client-JavaScript exceptions** in section 2 rather than one: the quote form
 submits by `fetch` and navigates to our own thank-you page, because Formspree's
 `_next` redirect is a paid feature, with the native POST unchanged beneath it;
@@ -108,6 +121,13 @@ no-analytics and no-cookies claims on `/privaatsus` become false silently, and
 nothing in this repository can detect it. The warning is duplicated at the top of
 `src/i18n/privacy.ts`, next to the copy it would falsify, because that is where
 somebody will be standing when it matters.
+
+This is the third of **four** settings that live in someone else's dashboard, change
+what visitors get, and cannot be seen from this repository. The other three are
+Formspree's reCAPTCHA and domain restriction in section 6, and Cloudflare's Managed
+robots.txt in section 9. They are recorded next to the thing each would falsify
+rather than gathered into a list, deliberately — a list is read once, and a warning
+beside the copy is read by whoever is about to break it.
 
 **Node 22.12 or newer.** Astro 7 requires it and will refuse to run below it. Declared in three places so it cannot drift: `.nvmrc` (`22`), the `engines.node` field in `package.json`, and the Node version configured on the deploy host. Package manager: npm.
 
@@ -335,7 +355,7 @@ Nothing else in the codebase hardcodes a phone number, an email address or a pri
 
 **The brand name is on the same footing**, and the rule paid for itself on 26 July 2026: the business was renamed to `Lendav Hollandlane` by editing two lines here. `brand` and `brandText` now hold the same string — the wordmark/running-text split is retired, though both keys stay — and neither is written anywhere else in `src/` or `public/`. `legalName` is separate and unchanged, because the brand is a trading name of AIF OÜ. The ` | <brand>` suffix on a page title is composed in `BaseLayout` — see the contract in section 6 — so an authored `meta.*.title` or `seoTitle` carries only the page-specific part, and `seoTitle` fails the build if it contains a pipe. `grep -rni "Lendav Hollandlane" src/ public/ --exclude=site.ts` returning anything is a bug. See CLAUDE.md, "The brand name".
 
-**`domain` is the one value on this list that is NOT single-sourced.** `astro.config.mjs` and `public/robots.txt` each hold their own copy, and neither can import this file today. Check 6 fails the build if the config's copy drifts from the canonical URLs built here; **nothing at all guards `robots.txt`**, whose `Sitemap:` line would point at a dead domain silently. Tracked as Phase 11 in PLAN.
+**`domain` is the one value on this list that is NOT single-sourced.** `astro.config.mjs` and `public/robots.txt` each hold their own copy, and neither can import this file today. Check 6 fails the build if the config's copy drifts from the canonical URLs built here; **nothing at all guards `robots.txt`**, whose `Sitemap:` line would point at a dead domain silently. Tracked as Phase 11 in PLAN. Note that the file is unguarded at the far end as well as at this one: Cloudflare can rewrite the `robots.txt` it serves without touching the copy in `public/` — section 9.
 
 ### Content collections (`src/content.config.ts`)
 
@@ -423,13 +443,13 @@ unattributed review must not be publishable.
 
   **The endpoint comes from `src/config/formspree.ts`, which imports the id from `astro:env/client` — not from `import.meta.env`.** That is the difference between a guard and a comment. `import.meta.env` is inlined at build time in a static build, so an unset variable becomes `undefined`, the form posts nowhere, and `npm run verify` passes: the page builds and every link resolves. `astro.config.mjs` declares `PUBLIC_FORMSPREE_ID` required in `env.schema`, and Astro coerces an empty string to missing before validating, so **both a missing and an empty value fail `astro build`**. `scripts/check-html.mjs` check 5 is the second, independent guard, asserting on the built output. Do not simplify the import back.
 
-  **Two Formspree settings live in their dashboard, outside this repository, and both break a native no-JavaScript POST if enabled: reCAPTCHA, and domain restriction.** reCAPTCHA injects a client-side challenge this form cannot complete; domain restriction rejects submissions whose `Referer` does not match a configured host, which includes `localhost` and any preview deploy. A session debugging a submission that vanishes, 403s, or bounces should check the dashboard before reading a line of code — nothing in this repo can express or detect either setting.
+  **Two Formspree settings live in their dashboard, outside this repository, and both break a native no-JavaScript POST if enabled: reCAPTCHA, and domain restriction.** reCAPTCHA injects a client-side challenge this form cannot complete; domain restriction rejects submissions whose `Referer` does not match a configured host, which includes `localhost` and any preview deploy. A session debugging a submission that vanishes, 403s, or bounces should check the dashboard before reading a line of code — nothing in this repo can express or detect either setting. These are two of the **four** external-dashboard hazards; the other two are Cloudflare's Web Analytics beacon (section 1) and its Managed robots.txt (section 9).
 
   **Verify your observation channel before drawing a conclusion from silence. An empty search result is evidence only if you have confirmed you are searching the right place.** The Gmail connector available to a session in this repository is authorised on `johanvanerkel@gmail.com`. **Enquiries do not go there.** They go to `info@lendavhollandlane.ee`, which Cloudflare Email Routing forwards to `jovanerkel@gmail.com` — a different mailbox, three letters apart in the local part. So a session that searches Gmail for Formspree notifications and finds nothing has learned nothing about delivery. Phase 6's test submissions were visible only because Formspree delivered to the connector's own address at the time; the recipient changed afterwards and the instrument did not. This cost a session on 26 July 2026, which concluded from an empty search that six accepted submissions had been silently dropped, and wrote it into both documents as a hazard — every one of the six had in fact arrived. It is the same class of trap as the stale preview server in section 8: about the instruments, not about the code, and invisible precisely because the wrong reading looks like a finding. **Those two personal addresses are named because the note is useless without them, and this repository is private — which is a reason to keep it private.** Two personal mailboxes in a document are unremarkable in a private repo and a small leak in a public one. If this repository is ever opened up — as a portfolio piece, an example, anything — **this paragraph is one of the first things to redact.**
 
   **`_next` is a paid feature and is still ignored by Formspree.** Measured in Phase 6, not assumed: two identical POSTs were each accepted with a 302 to `https://formspree.io/thanks`, never to the `_next` value. Formspree documents the custom "Thank You" redirect as *"Available on: Personal, Professional, Business plans"*, and this account is on the free tier. Everything else on the free tier works — the submission arrives, all seven fields map, `_subject` is honoured, **and AJAX submission works, which is what the enhancement above rests on.**
 
-  **What changed on 26 July 2026 is who performs the redirect, not whether Formspree will.** The page now reads `_next` and navigates itself, so **`/aitah` and `/en/thank-you` are reached by every visitor who has JavaScript** — they are the ordinary destination, not dead pages. A visitor without JavaScript still lands on Formspree's page, exactly as everyone did before. The field stays because it costs nothing and starts working server-side the day the plan is upgraded, at which point the no-JS visitor gets our page too. That upgrade is therefore no longer the difference between our thank-you page and Formspree's; it is the difference for the no-JS minority only, which is a much smaller decision — see PLAN's blocked list. This is a third dashboard/plan concern outside the repo, in the same class as the two above. Note also that the dashboard's redirect setting is **one URL per form** and cannot vary by locale, whereas `_next` is per-submission — which is why this form sends each locale to its own page, why the dashboard setting is not an equivalent substitute, and why the script can be locale-correct without knowing its own locale.
+  **What changed on 26 July 2026 is who performs the redirect, not whether Formspree will.** The page now reads `_next` and navigates itself, so **`/aitah` and `/en/thank-you` are reached by every visitor who has JavaScript** — they are the ordinary destination, not dead pages. A visitor without JavaScript still lands on Formspree's page, exactly as everyone did before. The field stays because it costs nothing and starts working server-side the day the plan is upgraded, at which point the no-JS visitor gets our page too. That upgrade is therefore no longer the difference between our thank-you page and Formspree's; it is the difference for the no-JS minority only, which is a much smaller decision — see PLAN's blocked list. This is a third Formspree-side concern outside the repo, in the same class as the two above. **It is not one of the four external-dashboard hazards**, and the enumerations are different on purpose: those four are settings that silently change what a visitor gets. The plan tier is known, its effect was measured, and it is written down here. Note also that the dashboard's redirect setting is **one URL per form** and cannot vary by locale, whereas `_next` is per-submission — which is why this form sends each locale to its own page, why the dashboard setting is not an equivalent substitute, and why the script can be locale-correct without knowing its own locale.
 - **`PriceTable`** — props `{ locale, entries }`, where `entries` are `services` collection entries. It reads prices from `site.ts` and **never takes a price**: each row's figure comes from resolving that entry's `priceKind` through `priceLine()`, and the minimum job comes from `site.prices.minimumJob`. Taking entries rather than rows is what stops the table disagreeing with the service page it links to. It **always renders the ex-VAT note**, and that is not a prop — CLAUDE.md requires every displayed price to be labelled excluding VAT, and a caller that could switch the label off would eventually be a caller that did. No total, no estimate, no calculator: SPEC section 4.
 - **`Faq` / `FaqList` / `FaqGroups`** — `FaqList` is the `<details>` list and owns the disclosure markup; `Faq` is the home page's three-question excerpt around it; `FaqGroups` is the whole set in its three groups for `/kkk`. All three read `i18n/faq.ts` through `faqEntries()`, which resolves `{season}`, `{minimum}`, `{area}` and `{authority}` from `site.ts` — and because the FAQ page's `FAQPage` JSON-LD is built from the same resolved objects it renders, the structured data cannot drift from the visible answer.
 - **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. **The identifiers block prints the email address** alongside the registry and VAT numbers, restored on 26 July 2026 when the address was tested — this is the page a KÜ board comes to for documents, and a written route belongs beside them.
@@ -491,7 +511,7 @@ State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empt
 - `hreflang` alternates on every page, plus `x-default` pointing at Estonian.
 - Canonical URLs absolute, from `site.domain`.
 - `LocalBusiness` JSON-LD sitewide; `Service` JSON-LD on service pages; `FAQPage` JSON-LD on the FAQ page only.
-- Sitemap generated at build; `robots.txt` in `public/`. Link to it as `/sitemap-index.xml` — since Astro 6, endpoints with a file extension are only reachable without a trailing slash.
+- Sitemap generated at build; `robots.txt` in `public/`. Link to it as `/sitemap-index.xml` — since Astro 6, endpoints with a file extension are only reachable without a trailing slash. **What `public/robots.txt` says and what the edge serves are two different questions** — Cloudflare's Managed robots.txt overrode this file until 27 July 2026 and would again if switched back on. Section 9.
 - Images: Astro's `<Image>`, WebP, explicit width and height, `loading="lazy"` below the fold. Alt text is required — a missing alt fails the build check.
 - `BreadcrumbList` JSON-LD on any page that renders a visible breadcrumb, built by `PageLayout` from the same `trail` array the breadcrumb renders. It is **not** emitted on pages whose breadcrumb is not shown: structured data describing a trail the reader cannot see is the mismatch Google's guidance warns about, and every other piece of structured data on this site is backed by something visible.
 
@@ -730,17 +750,9 @@ the alternative is a contact page that looks right and drops every enquiry.
 - **Cloudflare Email Routing active**, forwarding `info@lendavhollandlane.ee` to
   the operator's mailbox. A test message was sent and arrived.
 
-**Two items remain, both dashboard work:**
-
-- **`www` → apex.** `www` is attached to the Pages project, so it serves the site
-  rather than failing — but serving it and redirecting it are not the same thing,
-  and two hostnames serving identical HTML is a duplicate-content problem the
-  canonical tag mitigates rather than solves. **Whether the custom-domain
-  attachment already issues the redirect was not verified**; check it before
-  writing a Redirect Rule, and do not assume either way from this line.
-- **DNSSEC re-enabled from the Cloudflare side.** Delegating the nameservers
-  broke the chain of trust that was signed at the registrar. Re-signing is a
-  Cloudflare toggle plus a DS record at the registrar.
+**Both of the items this section listed as remaining are now done**, on
+27 July 2026, and both were dashboard work. They have their own subsections
+below: the `www` → apex Redirect Rule, and DNSSEC.
 
 **A `.com` redirect is NOT confirmed.** This section previously specified a `.com`
 → `.ee` redirect under the old name, and no one has said whether a `.com` under
@@ -768,8 +780,130 @@ them; the host-based rules are Cloudflare Bulk Redirects or Redirect Rules. Noth
 was added to the repo for them on purpose — a half-built redirect file that looks
 like the job is done is worse than an empty slot on the blocked list.
 
+### `www` → apex — done, as a Redirect Rule
+
+A Cloudflare Redirect Rule named **"Redirect from WWW to root"** 301s
+`https://www.lendavhollandlane.ee/*` to the apex, **preserving the path and the
+query string**. Configured 27 July 2026. This closes the duplicate-content
+question the canonical tag was mitigating rather than solving: the two hostnames
+no longer serve identical HTML, because one of them no longer serves HTML at all.
+
+**`www` remains a valid DNS record and a Pages custom domain, and that is not
+leftover work.** The rule intercepts at the edge, which means it only runs for
+requests that reach the zone — so the DNS record is what makes the redirect
+reachable. **Deleting the record would break the redirect rather than enforce
+it**: `www` would stop resolving, and a visitor who typed it would get a DNS
+failure instead of a 301 to the page they wanted. Leave both in place.
+
+### DNSSEC — active, and this is the one that can take the whole domain down
+
+Cloudflare signs the zone, and the **DS record is published at the `.ee` registry
+via Zone.ee**, which acts here as *registrar* rather than as DNS host — the
+nameservers are still Cloudflare's. The published DS is **key tag 2371, algorithm
+13 (ECDSAP256SHA256), digest type 2 (SHA-256)**.
+
+**The standing hazard, which is why this is written down rather than just marked
+done.** If the nameservers are ever moved off Cloudflare — to Zone.ee, to another
+host, in an emergency, for any reason — then **DNSSEC must be disabled at
+Cloudflare and the DS record removed at Zone.ee *before* the switch, and the old
+DS TTL must be allowed to expire.** Otherwise validating resolvers cannot build a
+chain of trust to the new nameservers and return **SERVFAIL for the entire
+domain**. Not a degraded site: no website and **no email**, for everyone whose
+resolver validates, until the DS is withdrawn and the TTL runs out. A nameserver
+change that would otherwise be a five-minute job becomes an outage of unknown
+length, and the failure looks like the new host being broken rather than like the
+old signature still being enforced.
+
+### Managed robots.txt — turned off, deliberately
+
+**Cloudflare's "Managed robots.txt" setting (AI Crawl Control → Overview) was
+enabled by default and was rewriting the `/robots.txt` this site serves.** What
+the edge returned was not `public/robots.txt`: it carried Content-Signal
+declarations and `Disallow` rules for ClaudeBot, GPTBot, Google-Extended,
+Amazonbot and five other crawlers, none of which is in this repository and none
+of which any session here had decided on. It was switched off on 27 July 2026, so
+**`public/robots.txt` is again the single source for what crawlers are told.**
+
+**This is the fourth instance of the external-dashboard hazard pattern**, with
+Formspree's reCAPTCHA and domain restriction (section 6) and Cloudflare's Web
+Analytics beacon injection (section 1). It has the same shape as the other three:
+a default-on toggle in someone else's UI changes what visitors — here, crawlers —
+receive, with no commit, no build and no trace in the repository.
+
+**No build check can catch it, and this one is worth stating plainly because
+`scripts/check-html.mjs` catches so much else.** Nothing in this project fetches
+the served `robots.txt` and compares it against the repo's copy; `npm run verify`
+runs against `dist/`, where the file is correct by construction. The check that
+would catch it is an assertion about a live URL, which no build-time gate can
+make. Re-checking the setting is on PLAN's launch checklist for the same reason
+the Web Analytics toggle is.
+
+**Why AI crawlers are allowed, since the default was to block them.** This site's
+purpose is lead generation, not traffic monetisation — SPEC section 1. Nothing
+here is sold by the pageview, so a crawler that reads the site and never sends a
+visitor costs us nothing, while an AI assistant that can name a Tallinn drone
+roof-cleaning operator with a published price and a stated authorisation is a
+discovery channel of exactly the kind SPEC section 2 describes. **Being citable
+is upside.** The calculus would be different for a publisher; it is not one.
+
+### Email — receive-only, and outbound is not domain-aligned
+
+**Cloudflare Email Routing forwards mail; it does not send it.** That is the
+limitation, and it is a property of the service rather than a misconfiguration.
+`info@lendavhollandlane.ee` receives and forwards correctly, which is what the
+site's contact routes depend on.
+
+**Outbound mail as `info@lendavhollandlane.ee` currently goes through Gmail's
+SMTP with an App Password.** The consequence is that **SPF and DKIM validate as
+`gmail.com`, not as `lendavhollandlane.ee`** — the message is authenticated, but
+against the wrong domain, so neither mechanism is *aligned* with the From
+address. The domain publishes **no DMARC record**, and alignment is only enforced
+by DMARC, so in practice this is accepted and mail is delivered.
+
+**What this means for anyone changing DNS: publishing a strict DMARC policy would
+break outbound mail.** `p=quarantine` or `p=reject` on this domain, with outbound
+still going through Gmail SMTP, would fail every reply the business sends to a
+customer — including quotes, which is the one message this whole site exists to
+produce. Do not add a DMARC record as a routine hardening step without changing
+the sending path first.
+
+**The upgrade path is a real mailbox on the domain**, with SPF and DKIM published
+for it so both align — Zone Premium Email at €3.95/month billed annually is the
+obvious candidate, alongside the domain that is already registered there. It
+would also make DMARC safe to publish. **Deferred until there is revenue**, as a
+cost decision rather than a technical one; see section 10.
+
+### Search Console and Bing — registered
+
+**Google Search Console: a Domain property, `sc-domain:lendavhollandlane.ee`.**
+The domain form was chosen over a URL-prefix property because it covers every
+subdomain and both protocols at once, which is the right shape for a site that
+also answers on `www` and redirects it. Verification was automatic — Cloudflare
+wrote the TXT record itself, being both the DNS host and the integration:
+
+```
+google-site-verification=3oEQO-IRgRFsDkug9tzD-7IMVyEWYo4KkCWxP3QLZoY
+```
+
+**That TXT record on the apex must not be deleted.** It is the only thing holding
+the verification, and removing it during an unrelated DNS tidy-up would drop the
+property — taking with it the ranking data that ARCHITECTURE section 1 names as
+the reason this site runs no analytics at all.
+
+`sitemap-index.xml` has been submitted. The site is also registered with **Bing
+Webmaster Tools**.
+
 ## 10. Decisions deliberately deferred
 
 Whether Decap CMS is ever needed (only if publishing becomes a real blocker) · Russian (structure is ready, content is not) · whether the survey business gets a section here or its own domain.
+
+**A real mailbox on the domain, so outbound mail is domain-aligned.** Today
+outbound goes through Gmail SMTP and authenticates as `gmail.com`; the domain
+publishes no DMARC, so it is delivered. A hosted mailbox — Zone Premium Email at
+€3.95/month annually, for instance — would align SPF and DKIM and make a DMARC
+policy safe to publish. **Deferred until there is revenue.** It is a recurring
+cost against a business that has not yet taken a job, and nothing is broken while
+it waits. Section 9 has the detail and the one thing not to do meanwhile, which
+is publish DMARC without moving the sending path first.
 
 **Analytics and hosting came off this list in Phase 9.** Both are decided, in section 1: Cloudflare Pages, and no analytics at all. The analytics slot being empty is the decision — do not read it as a gap and fill it.

@@ -330,30 +330,58 @@ that the site is not broken — see SPEC section 6. The gate is the list below b
    `PUBLIC_FORMSPREE_ID` set as a build variable. **The build failing on a missing
    `PUBLIC_FORMSPREE_ID` is the guard working, not a misconfiguration** —
    ARCHITECTURE section 9.
-2. **DNS — the migration is DONE.** `lendavhollandlane.ee` resolves and serves
-   the site as of 26 July 2026: nameservers delegated to Cloudflare, apex and
-   `www` attached to the Pages project, TLS live, Email Routing active. Two
-   dashboard items remain: **`www` → apex**, which may or may not already be
-   handled by the custom-domain attachment — check, do not assume — and
-   **DNSSEC re-enabled from the Cloudflare side**, since delegating the
-   nameservers broke the chain signed at the registrar. A `.com` → `.ee`
-   redirect is listed only *if* a `.com` under the new name turns out to be
-   ours; nobody has said it is, so do not assume it and do not buy one on the
-   strength of this line. ARCHITECTURE section 9.
+2. **DNS — DONE, including both items that used to be listed here as
+   remaining.** `lendavhollandlane.ee` resolves and serves the site as of
+   26 July 2026: nameservers delegated to Cloudflare, apex and `www` attached to
+   the Pages project, TLS live, Email Routing active. On 27 July 2026 the two
+   outstanding dashboard items were closed:
+   - **`www` → apex.** A Cloudflare Redirect Rule, "Redirect from WWW to root",
+     301s `https://www.lendavhollandlane.ee/*` to the apex, preserving path and
+     query string. **`www` stays as a DNS record and a Pages custom domain** —
+     the rule runs at the edge, so deleting the record would break the redirect
+     rather than enforce it.
+   - **DNSSEC.** Active. Cloudflare signs the zone; the DS record (key tag 2371,
+     algorithm 13, digest type 2) is published at the `.ee` registry through
+     Zone.ee, acting as registrar rather than as DNS host. **Standing hazard:
+     moving the nameservers off Cloudflare requires disabling DNSSEC at
+     Cloudflare and removing the DS at Zone.ee first, and waiting out the old DS
+     TTL** — otherwise validating resolvers return SERVFAIL for the whole
+     domain, website and email both. ARCHITECTURE section 9.
+
+   A `.com` → `.ee` redirect is listed only *if* a `.com` under the new name
+   turns out to be ours; nobody has said it is, so do not assume it and do not
+   buy one on the strength of this line. ARCHITECTURE section 9.
 3. **Re-run Lighthouse against the deployed site.** The Phase 9 pass was 100 across
    the board but it was localhost, with no CDN, no TLS handshake and no real
    latency. Those are not the numbers SPEC section 6 gates on.
-4. Search Console: verify the property, submit `/sitemap-index.xml`.
+4. **Search Console — DONE, 27 July 2026.** Registered as a **Domain property**,
+   `sc-domain:lendavhollandlane.ee`, verified automatically by a TXT record
+   Cloudflare wrote on the apex
+   (`google-site-verification=3oEQO-IRgRFsDkug9tzD-7IMVyEWYo4KkCWxP3QLZoY`).
+   **That record must not be deleted** — it is the whole of the verification, and
+   losing the property means losing the only ranking data this site collects.
+   `sitemap-index.xml` submitted. Also registered with **Bing Webmaster Tools**.
 5. **Send one real enquiry through the deployed form and confirm it in the inbox, not
    in the network panel.** A 200 from Formspree, or a 302 to its thanks page, says the
    request was well formed and the endpoint is right; it is not delivery. The mail still
    has Formspree's own sending and a Cloudflare Email Routing forward to survive, and it
    arrives at `info@lendavhollandlane.ee` — which forwards to the operator's mailbox, not
-   to any address a session can search. ARCHITECTURE section 6.
+   to any address a session can search. ARCHITECTURE section 6. **Replying to it is a
+   different path from receiving it**: Email Routing is receive-only, and outbound as
+   `info@` goes through Gmail SMTP, so it authenticates as `gmail.com` — ARCHITECTURE
+   section 9.
 6. **Confirm Cloudflare Web Analytics is OFF** and that no beacon is injected.
    `/privaatsus` states that the site runs no analytics; a dashboard toggle can make
    that false with no commit and nothing in the repo can detect it. See
    `src/i18n/privacy.ts`.
+7. **Confirm Cloudflare's Managed robots.txt is still OFF** (AI Crawl Control →
+   Overview) and that `https://lendavhollandlane.ee/robots.txt` is byte-for-byte
+   what `public/robots.txt` contains. It was **on by default** and was serving
+   Content-Signal declarations and `Disallow` rules for ClaudeBot, GPTBot,
+   Google-Extended, Amazonbot and five others until 27 July 2026. **No build
+   check can catch this** — `npm run verify` reads `dist/`, where the file is
+   correct by construction, and nothing fetches the served copy. Fetch it by
+   hand. ARCHITECTURE section 9.
 
 ---
 
@@ -400,6 +428,13 @@ pointing at a dead domain would fail silently and invisibly — no error, no fai
 gate, just a crawler that never finds the sitemap. That is the exact failure class
 this project has already paid for twice: the twenty pages with no hreflang, and the
 thirty-seven HTML comments in production.
+
+**This phase closes the repository end of that file and not the other end.** Even
+as a generated endpoint, what the crawler receives is whatever Cloudflare serves,
+and Cloudflare's Managed robots.txt was overriding it entirely until 27 July 2026
+— see the launch checklist above and ARCHITECTURE section 9. Do not finish this
+phase believing `robots.txt` is now guarded end to end: it is guarded up to
+`dist/`, and the edge is checked by hand.
 
 **The half that needs investigation — `astro.config.mjs`.** Importing
 `src/config/site.ts` into it would close the last copy. It is plausible, since Astro
@@ -503,13 +538,6 @@ page, which is precisely the change that should not be made without the read it 
 paired with. A future session must not resolve it by adding the address on a tidy-up —
 `src/i18n/privacy.ts` says the same beside the copy.
 
-**Google Search Console verification — NO LONGER BLOCKED.** It waited on the domain
-being registered, then on the DNS migration; both are done and
-`lendavhollandlane.ee` resolves, so nothing is holding it. It is now launch-checklist
-step 4 rather than a blocker. It is the ranking half of the analytics decision
-(ARCHITECTURE section 1), so the site has no answer to "which searches find us" until
-it is done. Submit `/sitemap-index.xml` at the same time.
-
 **Google Business Profile verified.** One of the two discovery channels named in SPEC
 section 2, and the local-discovery half of the same analytics decision.
 
@@ -545,7 +573,30 @@ retention period came off it in Phase 9, replaced by a criterion rather than a n
   nameservers delegated to Cloudflare, apex and `www` attached to the Pages project,
   TLS live. This was already a launch-checklist step rather than a blocker; it is
   recorded here because **Google Search Console was blocked on it and no longer is.**
-  Two dashboard items remain and are on the checklist: `www` → apex, and DNSSEC.
+  The two dashboard items outstanding that day — `www` → apex, and DNSSEC — were
+  both done on 27 July 2026; see the group below.
+
+**And on 27 July 2026, the last item on this list that was not about the operator:**
+
+- **Google Search Console verification — DONE, not merely unblocked.** It waited
+  on the domain being registered, then on the DNS migration. Both cleared, and it
+  is now a Domain property, `sc-domain:lendavhollandlane.ee`, verified by a
+  Cloudflare-written TXT record on the apex, with `sitemap-index.xml` submitted and
+  **Bing Webmaster Tools** registered alongside it. This is the ranking half of the
+  analytics decision (ARCHITECTURE section 1) — the reason the site can run no
+  analytics script and still answer "which searches find us". Launch-checklist
+  step 4 has the record that must not be deleted.
+
+**Nothing recorded on 27 July 2026 blocks anything.** Four pieces of live
+infrastructure were configured in external dashboards that day and written into
+ARCHITECTURE section 9 — the `www` → apex redirect, DNSSEC, Cloudflare's Managed
+robots.txt turned off, and Search Console — plus the known email limitation:
+Email Routing is receive-only, outbound as `info@` goes through Gmail SMTP and so
+authenticates as `gmail.com` rather than the domain. **The domain publishes no
+DMARC, which is what makes that work, and publishing a strict policy without
+first moving the sending path would break every reply the business sends.** The
+fix is a real mailbox on the domain and it is deferred until there is revenue —
+ARCHITECTURE section 10. It is not on this list because nobody is waiting on it.
 
 The list is only worth reading if it is true, so take an item off it the moment it is
 answered.
