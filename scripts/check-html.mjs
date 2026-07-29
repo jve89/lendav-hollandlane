@@ -7,6 +7,7 @@
  *  4. no HTML comment survives into any built page
  *  5. no <form> posts to nowhere
  *  6. the sitemap lists every indexable page, with the same hreflang set the page carries
+ *  7. no file under public/video/ exceeds the 1.5 MB hero video cap
  *
  * Check 2 exists because a build can pass while emitting structured data as literal
  * text. It did, once. See the Phase 0 notes.
@@ -42,8 +43,23 @@
  * The page's own `<link rel="canonical">` is used as its identity, because BaseLayout
  * builds the canonical and the self-referencing alternate from the same array — so if
  * this check can find the page in the sitemap at all, those two already agree.
+ *
+ * Check 7 exists because PLAN Phase 10 caps the hero video at 1.5 MB and that cap is
+ * the one hero constraint a machine can actually check. The rest of the list — 8–12
+ * seconds, no audio track, a scrimmed background loop — is a judgement about footage;
+ * a byte count is not. The CSS `@supports` gap is documented as a manual step for
+ * exactly the opposite reason, so where a guard CAN be mechanical it should be one
+ * rather than a paragraph somebody is trusted to have read.
+ *
+ * It reads `public/video/`, NOT `dist/video/`, and that is deliberate. `public/` is
+ * what the repository commits and it cannot silently pass: if Astro's static-copy
+ * behaviour ever changed, or the directory were excluded, a check reading `dist/`
+ * would report success on a file it never saw. That is the silent-pass failure class
+ * checks 4, 5 and 6 all exist to prevent, and this file should not reintroduce it.
+ * The directory being absent is not an error — that is the no-footage state, which
+ * SPEC section 9 says is a finished design rather than a missing asset.
  */
-import { readdir, readFile } from 'node:fs/promises'
+import { readdir, readFile, stat } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { join, extname } from 'node:path'
 
@@ -250,6 +266,48 @@ if (!existsSync(SITEMAP)) {
   }
 }
 
+/*
+ * 7. the hero video is inside its budget
+ *
+ * PLAN Phase 10 caps it at 1.5 MB, which is TIGHTER than SPEC section 9's 2 MB and
+ * deliberately so — the SPEC ceiling is not a licence to spend up to it. Footage that
+ * cannot meet the cap is re-cut or re-encoded, never exempted, so this check does not
+ * take an override and must not be given one.
+ */
+const VIDEO_DIR = join('public', 'video')
+const VIDEO_MAX_BYTES = Math.round(1.5 * 1024 * 1024)
+
+/** Every file under a directory, recursively. Absent directory -> no files. */
+async function filesUnder(dir) {
+  if (!existsSync(dir)) return []
+  const out = []
+  for (const e of await readdir(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name)
+    if (e.isDirectory()) out.push(...(await filesUnder(p)))
+    else if (e.isFile()) out.push(p)
+  }
+  return out
+}
+
+const mb = (bytes) => `${(bytes / 1024 / 1024).toFixed(2)} MB`
+
+const videoFiles = await filesUnder(VIDEO_DIR)
+for (const f of videoFiles) {
+  const { size } = await stat(f)
+  if (size > VIDEO_MAX_BYTES) {
+    /* The byte counts are printed as well as the megabytes because a file one
+       byte over the cap rounds to "1.50 MB exceeds the 1.50 MB cap", which reads
+       like a bug in the check rather than a file to re-encode. */
+    errors.push(
+      `${f}: ${mb(size)} exceeds the ${mb(VIDEO_MAX_BYTES)} hero video cap (PLAN Phase 10) ` +
+        `by ${(size - VIDEO_MAX_BYTES).toLocaleString('en-US')} bytes ` +
+        `(${size.toLocaleString('en-US')} of ${VIDEO_MAX_BYTES.toLocaleString('en-US')}).\n` +
+        `      Re-cut or re-encode it. Do not raise the cap — the budget is the constraint, ` +
+        `not the footage.`,
+    )
+  }
+}
+
 if (errors.length) {
   console.error(`check-html: ${errors.length} problem(s)`)
   for (const e of errors) console.error(`  ${e}`)
@@ -257,5 +315,6 @@ if (errors.length) {
 }
 console.log(
   `check-html: OK — ${files.length} page(s): links, JSON-LD, headings, meta, no comments, ` +
-    `forms post somewhere, sitemap hreflang matches every page`,
+    `forms post somewhere, sitemap hreflang matches every page; ` +
+    `${videoFiles.length} video file(s) under ${mb(VIDEO_MAX_BYTES)}`,
 )

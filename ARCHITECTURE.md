@@ -1,5 +1,24 @@
 # ARCHITECTURE.md — Lendav Hollandlane website
 
+**Version 1.9 · 29 July 2026** — **the hero video is built, so the third
+client-JavaScript exception in section 2 flips from PLANNED to BUILT and the
+Hero contract in section 6 is rewritten as a single accurate contract with its
+SUPERSEDED-PENDING box removed.** What shipped differs from what 1.8 anticipated
+on four counts, each recorded where it belongs: the video is a **scrimmed
+background** behind the hero text rather than a media band above the price
+block; a new `--hero-scrim` token carries the overlay; the hero text is
+**remapped in the footage state** because no scrim alpha PLAN permits can hold
+AA over a bright frame; and the `<source media="...">` gate **no longer carries a
+width condition**, so a phone fetches the video too — a product decision, taken
+against the fact that most of this site's traffic is mobile, and reversible on a
+PageSpeed number rather than on a precaution. Section 8 gains **check 7**, which
+fails the build if any file under `public/video/` exceeds 1.5 MB. Section 4
+records that the poster lives in `src/assets/` while the video lives in
+`public/video/`, and why. **SPEC sections 6 and 9 were corrected in the same
+commit** — they described a media band and promised zero video bytes on mobile,
+and both statements are now false. The open `TODO:` in the old contract, asking
+whether `media` on `<source>` is honoured, is **answered for Chrome** below.
+
 **Version 1.8 · 27 July 2026** — **section 2 names a third client-JavaScript
 exception, and it is planned rather than built**: the hero video's viewport-entry
 playback, approved with the rest of the visual decisions now written into PLAN's
@@ -164,7 +183,7 @@ No other runtime dependencies. Adding one requires explicit approval — see CLA
 
 1. **The mobile navigation toggle, and FAQ disclosure.** Both use native `<details>`, so **this exception has never actually been taken** — it costs zero bytes. It stays named because the toggle is where a future session would reach for a script first.
 2. **The quote form's Formspree submit** — `QuoteForm.astro`, one `is:inline` script, 23 lines of code. **This is the only client JavaScript the site ships today.** Full contract in section 6; the reasoning is below.
-3. **The hero video's viewport-entry playback — PLANNED, not built.** Approved on 27 July 2026 with the rest of the visual decisions in PLAN's Phase 10, where the constraints are. The hero loads `preload="none"` and starts playback when the media band enters the viewport, which needs a script; the constraint list, the budget and the acceptance gate are in PLAN and are not repeated here. **It is named on this list now, before it exists, precisely so it arrives as a decision that was taken rather than as a script that turned up in a diff.** Nothing may be written against it until there is real footage — SPEC section 9.
+3. **The hero video's viewport-entry playback — BUILT, 29 July 2026.** `Hero.astro`, one `is:inline` script, 22 lines. Approved on 27 July 2026 and named on this list before it existed, precisely so it arrived as a decision that was taken rather than as a script that turned up in a diff. The hero loads `preload="none"` and an `IntersectionObserver` starts playback when the hero enters the viewport, **pausing it when it leaves and resuming on re-entry** — browsers throttle timers off-screen but keep decoding video, so an observer that disconnected after first entry would leave a phone decoding for the rest of the session. Full contract in section 6; the budget and the acceptance gate stay in PLAN. **It is emitted only when the footage exists**, so the no-footage hero — which is the launch state — still ships no client JavaScript at all. Not a precedent for a fourth.
 
 The language switch is a link to a real URL, not a JS toggle — this matters for indexing.
 
@@ -176,7 +195,13 @@ The language switch is a link to a real URL, not a JS toggle — this matters fo
 
 **Why it is progressive enhancement rather than a dependency, which is the whole basis on which it was taken.** With JavaScript disabled there is no listener, nothing calls `preventDefault()`, and the browser performs exactly the native POST it performed before the script existed — landing on Formspree's page, which is precisely what happened before. **It degrades to yesterday's behaviour, not to broken, and the enquiry arrives either way.** Any failure of the enhanced path — `fetch` throwing, CORS refused, a non-ok response — falls back to `form.submit()` for the same reason. A form that stops working when a script fails would not have been permitted here whatever it bought.
 
-The hero video was originally specified inside that budget with no script at all: `<video>` with `autoplay muted loop playsinline`, and `<source media="...">` deciding per-viewport and per-motion-preference which file is fetched, if any. **The 27 July 2026 decision above changes what starts playback and nothing else** — `preload="none"` plus a viewport-entry trigger, which is exception 3. What does not change: `<source media="...">` still decides *what is fetched*, both reduced-motion guards in section 6 still stand, and a third-party video player is still a dependency decision rather than an implementation detail. **The rule underneath is unchanged too — a hero that needs JavaScript to decide what to *load* is a design that has gone wrong**; deferring when it *plays* is a different thing, and it is the only thing that was permitted. The Hero contract in section 6 still describes the no-script form and **is marked SUPERSEDED-PENDING at its head** rather than rewritten — it is reconciled by the session that holds the footage, not by this note.
+### The third exception, as built
+
+The hero video was originally specified inside that budget with no script at all: `<video>` with `autoplay muted loop playsinline`, and `<source media="...">` deciding per-viewport and per-motion-preference which file is fetched, if any. **What was permitted, and what was built, changes what starts playback and nothing else** — `preload="none"` plus a viewport-entry trigger. What did not change: `<source media="...">` still decides *what is fetched*, both reduced-motion guards in section 6 still stand, and a third-party video player is still a dependency decision rather than an implementation detail. **The rule underneath is unchanged too — a hero that needs JavaScript to decide what to *load* is a design that has gone wrong**; deferring when it *plays* is a different thing, and it is the only thing that was permitted.
+
+**It passes the same test the quote form's exception passes, and that is the whole basis on which it was taken.** With JavaScript disabled there is no observer, nothing calls `play()`, `preload="none"` means the mp4 is never fetched, the `is-playing` class is never added, and the visitor keeps the poster. **Measured rather than argued**, on a build with the media present and scripts disabled: `readyState` 0 (`HAVE_NOTHING`) and `networkState` 1 (`IDLE`) — the video element requested no bytes at all — with the poster layer at full opacity, in both locales. It degrades to a *designed* state, not to a broken one, exactly as `BeforeAfter`'s empty state does.
+
+**What could not be observed, and should be, once someone runs this on a normal machine.** Actual decode and playback were never seen: the automated browser reported `document.visibilityState === 'hidden'` throughout, and Chrome will neither load media nor deliver `IntersectionObserver` callbacks to a page it is not rendering. What *was* confirmed is that the observer fires and calls `play()` — `paused` went false with nothing calling it by hand — and that the poster-fade rule works when `is-playing` is applied. **Pause-on-exit was not observed and is inferred from the code.** Same class of gap as Phase 6's "works with JavaScript disabled", which was strong-but-by-proxy for a while: write it up as inferred until somebody watches it.
 
 ## 3. Internationalisation
 
@@ -238,11 +263,12 @@ name out of a diagram that does not need one.
 │   ├── favicon-32.png
 │   ├── apple-touch-icon.png        # 180×180, full bleed — iOS masks it itself
 │   ├── robots.txt
-│   ├── video/                      # hero loop, if self-hosted — see section 6
+│   ├── video/                      # hero.mp4. NOT processed by Astro — see below.
+│   │                               #   check 7 enforces the 1.5 MB cap on this path
 │   └── images/
-│       ├── hero/                   # hero poster still, from our own footage
 │       └── og/                     # default.png — one image, no text. See section 7
 └── src/
+    ├── assets/                     # hero-poster.jpg — PROCESSED by Astro. See below.
     ├── content.config.ts           # zod schemas for every collection
     ├── config/
     │   ├── site.ts                 # SINGLE SOURCE: phone, email, prices, company details, service area
@@ -324,6 +350,20 @@ name out of a diagram that does not need one.
             ├── areas/[slug].astro
             └── blog/{index,[slug]}.astro
 ```
+
+**The hero's two assets live in two directories, and that is deliberate rather
+than an inconsistency to tidy up.** Anyone swapping in real footage — or looking
+for the poster in three weeks — needs this in one sentence:
+
+| asset | lives in | because |
+|---|---|---|
+| `hero-poster.jpg` | `src/assets/` | Astro **processes** it. That is what produces the AVIF/WebP `srcset` at four widths, the intrinsic `width`/`height` that stops any layout shift, and a build error if it goes missing. Nothing in `public/` can be processed — this is the same reason `jobs`' photos live in `src/`. |
+| `hero.mp4` | `public/video/` | Astro does **not** process video, so `src/` would buy nothing — and `scripts/check-html.mjs` check 7 enforces the 1.5 MB cap against this exact path. |
+
+Swapping in real footage is dropping both files at those two paths. No code
+change, the same contract `BeforeAfter` has. The poster's extension is not fixed:
+`Hero.astro` globs `hero-poster.{jpg,jpeg,png,webp,avif}`, so the operator can
+drop whatever the camera produced.
 
 **`Seo.astro` was removed from this tree in Phase 5, and it is not coming.** It
 was listed here from the start and never built, because `BaseLayout` owns the
@@ -460,7 +500,7 @@ unattributed review must not be publishable.
 
 - **`BaseLayout`** — props `{ title, description, locale, routeKey, brandSuffix?, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, the icon and `theme-color` tags, Open Graph and Twitter card, and `LocalBusiness` JSON-LD built from `site.ts`. **`ogImage` now has a default** — the one sitewide image, section 7 — so a page that passes nothing still emits a card; no page overrides it today. `theme-color` is resolved from `tokens.css` rather than typed, and throws if the token is gone. Every page goes through it. **It also owns the `<title>` brand suffix**: `title` is the page-specific part only, and ` | ${site.brandText}` is composed here, in the one expression every page title passes through — `PageLayout` forwards and composes nothing. `<title>` and `og:title` are both built from that string so they cannot drift apart. `brandSuffix={false}` suppresses the suffix for a page whose title already carries the brand; it does not license authoring the name, which still comes from `site.brandText`. No page sets it today. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
-- **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. Renders a looped video of our own work with the price and credentials block directly beneath it, and degrades through a defined chain when the footage does not exist. Full contract below — **and it is marked SUPERSEDED-PENDING**: the 27 July 2026 visual decisions contradict part of it, PLAN's Phase 10 holds the binding list, and the box at the head of that contract says exactly which parts still stand.
+- **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. A type-led hero — headline, sub, and the price and credentials block — which **gains a scrimmed background video** when the footage exists, and renders exactly as it always did when it does not. The no-footage state is the default path and the launch state. Full contract below.
 - **`QuoteForm`** — props `{ locale, defaultService? }`. A native `<form action method="POST">` posting straight to Formspree. **That native POST is the baseline, and it is the requirement rather than an optimisation: it works with JavaScript disabled, and it is what runs when the enhancement does not.** On top of it sits one `is:inline` script — the second named exception in section 2, and the only client JavaScript on the site — which intercepts the submit, POSTs by `fetch` with `Accept: application/json`, and navigates to our own thank-you page, because Formspree's `_next` redirect is a paid feature. **It reads the redirect target out of the rendered `_next` field rather than from a second copy of the expression that built it**, so the two mechanisms cannot disagree, and it navigates by same-origin path so a preview build stays on the preview build. Any failure — `fetch` throwing, CORS refused, a non-ok response — logs and calls `form.submit()`, so the browser posts natively; none of those failure modes leaves a submission on Formspree, so the re-post cannot duplicate an enquiry. *(This bullet said "**Zero client JavaScript** … because there is no script to disable" until 26 July 2026. There is now a script to disable, and disabling it returns the form to the native POST rather than breaking it — which is the honest version of the same guarantee.)* `@formspree/ajax` and `@formspree/react` are still rejected — they are dependencies, the list in section 1 is closed, and the AJAX path needs neither. Native HTML validation only: `required`, `type="email"`, `inputmode`, `autocomplete`, no scripted checks and no `novalidate`. **Required: name, email, address. Optional: phone, area, message** — the reasoning is in `src/i18n/contact.ts` and is deliberate; a required area field a homeowner cannot answer is a field they abandon. The service options come from `servicesFor()`, never from a list in the component, so they cannot drift from the service pages. Spam is Formspree's `_gotcha` honeypot only — no CAPTCHA, no third-party script — hidden from sight, from the tab order and from assistive tech. `_next` must be an **absolute** URL, built from `site.domain` and the route map.
 
   **The endpoint comes from `src/config/formspree.ts`, which imports the id from `astro:env/client` — not from `import.meta.env`.** That is the difference between a guard and a comment. `import.meta.env` is inlined at build time in a static build, so an unset variable becomes `undefined`, the form posts nowhere, and `npm run verify` passes: the page builds and every link resolves. `astro.config.mjs` declares `PUBLIC_FORMSPREE_ID` required in `env.schema`, and Astro coerces an empty string to missing before validating, so **both a missing and an empty value fail `astro build`**. `scripts/check-html.mjs` check 5 is the second, independent guard, asserting on the built output. Do not simplify the import back.
@@ -476,80 +516,190 @@ unattributed review must not be publishable.
 - **`Faq` / `FaqList` / `FaqGroups`** — `FaqList` is the `<details>` list and owns the disclosure markup; `Faq` is the home page's three-question excerpt around it; `FaqGroups` is the whole set in its three groups for `/kkk`. All three read `i18n/faq.ts` through `faqEntries()`, which resolves `{season}`, `{minimum}`, `{area}` and `{authority}` from `site.ts` — and because the FAQ page's `FAQPage` JSON-LD is built from the same resolved objects it renders, the structured data cannot drift from the visible answer.
 - **`Credentials`** — props `{ locale }`. The body of `/meist`. Every fact is read from `site.ts` via `aboutSections()`: the operator, the legal name, the authority, the exact authorisation and insurance references, the area and the season. **The identifiers block prints the email address** alongside the registry and VAT numbers, restored on 26 July 2026 when the address was tested — this is the page a KÜ board comes to for documents, and a written route belongs beside them.
 
-### `Hero` — the contract *(SUPERSEDED-PENDING as of 27 July 2026 — read this box first)*
+### `Hero` — the contract
 
-> **This contract is not current truth, and it is not yet replaced.** The visual decisions
-> taken on 27 July 2026 contradict part of what is written below, and the replacement is
-> **deliberately not written here**: rewriting it is design work for the session that holds
-> the real footage, and doing it in advance would be specifying a hero against footage
-> nobody has seen.
->
-> **What is contradicted.** This contract specifies `autoplay muted loop playsinline` with
-> **no script**. The approved hero instead loads `preload="none"` and **triggers playback on
-> viewport entry**, which needs one — the third client-JavaScript exception in **section 2**.
-> It also adds constraints this contract does not carry: a scrimmed background loop at
-> 55–65% opacity, no audio track at encode, and a budget of **under 1.5 MB for 8–12 seconds
-> at 1080p**, tighter than the 2 MB / 12-second caps stated further down.
->
-> **What still stands, unaffected.** The three-state fallback chain and state 3 as the
-> default path; both reduced-motion guards, neither dropped because the other exists;
-> `<source media="...">` deciding what is *fetched*; `aria-hidden` and no player library;
-> the poster as the LCP element; self-hosting in `public/video/`. The decision changed *when
-> the video plays*, not *what the page loads*.
->
-> **The binding constraint list is PLAN's Phase 10, "The visual decisions".** Where that
-> list and the text below disagree, the list wins, and **the session that builds the hero
-> reconciles this section in the same commit** — at which point this box comes out. Do not
-> quote the paragraphs below as settled while it is still here.
+Built 29 July 2026. This replaces the SUPERSEDED-PENDING contract that stood here from
+27 July, which specified `autoplay` with no script and a media band above the price
+block. Both are gone; what follows is what ships.
 
-**Structure.** One `<section>` containing the media band, then the price and credentials block. Nothing sits between them and the block is not a separate component boundary — the pairing is the point. The block reads its price from `site.ts` via `PriceTable`'s rules (from-price, `alates` prefix, excluding VAT, labelled) and its credentials from `site.credentials`. The Hero never takes a price, a phone number or a credential as a prop.
+**Structure.** One `<section>`. In the no-footage state it contains only the type: the
+pills, the `h1`, the sub, the actions, and the price and credentials block. **When the
+footage exists the section gains a background behind that type — not a band above it.**
+Nothing sits between the type and the price block, and the block is not a separate
+component boundary; the pairing is the point. The block reads its price from `site.ts` via
+`PriceTable`'s rules (from-price, `alates` prefix, excluding VAT, labelled) and its
+credentials from `site.credentials`. The Hero never takes a price, a phone number or a
+credential as a prop.
 
-**Media, when footage exists.** Native `<video>`, no player library. No `controls`, no sound, no audio track in the file at all. `muted` and `playsinline` are both load-bearing: without them iOS refuses to autoplay and takes the video fullscreen. The element carries no `aria-label` and is `aria-hidden`, because it is decoration — every claim it makes visually is also made in text beneath it. A hero that only communicates through video fails for a screen reader and fails with the video blocked.
+*Background, not a band, is the one structural thing that changed.* PLAN's Phase 10 list
+said "scrimmed background loop … background, not foreground" and that list governs. SPEC
+section 9 said "media band" and **was corrected in the same commit** rather than left to
+contradict this.
 
-**Two independent guards, both required.** Reduced motion is protected twice, and neither guard is a fallback for the other. They are built together or the component is not done.
+**The layers, bottom to top.** All of them are `position: absolute; inset: 0`, so they add
+no height and nothing can shift when the page loads. `.hero` is `position: relative` with
+`isolation: isolate`, which keeps them in their own stacking context and out of the
+header's way — `Header.astro` is fixed at `z-index: 60`.
 
-*Guard one — the fetch never happens.* `<source media="...">` gates which file is fetched on viewport and motion preference. When nothing matches, the browser fetches nothing and paints the poster:
+| z | layer | |
+|---|---|---|
+| 4 | `.hero__inner` | the type |
+| 3 | `.hero::after` | the radial glow |
+| 2 | `.hero__scrim` | `var(--hero-scrim)`, uniform |
+| 1 | `.hero__poster` | `<Picture>`, faded out once playback starts |
+| 0 | `.hero__video` | `<video>`, `object-fit: cover` |
+
+**The glow and the video do not fight, and this is the decision.** `--hero-glow` is
+unchanged in value and geometry; it simply moved off `.hero`'s `background` shorthand onto
+`.hero::after` so it can paint *above* the scrim. Over `--bg` it lifts, which is its job
+today. Over scrimmed footage `#14202e` is darker than most frames, so the identical layer
+reads as a vignette. Same token, both times concentrating attention on the type. The
+no-footage rendering is pixel-identical to the old shorthand — the same gradient over the
+same base colour.
+
+**Media, when footage exists.** Native `<video>`, no player library. No `controls`, no
+`autoplay`, no sound, **no audio track in the file at all** — stripped at encode (`-an`),
+not muted at playback. `muted` and `playsinline` are both load-bearing: `muted` is what
+lets a scripted `play()` run without a user gesture, and without `playsinline` iOS takes
+the video fullscreen. The media container is `aria-hidden`, because it is decoration —
+every claim it makes visually is also made in text beneath it. A hero that only
+communicates through video fails for a screen reader and fails with the video blocked.
+
+**One encoding, `mp4`.** Only one file is ever fetched, so a second is repository weight
+the browser never sees. If real footage cannot meet 1.5 MB as H.264 at acceptable quality,
+a `webm` goes *ahead* of it with the same `media` attribute — a decision to take against a
+real encode, not in advance.
+
+**The poster is a `<picture>`, and the `poster` attribute is deliberately not used.** The
+attribute takes a single URL and cannot carry a `srcset`, which would throw away the whole
+responsive pipeline; using both would fetch two stills and show the wrong one. So the
+poster is an Astro `<Picture>` — AVIF and WebP at 640/960/1280/1920, `sizes="100vw"`,
+`alt=""`, `loading="eager"`, `fetchpriority="high"`, with the intrinsic `width` and
+`height` that stop any layout shift. It sits *above* the video and fades out only when
+playback actually starts, so there is never a frame in which an undecoded `<video>` paints
+an empty box. **If playback never starts, for any reason, the poster simply stays** — and
+that covers no JavaScript, reduced motion, a failed fetch and an unsupported codec with
+one mechanism.
+
+**Both reduced-motion guards, plus guard one in its script form.** Neither original guard
+is dropped because another exists.
+
+*Guard one — the fetch never happens.* `<source media="...">` gates whether any file is
+selected at all. When nothing matches, `currentSrc` is empty, the browser fetches nothing,
+and `play()` rejects:
 
 ```html
-<video autoplay muted loop playsinline preload="none"
-       poster="/images/hero/poster.webp" aria-hidden="true">
-  <source src="/video/hero.webm" type="video/webm"
-          media="(min-width: 48em) and (prefers-reduced-motion: no-preference)">
+<video class="hero__video" muted loop playsinline preload="none">
   <source src="/video/hero.mp4" type="video/mp4"
-          media="(min-width: 48em) and (prefers-reduced-motion: no-preference)">
+          media="(prefers-reduced-motion: no-preference)">
 </video>
 ```
 
-Media queries on `<source>` are evaluated once at page load and never re-evaluated on resize — correct for a landing page, and the reason no resize listener is needed.
+**There is no width condition, and its absence is a decision rather than an omission.**
+This gate read `(min-width: 48em) and …` in the old contract, which meant no phone ever saw
+the hero video. Excluding mobile is a *product* decision dressed as a performance guard:
+the poster is the LCP element and is already painted, and the video is `preload="none"`
+fetched on viewport entry, so it never competes for LCP. Most of this site's traffic is
+mobile — SPEC section 7 — so a hero video no mobile visitor ever sees defeats its purpose.
+**If PageSpeed mobile on the deployed site drops below 90, re-add the width condition,
+citing that number.** Decide it on a measurement, and do not reinstate it as a precaution.
 
-*Guard two — no motion is ever visible.* Independently of the above, CSS hides the video outright when the visitor has asked for reduced motion, revealing the poster beneath:
+Media queries on `<source>` are evaluated once at page load and never re-evaluated on
+resize — correct for a landing page, and the reason no resize listener is needed.
+
+*Guard one, in the script.* The observer checks `matchMedia('(prefers-reduced-motion: reduce)')`
+and does not observe at all. This is not a third guard; it closes the hole guard one has
+always had — a browser that ignores `media` on `<source>` would fetch and play anyway —
+and with a scripted trigger it costs one line.
+
+*Guard two — no motion is ever visible.* Independently of both, CSS removes the video:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
   .hero__video { display: none; }
-  .hero__poster { display: block; }
 }
 ```
 
-**Why both.** They fail differently. Guard one is the one that saves bandwidth, but it depends on `media` on `<source>` being honoured — support was removed from the spec in 2014 and only restored in Chrome 120 and Firefox 120, so a browser that ignores it silently fetches and plays the video. Guard two cannot prevent the download, but it is plain CSS that has worked for a decade and it guarantees the accessibility outcome regardless. One protects the budget, the other protects the visitor. Neither may be dropped on the grounds that the other exists.
+The poster needs no rule of its own: it is already above the video and only fades on
+`is-playing`, which cannot be added when the video is gone.
 
-`TODO:` verify guard one on real iOS Safari and Android Chrome once footage exists, particularly `prefers-reduced-motion` inside the `media` attribute. If it turns out not to be honoured the design still holds — guard two carries the accessibility outcome and only the bandwidth saving is lost — but we should know rather than assume.
+**Why all of them.** They fail differently. Guard one saves the bandwidth but depends on
+`media` on `<source>` being honoured. Guard two cannot prevent a download, but it is plain
+CSS that has worked for a decade and it guarantees the accessibility outcome regardless.
+One protects the budget, the other protects the visitor.
 
-**The fallback chain.** Three states, and the component must implement all three from the start:
+**The old `TODO:` here asked whether `media` on `<source>` is honoured. Answered for
+Chrome, 29 July 2026, by direct test rather than by reading release notes:** a `<source>`
+whose query is false leaves `currentSrc` **empty** and fetches nothing, and a true one
+resolves — tested with `(min-width: 99999px)`, `(min-width: 1px)`,
+`(prefers-reduced-motion: reduce)` and `(prefers-reduced-motion: no-preference)`, which is
+the specific case that was in doubt. **Still unverified on real iOS Safari and Android
+Chrome**, and that remains worth doing on a real handset; if either ignores it the design
+still holds, because guard two carries the accessibility outcome and only the bandwidth
+saving is lost.
 
-1. **Video** — poster paints immediately and is the LCP element; video replaces it when decoded.
-2. **Poster only** — a real still from our own footage. Served to phones, to reduced-motion visitors, and to anyone whose video fails.
-3. **No footage at all** — no video, no poster. Renders a designed, image-free hero: the headline, the sub, and the price and credentials block, carried by type and the tokens in `tokens.css`. Not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon".
+**Playback.** An `IntersectionObserver` at `threshold: 0.25` starts playback on entry and
+**pauses on exit, resuming on re-entry**. The observer is deliberately *not* disconnected
+after first entry: browsers throttle timers off-screen but keep decoding video, so
+disconnecting would leave a phone decoding for the rest of the session for something nobody
+is looking at. `play()`'s rejection is swallowed — that is the entire fallback path, since
+a rejection means guard one left no source or the codec failed, and in both cases the
+poster is already the right answer. The script is emitted **only when the footage exists**.
 
-State 3 is the **default path** and ships first, exactly as `BeforeAfter`'s empty state does. It must look finished, for two reasons: it is the state every preview build and every review renders in until the first flight lands its footage, and it is what launch falls back to if that footage slips or turns out unusable. A hero that looks broken without footage will ship looking broken.
+**The footage-state text remap, which is measured and is not styling.** The scrim alone
+cannot make this hero accessible, and no alpha PLAN permits can. Against the worst case a
+frame can present — pure white, the same bound `--glass-media` is derived against —
+`--ink-3` reaches 2.26:1 and `--muted` 1.76:1, and at PLAN's 65% ceiling they are still
+2.70:1 and 2.10:1. So under `.hero--media`:
 
-*(Corrected in Phase 6. This line said "it is what the site launches with and may be what it runs on for months", which was true only under the old ordering, where launch preceded the content drop. SPEC section 9 was corrected first; this was the last copy of the old launch order in the documents. The design decision is unchanged — state 3 is still built first and is still the default path.)*
+| element | becomes | on a pure-white frame |
+|---|---|---|
+| pills | `--glass-media` + `--ink-on-glass` | 11.37:1 |
+| lead, price line | `--ink` | 4.87:1 |
+| `h1` | `--ink`, unchanged | 4.87:1 |
+| both buttons' border | `--ink` | 4.87:1 (non-text, 1.4.11) |
 
-**What state 3 must not become.** It must not acquire a stock image, a stock video, an illustration of a drone we do not own, or a photograph of someone else's roof. SPEC section 4 and CLAUDE.md apply to the hero identically. The `TODO:` marker for missing footage lives in the repo, not rendered onto the production home page — the visitor sees a complete image-free hero, and the marker exists so a future session does not mistake the empty state for a finished one.
+**The requirement to preserve if these are ever re-tuned: every piece of hero text clears
+4.5:1 against a pure-white frame, with no assumption about what the footage contains.**
+The cost is that the hero carries its hierarchy through size and weight rather than colour
+whenever the video is present — the same deviation recorded at the head of `tokens.css` for
+Direction D's three dim greys, taken for the same reason. The scrim alpha has a hard floor
+of **0.58**, below which even `--ink` fails; the derivation is beside `--hero-scrim`.
 
-**Budget.** The poster is the LCP element and is the only hero asset counted against the 500 KB first-load budget in SPEC section 6, which is binding on mobile. It is WebP or AVIF with explicit `width` and `height`, and no hero asset may introduce layout shift — the media band reserves its aspect ratio in CSS before anything loads. The video is capped at **2 MB on desktop**, measured as the single file the browser actually fetches rather than the sum of the encodings offered, with a **maximum loop length of 12 seconds**. On mobile the video budget is zero bytes, because no video is fetched. Footage that cannot meet the caps is re-cut or re-encoded, not exempted.
+**The fallback chain.** Three states, all implemented:
 
-**Hosting.** Self-hosted in `public/video/`, served as a static asset by the same CDN as the rest of the site. No video CDN, no HLS, no player library — see SPEC section 9 for the reasoning. This is a closed decision; adding a video host is a dependency change and needs approval like any other.
+1. **Video** — the poster paints immediately and is the LCP element; the video fades in over it once it is actually playing.
+2. **Poster only** — a real still from our own footage. Served to reduced-motion visitors, to anyone without JavaScript, and to anyone whose video fails.
+3. **No footage at all** — no video, no poster, no scrim, no reserved band. A designed, image-free hero carried by type and the tokens. Not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon".
+
+**State 3 is the default path**, and it is enforced by construction rather than by
+discipline: the media layers render only when the assets are actually present, so a
+repository with no footage in it emits the type-led hero and nothing else. It must look
+finished, because it is the state every preview build and every review renders in until the
+first flight lands its footage, and it is what launch falls back to if that footage slips
+or turns out unusable.
+
+*(Corrected in Phase 6. This line said "it is what the site launches with and may be what it runs on for months", which was true only under the old ordering, where launch preceded the content drop. SPEC section 9 was corrected first; this was the last copy of the old launch order in the documents. The design decision is unchanged — state 3 is still the default path.)*
+
+**What state 3 must not become.** It must not acquire a stock image, a stock video, an illustration of a drone we do not own, or a photograph of someone else's roof. SPEC section 4 and CLAUDE.md apply to the hero identically. The marker for missing footage lives in the repo, not rendered onto the production home page — the visitor sees a complete image-free hero, and the marker exists so a future session does not mistake the empty state for a finished one.
+
+**Budget.** The poster is the LCP element and is the only hero asset counted against the
+500 KB first-load budget in SPEC section 6. The video is capped at **1.5 MB** for
+**8–12 seconds at 1080p** — PLAN's number, tighter than SPEC section 9's 2 MB and
+12 seconds on both counts, and **the tighter number governs**; the SPEC caps are not a
+licence to spend up to them. The cap is measured as the single file the browser actually
+fetches. `scripts/check-html.mjs` **check 7 enforces it mechanically** — section 8.
+Footage that cannot meet it is re-cut or re-encoded, not exempted.
+
+**Mobile is no longer zero bytes of video, and SPEC sections 6 and 9 were corrected to
+match.** Both said the 500 KB budget was satisfied because no phone fetched any video. That
+stopped being true when the width condition came off guard one. The video is still outside
+the first-load critical path — `preload="none"`, fetched on viewport entry, after the
+poster has painted — but it is no longer zero, and the honest arbiter is now PageSpeed
+mobile on the deployed site rather than an argument. **PLAN's acceptance gate is unchanged
+and is the thing that decides this: below 90, revert.**
+
+**Hosting.** Self-hosted in `public/video/`, served as a static asset by the same CDN as the rest of the site. No video CDN, no HLS, no player library — see SPEC section 9 for the reasoning. This is a closed decision; adding a video host is a dependency change and needs approval like any other. The poster is the exception to the directory, and section 4 says why.
 
 ## 7. SEO
 
@@ -640,7 +790,7 @@ commands are in the header comment of each SVG source.
 "build":   "astro build",
 "preview": "astro preview",
 "check":   "astro check",
-"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments, forms, sitemap
+"links":   "node scripts/check-html.mjs",   // links, JSON-LD, headings, meta, no comments, forms, sitemap, video size
 "sync":    "astro sync --force",            // evict the content cache; see below
 "verify":  "npm run sync && npm run check && npm run build && npm run links"
 ```
@@ -733,6 +883,36 @@ all has already proved those two agree.
 
 Confirmed to fail, not assumed: restoring the `i18n` option and rebuilding produced
 twelve `sitemap: (none)` errors across the service pages in both locales.
+
+### Why `check-html` fails on an oversized hero video
+
+Check 7, added in Phase 10 with the hero video. Every file under **`public/video/`** must
+be at or under **1.5 MB** — PLAN's cap, tighter than SPEC section 9's 2 MB, and the tighter
+number governs.
+
+It exists because that cap is **the one hero constraint a machine can actually check**. The
+rest of PLAN's list is a judgement about footage — 8–12 seconds, no audio track, a scrimmed
+background loop, is the shot any good — and none of that is mechanisable. A byte count is.
+The CSS `@supports` gap is documented as a manual step for precisely the opposite reason,
+so where a guard *can* be mechanical it should be one rather than a paragraph somebody is
+trusted to have read. The failure it prevents is also a slow one: an oversized video does
+not break the page, it just makes it expensive, and nothing else in the gate would notice.
+
+**It reads `public/video/`, not `dist/video/`, and that is deliberate.** `public/` is what
+the repository commits and it cannot silently pass. If Astro's static-copy behaviour ever
+changed, or the directory were excluded from the build, a check reading `dist/` would
+report success on a file it never saw — the silent-pass failure class checks 4, 5 and 6 all
+exist to prevent, and this check should not reintroduce it at the moment it is added.
+
+**An absent `public/video/` is not an error.** That is the no-footage state, which SPEC
+section 9 calls a finished design rather than a missing asset, and it is what the repository
+holds today.
+
+Confirmed to fail, not assumed, and at the boundary rather than only in the obvious case: a
+928 MB clip fails with its size reported; **1,572,864 bytes exactly passes and 1,572,865
+fails**; an absent directory passes with `0 video file(s)`. The message prints the byte
+counts as well as the megabytes, because a file one byte over rounds to *"1.50 MB exceeds
+the 1.50 MB cap"*, which reads like a bug in the check rather than a file to re-encode.
 
 ### Lighthouse is run ad hoc and is NOT a project dependency
 

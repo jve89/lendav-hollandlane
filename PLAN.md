@@ -267,9 +267,13 @@ The source is a **controlled first job on family property**, flown as soon as th
 arrives — not a paying customer's roof. One flight answers most of what the site currently
 cannot say:
 
-- **Hero footage** into `public/video/`, plus its poster still — SPEC section 9's FOOTAGE
-  state, under the 2 MB desktop cap and the 12-second loop limit. Mobile still fetches zero
-  bytes of video.
+- **Hero footage** into `public/video/hero.mp4`, plus its poster still into
+  `src/assets/hero-poster.jpg` — SPEC section 9's FOOTAGE state. **Under 1.5 MB and 8–12
+  seconds**, not the 2 MB / 12-second SPEC ceilings, and check 7 fails the build if the
+  video misses it. **Mobile fetches the video too** — the width condition came off the
+  `<source>` gate on 29 July 2026; see piece two below. Note the two directories: the
+  poster is in `src/` so Astro can process it, the video in `public/` because Astro cannot
+  process video. ARCHITECTURE section 4.
 - **A before/after pair** into `src/content/jobs/`, which fills `BeforeAfter` on both home
   pages the moment the file lands — no code change needed, that is the contract.
 - **A measured job duration and throughput**, feeding both the copy and the financial
@@ -366,39 +370,91 @@ surfaces. Both may survive the change or may not; neither goes as an obvious lef
 worth more for long reading than for a card grid. Do not fold them in on the grounds of
 consistency.
 
-#### Piece two — the hero video. Blocked on the footage. Do not build it speculatively.
+#### Piece two — the hero video. BUILT 29 July 2026, against placeholder footage.
 
-**The pattern is approved; the code is not written until there is footage to put in it.**
-Building it against a stand-in is what SPEC section 9 exists to prevent, and the no-footage
-hero is a finished design rather than a hole waiting for an asset.
+**The component ships; the footage does not exist yet and nothing about that changed.**
+The media layers render only when the assets are actually present, so the repository as
+committed still emits the type-led no-footage hero — that state is enforced by
+construction now, not by discipline. Swapping in real footage is dropping two files:
+`src/assets/hero-poster.jpg` and `public/video/hero.mp4`. No code change.
 
-Hard constraints, all of them:
+It was built against a **pure-white placeholder clip** generated with ffmpeg and deleted
+before the commit. That is not a violation of "do not build it speculatively": white is
+the worst case a frame can present for contrast, so the placeholder was a *test fixture*
+for the one thing that had to be got right, not a stand-in for footage nobody has seen.
 
-- **A scrimmed background loop at 55–65% opacity.** Background, not foreground.
-- **The poster still is the LCP element and must stand alone.** The page is finished with
-  the poster and no video ever arriving.
-- **`preload="none"`, with playback triggered on viewport entry.**
-- **No audio track in the file at all** — stripped at encode, not muted at playback.
-- **Under 1.5 MB total, for 8–12 seconds at 1080p.** Tighter than SPEC section 9's 2 MB and
-  12-second ceilings on both counts. **The tighter number governs**; the SPEC caps are not a
-  licence to spend up to them.
-- **`prefers-reduced-motion` honoured**, under both guards in the Hero contract
-  (ARCHITECTURE section 6). Neither guard is dropped because the other exists.
+Hard constraints, all of them, and what happened to each:
 
-**Reconcile with the Hero contract before writing anything.** ARCHITECTURE section 6
-specifies `autoplay muted loop playsinline` with `<source media="...">` and **no script**.
-Viewport-entry playback needs one. This list does not silently override that contract — the
-session that builds the hero updates it in the same commit.
+- **A scrimmed background loop.** Background, not foreground — built that way. The opacity
+  band is corrected below.
+- **The poster still is the LCP element and must stand alone.** Held. It is a responsive
+  `<Picture>` in `src/assets/`, above the video, and it stays whenever playback does not
+  start.
+- **`preload="none"`, with playback triggered on viewport entry.** Held, plus **pause on
+  exit and resume on re-entry** — an observer that disconnected after first entry would
+  leave a phone decoding off-screen for the rest of the session.
+- **No audio track in the file at all** — stripped at encode, not muted at playback. Held.
+- **Under 1.5 MB total, for 8–12 seconds at 1080p.** Held, and now **mechanically
+  enforced**: check 7 in `scripts/check-html.mjs` fails the build on any file under
+  `public/video/` over the cap. Confirmed to fire, including at the exact byte boundary.
+- **`prefers-reduced-motion` honoured**, under both guards. Held, and guard one is now
+  **confirmed honoured in Chrome by direct test** — a false `media` query on `<source>`
+  leaves `currentSrc` empty and fetches nothing. Still unverified on real iOS Safari and
+  Android Chrome.
 
-**The acceptance gate is a number, not a judgement.** The deployed site scores **99 on
-PageSpeed mobile today**. **If it drops below 90 after the hero ships, revert to the still
-frame.** Not "investigate", not "optimise it later" — revert. The poster-only state is a
-finished design, so reverting to it costs nothing but the video.
+**The 55–65% opacity band was wrong at its lower end, and this is the correction.** That
+band came from a reference site rather than from any measurement of this design, and
+55–57% ships a hero whose lead paragraph fails AA against a bright frame. **The measured
+requirement is the AA-against-white floor, not the band**: every piece of hero text must
+clear 4.5:1 against a pure-white frame with no assumption about what the footage contains.
+Two things carry that together and neither is sufficient alone — a scrim alpha of **at
+least 0.58** (60% shipped, for the margin) and the **footage-state text remap** in
+`Hero.astro`. The full table is beside `--hero-scrim` in `tokens.css`.
 
-**Viewport-entry playback is a third client-JavaScript exception, and the second actually
-taken.** It is recorded in ARCHITECTURE section 2 as a *planned* entry, so it arrives as a
-decision that was taken rather than as a script that turned up. It is not a precedent for a
-fourth.
+**Footage brightness is a quality note and is NOT load-bearing for accessibility.** For
+the record, the original tokens would also have held had the frame stayed at or below
+about rgb(142) under the lead and rgb(100) under the price line. A future session must not
+read that as a requirement on the grade, and must not weaken the remap on the grounds that
+the real footage turned out dark — the remap is what makes the page safe against a frame
+nobody has seen yet.
+
+**A refinement for the session that has real footage, deliberately not attempted now:** a
+**non-uniform scrim**, denser behind the text block and lighter toward the edges, would let
+brighter footage through while giving the copy a proper floor. Note that the hero already
+carries a radial glow (`--hero-glow`, `#14202e`) occupying exactly that space, so the
+refinement is most likely **"the glow becomes the scrim"** rather than a third layer. It
+was not designed here because we were testing against a flat placeholder, and a gradient
+tuned against a flat colour tells you nothing. **If it ever exceeds 65% locally, that is an
+amendment to make deliberately — not a violation**, because the band was never the
+constraint.
+
+**The `(min-width: 48em)` condition came OFF the `<source>` gate, and must not be
+reinstated as a precaution.** Excluding phones is a product decision dressed as a
+performance guard. The poster is the LCP element and is already painted; the video is
+`preload="none"` and fetched on viewport entry, so it never competes for LCP. Most of this
+site's traffic is mobile, and a hero video no mobile visitor ever sees defeats the point of
+having one. **Decide it by measurement: if PageSpeed mobile on the deployed site drops
+below 90, re-add the width condition citing that number.** The consequence is that mobile
+is no longer zero bytes of video — **SPEC sections 6 and 9 said it was, and both were
+corrected in the same commit** rather than left to contradict the code.
+
+**The acceptance gate is a number, not a judgement, and it has not been met yet.** The
+deployed site scores **99 on PageSpeed mobile today**, measured before the hero existed.
+**If it drops below 90 after the hero ships, revert to the still frame.** Not
+"investigate", not "optimise it later" — revert. The poster-only state is a finished
+design, so reverting to it costs nothing but the video. **This gate cannot be run until
+there is real footage and a deploy**, so it stays open: the component being built does not
+close it.
+
+**Viewport-entry playback is the third client-JavaScript exception, and the second
+actually taken.** ARCHITECTURE section 2 carried it as a *planned* entry so it would arrive
+as a decision rather than as a script that turned up in a diff; it is now marked BUILT. It
+is not a precedent for a fourth.
+
+**Still outstanding on this piece:** real footage, the native-speaker review below, the
+post-deploy PageSpeed run, and playback verification on a real handset — Chrome's
+`media`-on-`<source>` behaviour is confirmed but iOS Safari and Android Chrome are not, and
+pause-on-exit is inferred from the code rather than observed.
 
 #### Rejected, recorded so it is not re-proposed
 

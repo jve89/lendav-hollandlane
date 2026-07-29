@@ -23,8 +23,61 @@
 
   /* Direction D's launch-state hero wash: a static radial glow behind the type,
      never an image, never animated. See SPEC section 9 — the no-footage hero
-     must not acquire anything that reads as a stand-in for a photograph. */
+     must not acquire anything that reads as a stand-in for a photograph.
+     Phase 10 gave it a second job without changing its value: it now paints
+     ABOVE the hero video and its scrim, where the same colour reads as a
+     darkening vignette instead of a lift. See the Hero contract, ARCHITECTURE
+     section 6. */
   --hero-glow: #14202e;
+
+  /* ---- the hero video's scrim ----
+   * The uniform overlay between the hero video and the hero text. --bg at 60%.
+   * TO TUNE THE SCRIM, CHANGE THE ALPHA HERE AND NOWHERE ELSE.
+   *
+   * Shaped like --glass and --glass-media below rather than as a bare number,
+   * for the same reason those are: the colour is --bg's, and tokens.css is the
+   * only file permitted to hold a hex.
+   *
+   * THIS ALPHA HAS A HARD FLOOR OF 0.58 AND IT IS NOT A FREE DESIGN WEIGHT.
+   * Accessibility here is carried by TWO things together — this alpha and the
+   * FOOTAGE-STATE TEXT REMAP in Hero.astro — and neither is sufficient alone.
+   * The remap is what makes --ink the darkest thing any hero text uses; this
+   * alpha is what makes --ink itself legible against a white frame:
+   *
+   *     0.55 ..... --ink 4.04:1   FAILS
+   *     0.58 ..... --ink 4.53:1   the floor, with almost no margin
+   *     0.60 ..... --ink 4.87:1   <- here, chosen for the margin
+   *     0.65 ..... --ink 5.83:1
+   *
+   * SO PLAN's 55–65% BAND IS WRONG AT ITS LOWER END. That band came from a
+   * reference site rather than from a measurement, and 55–57% ships a hero
+   * whose lead paragraph fails AA against a bright frame. Do not treat the
+   * band as the constraint; 0.58 is the constraint. PLAN Phase 10 records this.
+   *
+   * Measured against the worst case a frame can present — pure white, the same
+   * bound --glass-media is derived against below — this composites to
+   * rgb(106,107,110), and every piece of hero text clears AA on it:
+   *
+   *     h1          --ink            4.87:1  (large text, needs 3)
+   *     lead        --ink            4.87:1
+   *     price       --ink            4.87:1
+   *     ghost btn   --ink            4.87:1
+   *     pills       --ink-on-glass  11.37:1  (on --glass-media, not --pill-fill)
+   *     accent btn  --accent-ink     9.16:1  (opaque fill; backdrop-independent)
+   *
+   * The tokens those replaced could not: --ink-3 reaches 2.26:1 and --muted
+   * 1.76:1 on the same backdrop, and raising the alpha to PLAN's 65% ceiling
+   * leaves them at 2.70:1 and 2.10:1. No permitted alpha rescues either, which
+   * is why the remap exists rather than a heavier scrim.
+   *
+   * IT ALSO PROTECTS THE HEADER, which floats over this section on the home
+   * page. tokens.css asks below that both ends of --glass be re-measured
+   * together if either moves; the scrim is a new backdrop for it, so: over the
+   * scrimmed white worst case the pill composites to rgb(68,71,75), where nav
+   * links reach 6.10:1, the wordmark 8.53:1 and --accent 5.17:1 — all better
+   * than the 4.89:1 floor recorded for --glass below, because the scrim is
+   * darker than the page content that floor was measured against. */
+  --hero-scrim: rgba(7, 9, 13, 0.6);
 
   /* ---- text on dark. Contrast against --bg noted; all pass AA. ---- */
   --ink: #f2f5f8;     /* headings, primary            15.9:1 */

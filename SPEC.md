@@ -1,5 +1,19 @@
 # SPEC.md — Lendav Hollandlane website
 
+**Version 1.4 · 29 July 2026** — **the hero video was built, and two statements
+in this document turned out to describe a hero that is not what shipped.** Both
+are corrected in place rather than annotated, because a governing document that
+is actively wrong about the site is worse than one that says nothing. Section 9
+described the FOOTAGE state as *"a media band above the price and credentials
+block"*; it is a **scrimmed background behind the type**, which is what PLAN's
+binding constraint list specified. Sections 6 and 9 both promised **zero bytes
+of video on mobile**; the `(min-width: 48em)` condition came off the `<source>`
+gate deliberately, so a phone fetches it too, and the budget is now a single
+**1.5 MB** cap enforced by a build check rather than a desktop/mobile split.
+Nothing else moved: the hero decision itself, the no-footage state as the
+default path, the no-stock-footage rule and the sequence that gates launch on
+the first flight are all unchanged.
+
 **Version 1.3 · 26 July 2026** — section 5's differentiator list was overstated
 and is corrected, and **section 10 is new**: the competitor publishes prices
 too, and is cheaper. Version 1.2 settled the business name as **Lendav
@@ -60,7 +74,11 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 - Lighthouse performance ≥ 95, accessibility ≥ 95 on the home page, mobile
 - Total page weight under 500 KB on first load, excluding photography
 
-The 500 KB budget was written before the hero video was decided, and it carves out photography but not video. **Decided: the budget stays binding on mobile, and hero video is inside it.** This costs nothing to honour, because the hero does not fetch video on a phone at all — see section 9. Lighthouse mobile is the measurement that matters, and it is the one a hero video most easily breaks. Desktop carries its own separate cap, also in section 9.
+The 500 KB budget was written before the hero video was decided, and it carves out photography but not video. **Decided: the budget stays binding on mobile, and hero video is inside it.**
+
+**This paragraph said "this costs nothing to honour, because the hero does not fetch video on a phone at all", and that stopped being true on 29 July 2026.** The `(min-width: 48em)` condition came off the hero's `<source>` gate when the video was built: excluding phones was a product decision dressed as a performance guard, and most of this site's traffic is mobile. **A phone now fetches the video too.**
+
+What keeps the budget honest instead is *when* it is fetched. The poster is the LCP element and is a responsive AVIF/WebP `<Picture>`; the video is `preload="none"` and is fetched only when the hero enters the viewport, after the poster has painted, so it is outside the first-load critical path. It is capped at **1.5 MB** and a build check enforces that. **But it is no longer zero, so the honest arbiter is a measurement rather than an argument:** PageSpeed mobile on the deployed site, against PLAN Phase 10's gate of 90. Below that, the width condition goes back on. Lighthouse mobile is the measurement that matters, and it is the one a hero video most easily breaks.
 
 **Commercial (the real gate, not automatable):**
 - The site produces a written enquiry with a real address.
@@ -97,21 +115,26 @@ An earlier version of this section put the footage at "September 2026" and had t
 **Two states, and the NO-FOOTAGE state is the one that is built first.** `reference/direction-d.html` is the approved design direction and demonstrates both states on the same page.
 
 - **NO-FOOTAGE — what the site renders today, and until the first flight.** A black, type-led hero: the headline, the sub, and the price and credentials block, carried by type and the tokens alone. **No media band, no poster, no placeholder.** Not a reserved empty band, not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon" — the section simply has no media in it. This is the default path. It is built first and it must look finished, for two reasons: it is the state every preview build and every review renders in until the footage lands, and it is what launch falls back to if that footage slips or turns out unusable. A hero that looks broken without footage will ship looking broken.
-- **FOOTAGE — what the same hero becomes.** It *gains* a media band above the price and credentials block. Within this state the media degrades video → poster still, under the two guards below.
+- **FOOTAGE — what the same hero becomes.** It *gains a scrimmed background behind the type* — the video and its poster sit behind the headline, the sub and the price and credentials block, under a uniform scrim. Within this state the media degrades video → poster still, under the guards below.
 
-The distinction matters for how it is built: this is a type-led hero that later gains a video, not a video hero with a hole in it. The no-footage state is not the bottom of a fallback chain — it is a finished design in its own right, and nothing about it is a placeholder awaiting an asset.
+  **Corrected 29 July 2026: this said "a media band above the price and credentials block", and the hero was not built that way.** PLAN's Phase 10 constraint list said "scrimmed background loop … background, not foreground", that list governs where the two disagree, and background is what shipped. The sentence is corrected rather than annotated because a governing document that describes a layout the site does not have is worse than no description.
+
+The distinction that still matters is how it is built: this is a type-led hero that later gains a video, not a video hero with a hole in it. The no-footage state is not the bottom of a fallback chain — it is a finished design in its own right, and nothing about it is a placeholder awaiting an asset. That is now enforced by construction: the media layers render only when the assets exist.
 
 Detail in the Hero contract, ARCHITECTURE section 6.
 
-**Mobile and `prefers-reduced-motion` — no video is fetched in either case.** A phone and a reduced-motion visitor both get the poster, or the image-free hero when there is no poster. Two independent guards enforce this, and both are built from the start rather than one held in reserve: a `media` gate on `<source>` that prevents the fetch, and a CSS rule that hides the video under `prefers-reduced-motion: reduce`. The guards cover different failure modes and neither is a substitute for the other.
+**`prefers-reduced-motion` — no video is fetched.** A reduced-motion visitor gets the poster, or the image-free hero when there is no poster. Two independent guards enforce this, and both are built rather than one held in reserve: a `media` gate on `<source>` that prevents the fetch, and a CSS rule that hides the video under `prefers-reduced-motion: reduce`. The guards cover different failure modes and neither is a substitute for the other.
+
+**Mobile is no longer part of that sentence, and this is the change.** It read "Mobile and `prefers-reduced-motion` — no video is fetched in either case" until 29 July 2026, when the `(min-width: 48em)` condition came off the `<source>` gate. **A phone now fetches the video**, deliberately: the poster is already the LCP element, the video is `preload="none"` and fetched on viewport entry, and a hero video no mobile visitor ever sees defeats the purpose of having one on a site whose traffic is mostly mobile. Reversible on a PageSpeed number — see section 6 and PLAN Phase 10.
 
 **Budget.**
 
-- **Mobile: zero bytes of video.** The 500 KB first-load budget in section 6 is binding, and the hero satisfies it by fetching no video at all.
-- **Desktop: 2 MB maximum** for the hero video, counted as the single file the browser actually fetches, not the sum of the encodings offered.
-- **Loop length: 12 seconds maximum.** Long enough to show the work, short enough to encode well under the cap and to loop without the seam becoming obvious.
+- **1.5 MB maximum** for the hero video, on every device, counted as the single file the browser actually fetches rather than the sum of the encodings offered. **This replaces the "2 MB desktop / zero mobile" split** that stood here until 29 July 2026. It is PLAN Phase 10's tighter number, and it is enforced by check 7 in `scripts/check-html.mjs` rather than trusted.
+- **Loop length: 8–12 seconds.** Long enough to show the work, short enough to encode well under the cap and to loop without the seam becoming obvious.
+- **No audio track in the file at all** — stripped at encode, not muted at playback.
+- **The poster** is the LCP element and is the hero asset counted against the 500 KB first-load budget in section 6.
 
-A cut that cannot meet both caps is re-cut or re-encoded. It is not exempted.
+A cut that cannot meet the caps is re-cut or re-encoded. It is not exempted.
 
 See the Hero contract in ARCHITECTURE section 6.
 

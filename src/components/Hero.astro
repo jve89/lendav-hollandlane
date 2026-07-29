@@ -2,24 +2,34 @@
 /**
  * Hero — SPEC section 9, ARCHITECTURE section 6.
  *
- * THIS SHIPS IN THE NO-FOOTAGE STATE, AND THAT IS THE DEFAULT PATH, NOT A
- * DEGRADED ONE. There is deliberately no <video>, no <source>, no poster, no
- * reserved media band and no aspect-ratio box in this file. The section is
- * carried by type and the tokens alone. It is a type-led hero that will later
- * gain a video — not a video hero with a hole in it.
+ * TWO STATES, AND THE NO-FOOTAGE STATE IS STILL THE DEFAULT PATH. With no
+ * poster in `src/assets/` this renders exactly the type-led hero it rendered
+ * before Phase 10 built the media layers: no <video>, no <picture>, no scrim,
+ * no reserved band, no aspect-ratio box. It is a type-led hero that GAINS a
+ * video, not a video hero with a hole in it, and that distinction is why the
+ * media layers are gated on the assets existing rather than shipped pointing
+ * at files that may not be there.
+ *
+ * THE TWO ASSETS LIVE IN DIFFERENT PLACES AND THAT IS DELIBERATE, NOT AN
+ * INCONSISTENCY. Do not "tidy" them into one directory:
+ *
+ *   src/assets/hero-poster.jpg   Astro PROCESSES it. That is what produces the
+ *                                AVIF/WebP srcset, the intrinsic width and
+ *                                height, and the build error if it goes
+ *                                missing. Nothing in public/ can be processed.
+ *   public/video/hero.mp4        Astro does NOT process video, so there is
+ *                                nothing to gain from src/ — and check 7 in
+ *                                scripts/check-html.mjs enforces the 1.5 MB cap
+ *                                against this exact path.
+ *
+ * Swapping in real footage is: drop both files at those two paths. No code
+ * change, the same contract BeforeAfter has.
  *
  * unconfirmed(footage): the hero footage comes out of the FIRST CONTROLLED
  * FLIGHT on family property, flown as soon as the ordered kit arrives. That is
- * a SEQUENCE, and it must not be rewritten as a date: this comment carried one
- * for three phases after SPEC section 9 had already retracted it as an
- * unchecked session-one assumption. When the footage exists, this component
- * GAINS a media band ABOVE the price and credentials
- * block, with both guards from ARCHITECTURE section 6 built together: the
- * `media` attribute on <source> so a phone or a reduced-motion visitor never
- * fetches the file, AND the CSS rule that hides the video outright under
- * `prefers-reduced-motion: reduce`. Neither guard substitutes for the other.
- * This marker lives in the repo, never on the page — a visitor sees a finished
- * hero, and a future session does not mistake that for unfinished work.
+ * a SEQUENCE and it must not be rewritten as a date. This marker lives in the
+ * repo, never on the page — a visitor sees a finished hero either way, and a
+ * future session does not mistake that for unfinished work.
  *
  * What this must never acquire: stock footage, a stock photograph, an
  * illustration of a drone we do not own, a grey box, or the words "video
@@ -28,6 +38,8 @@
  * The price and the credentials are read here, never passed in — the pairing of
  * the headline with the published price is the whole point of the section.
  */
+import { existsSync } from 'node:fs'
+import { Picture } from 'astro:assets'
 import { site } from '../config/site'
 import { homeCopy } from '../i18n/home'
 import { formatPrice, path, useTranslations } from '../i18n/utils'
@@ -52,8 +64,154 @@ const c = homeCopy[locale].hero
  * 2026, and the hero's ask is still the form.
  */
 const quoteHref = path('contact', locale)
+
+/**
+ * DOES THE FOOTAGE EXIST? Two gates, because the two assets live in two places
+ * and only one of them is something Astro can import.
+ *
+ * The poster is found with `import.meta.glob`, not a bare `import`. A static
+ * import of a file that is not there is a build error, and the no-footage state
+ * is not an error — it is the launch state. A glob that matches nothing returns
+ * `{}`, which is the clean "no footage yet" answer. `eager` is what makes the
+ * value a real `ImageMetadata` rather than a promise, which is what `<Picture>`
+ * needs. The extension list is broad so the operator can drop a JPEG, a PNG or
+ * an AVIF without editing this file.
+ */
+const posterModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/hero-poster.{jpg,jpeg,png,webp,avif}',
+  { eager: true },
+)
+const poster = Object.values(posterModules)[0]?.default
+
+/**
+ * The video is a plain `existsSync` at build time, because `public/` is copied
+ * rather than processed and there is nothing to import. The path is relative to
+ * the project root, which is the cwd Astro builds in.
+ *
+ * THE VIDEO IS GATED ON THE POSTER TOO, not only on itself. The poster is the
+ * LCP element and the thing the visitor actually sees; a video with no poster
+ * would paint an empty box before it has decoded a frame, and would show
+ * nothing at all to anyone whose playback never starts — which is every phone
+ * under reduced motion, every visitor without JavaScript, and every visitor
+ * whose fetch fails. There is no state in which a video without a poster is
+ * better than no media at all.
+ */
+const hasVideo = Boolean(poster) && existsSync('public/video/hero.mp4')
+const hasMedia = Boolean(poster)
+
+/**
+ * ARCHITECTURE section 2's THIRD named client-JavaScript exception, and the
+ * second actually taken. Do not read it as a violation of the zero-JS rule and
+ * delete it — and do not read it as a precedent for a fourth.
+ *
+ * It defers WHEN THE VIDEO PLAYS, never WHAT THE PAGE LOADS, which is the only
+ * thing that was permitted. With JavaScript disabled there is no observer,
+ * nothing calls play(), `preload="none"` means the mp4 is never fetched, and
+ * the visitor keeps the poster — a finished state by design, not a broken one.
+ * That is the same test the quote form's exception passes: it degrades to a
+ * designed state rather than to nothing.
+ *
+ * IT IS A STRING HERE, AND NOT INLINE IN THE TEMPLATE, FOR ONE MECHANICAL
+ * REASON. It has to be emitted only alongside the media — a page with no
+ * footage has nothing to observe and must ship no script at all — and an
+ * element inside a `{cond && ...}` expression has its children parsed as JSX,
+ * where the braces and `<` in real JavaScript do not survive. `set:html` on the
+ * script below emits it verbatim. If the condition ever goes away, this can go
+ * straight back into the template the way QuoteForm's does.
+ */
+const viewportPlaybackScript = `
+// Guard one, in its script form. Guard one proper is the \`media\` attribute on
+// <source>, which leaves nothing to fetch under reduced motion — but a browser
+// that ignores \`media\` there would fetch and play anyway, and with a scripted
+// trigger that hole costs one line to shut. Guard two (the CSS rule) is
+// untouched and still independent of both.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  for (const video of document.querySelectorAll('video.hero__video')) {
+    // PAUSE ON EXIT, RESUME ON RE-ENTRY, so the observer is deliberately NOT
+    // disconnected after the first entry. Browsers throttle timers off-screen
+    // but keep decoding video, which on a phone means continuous decode for the
+    // rest of the session for something nobody is looking at.
+    new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          // play() rejects when guard one left no matching <source>, and on any
+          // codec or network failure. Swallowing it is the whole fallback: no
+          // \`is-playing\` class is added, so the poster never fades.
+          video.play().then(() => video.classList.add('is-playing')).catch(() => {})
+        } else {
+          video.pause()
+        }
+      }
+    }, { threshold: 0.25 }).observe(video)
+  }
+}
+`
 ---
-<section class="hero">
+<section class:list={['hero', hasMedia && 'hero--media']}>
+  {
+    hasMedia && (
+      <div class="hero__media" aria-hidden="true">
+        {hasVideo && (
+          /* NO `autoplay`, and NO `poster` attribute.
+             `autoplay` is absent because playback is started by the observer at
+             the foot of this file, on viewport entry — ARCHITECTURE section 2's
+             third client-JavaScript exception.
+             The `poster` ATTRIBUTE is absent because it takes a single URL and
+             cannot carry a srcset; the poster is the <Picture> below it, which
+             can. Using both would fetch two stills and show the wrong one.
+             `muted` is not decoration: without it a scripted play() is refused
+             without a user gesture, and iOS takes the video fullscreen without
+             `playsinline`. */
+          <video class="hero__video" muted loop playsinline preload="none">
+            {/* GUARD ONE — the fetch never happens. When no <source> matches,
+                the browser has nothing to load and play() rejects, so the
+                poster simply stays. There is deliberately NO width condition
+                here: excluding phones is a product decision rather than a
+                performance guard, and most of this site's traffic is mobile.
+                The video is preload="none" and fetched on viewport entry, so it
+                never competes with the poster for LCP. If PageSpeed mobile on
+                the DEPLOYED site drops below 90, re-add `(min-width: 48em)`
+                citing that number — see PLAN Phase 10. */}
+            <source
+              src="/video/hero.mp4"
+              type="video/mp4"
+              media="(prefers-reduced-motion: no-preference)"
+            />
+          </video>
+        )}
+
+        {/* The LCP element. Eager, high priority, never lazy — it is the first
+            thing in the viewport and deferring it would be deferring the paint
+            the whole page is judged on. `alt=""` because the media is
+            decoration: every claim it makes visually is also made in the text
+            beneath it, which is what keeps this hero working for a screen
+            reader and with the media blocked.
+
+            WRAPPED IN A DIV WE OWN, deliberately. <Picture> puts `class` on the
+            inner <img> rather than on the <picture> it emits, so styling or
+            selecting the poster through it would depend on that internal
+            detail. The wrapper is a real element in this template, so Astro's
+            style scoping reaches it and the adjacent-sibling rule below is
+            stable whatever <Picture> emits inside. */}
+        <div class="hero__poster">
+          <Picture
+            src={poster!}
+            formats={['avif', 'webp']}
+            widths={[640, 960, 1280, 1920]}
+            sizes="100vw"
+            alt=""
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+
+        {/* The scrim. Uniform, one token, tuned in tokens.css and nowhere else. */}
+        <div class="hero__scrim" />
+      </div>
+    )
+  }
+
   <div class="hero__inner">
     <ul class="hero__pills">
       {c.pills.map((claim) => <li class="pill">{claim}</li>)}
@@ -74,21 +232,127 @@ const quoteHref = path('contact', locale)
 </section>
 
 <style>
-  /* A static radial wash behind the type. Not animated, not an image, and it
-     reserves no space of its own — nothing here can shift when the page loads. */
+  /* The glow moved OFF this shorthand and onto ::after below, so it can paint
+     ABOVE the video and its scrim. In the no-footage state the two forms are
+     pixel-identical — the same gradient over the same base colour — which was
+     confirmed by screenshot comparison rather than assumed. */
   .hero {
-    background:
-      radial-gradient(90% 70% at 50% 0%, var(--hero-glow) 0%, transparent 60%),
-      var(--bg);
+    background: var(--bg);
     text-align: center;
     /* Clears the absolutely positioned header pill in its overlay variant. */
     padding-block: calc(var(--sp-12) + var(--sp-7)) var(--sp-11);
+    /* The media layers are absolutely positioned against this. `isolation`
+       keeps them in their own stacking context so they cannot rise past the
+       header, which is fixed at z-index 60 in Header.astro. */
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  /* Room for the footage to read as footage. Without it the 16:9 frame is
+     cropped to a strip by a hero sized to its type. Only in the media state —
+     the no-footage hero's height is its type's, exactly as before. `svh` so a
+     phone's collapsing browser chrome cannot make it jump; the `vh` line above
+     is the fallback for anything that does not know `svh`. */
+  .hero--media {
+    min-height: 78vh;
+    min-height: min(78svh, 720px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* ---- the media layers ----
+     Both are `position: absolute`, so they add no height and nothing here can
+     shift when the page loads. */
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero__video,
+  .hero__poster {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__video {
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ABOVE the video, and faded out once playback actually starts — so there is
+     never a frame in which an undecoded <video> paints an empty box. If
+     playback never starts, for any reason at all, this simply stays: no
+     JavaScript, reduced motion, a failed fetch and an unsupported codec all
+     land on the same finished poster-only hero. */
+  .hero__poster {
+    z-index: 1;
+    transition: opacity 0.4s ease;
+  }
+
+  .hero__video.is-playing + .hero__poster {
+    opacity: 0;
+  }
+
+  /* `:global` because these are <Picture>'s own output, not elements in this
+     template, so the scope attribute never reaches them. */
+  .hero__poster :global(picture),
+  .hero__poster :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--hero-scrim);
+  }
+
+  /* GUARD TWO — no motion is ever visible. Independent of guard one on
+     <source>, and not a fallback for it: guard one saves the bandwidth but
+     depends on `media` being honoured, and guard two is plain CSS that has
+     worked for a decade. Neither is dropped because the other exists. Hiding
+     the video also drops `.is-playing + .hero__poster`, so the poster stays
+     opaque even if playback somehow started. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__video {
+      display: none;
+    }
+  }
+
+  /* The radial wash, now a layer of its own so it can sit above the scrim.
+     Static, never animated, never an image.
+
+     OVER --bg IT LIFTS; OVER FOOTAGE IT DARKENS. Same token, same geometry,
+     both times concentrating attention on the type — --hero-glow is darker
+     than most frames, so against a video the identical layer reads as a
+     vignette rather than a glow. That is the decision, and it is why the glow
+     and the video are not fighting: they are not competing for the same job.
+     (No hex here on purpose: the value lives in tokens.css and a copy in a
+     comment is a copy that can drift.) */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: radial-gradient(90% 70% at 50% 0%, var(--hero-glow) 0%, transparent 60%);
   }
 
   .hero__inner {
+    position: relative;
+    z-index: 4;
     max-width: 920px;
     margin-inline: auto;
     padding-inline: var(--gutter);
+    width: 100%;
   }
 
   .hero__pills {
@@ -125,4 +389,59 @@ const quoteHref = path('contact', locale)
     font-size: var(--step-sub);
     letter-spacing: -0.01em;
   }
+
+  /* ---- the footage-state remap ----
+   *
+   * DO NOT DELETE THESE AS REDUNDANT. They are what makes the hero accessible
+   * over footage, and they are measured, not stylistic. The scrim alone cannot
+   * do it: against the worst case a frame can present — pure white, the same
+   * bound --glass-media was derived against — the tokens these replace reach
+   * 3.01:1 (pills), 2.26:1 (lead) and 1.76:1 (price), and NO alpha in the range
+   * PLAN permits rescues any of them. The derivation and the full table are in
+   * tokens.css beside --hero-scrim.
+   *
+   * The cost is that the hero loses its colour hierarchy whenever the video is
+   * present, and carries it through size and weight instead. That is the same
+   * deviation recorded at the head of tokens.css for Direction D's three dim
+   * greys, taken for the same reason.
+   *
+   * Requirement to preserve if these are ever re-tuned: every piece of hero
+   * text clears 4.5:1 against a PURE-WHITE frame, with no assumption made about
+   * what the footage actually contains. Footage brightness is a quality
+   * question, not this requirement — see PLAN Phase 10. */
+
+  /* Glass over media, not over a surface we control — so --glass-media and
+     --ink-on-glass, which BeforeAfter's Enne/Pärast tags already use for
+     exactly this problem. 11.37:1 against a white frame. --pill-fill is a
+     white tint and LIGHTENS the backdrop under the text, which is why the
+     unremapped pill is the worst-performing element in the hero. */
+  .hero--media .pill {
+    background: var(--glass-media);
+    border-color: var(--glass-line);
+    color: var(--ink-on-glass);
+  }
+
+  .hero--media .hero__sub,
+  .hero--media .hero__price {
+    color: var(--ink);
+  }
+
+  /* Non-text contrast, WCAG 1.4.11. Both buttons need a boundary against the
+     scrimmed video: --ghost-line falls to 1.76:1 and the accent fill to 2.95:1,
+     both under the 3:1 threshold. --ink is 4.87:1 on the same backdrop and it
+     is one rule for both. `.btn` already carries a transparent 1px border, so
+     this changes no geometry and nothing shifts. */
+  .hero--media .btn {
+    border-color: var(--ink);
+  }
 </style>
+
+{/* The third named exception. Reasoning is in the frontmatter above, which Astro
+    discards rather than shipping; only what is needed to read the code is kept
+    in the script itself.
+
+    `is:inline` so Astro neither bundles nor hoists it — no extra request, the
+    same treatment QuoteForm's script gets. Emitted ONLY when there is a video
+    to observe, so the no-footage hero — which is the launch state — still ships
+    no client JavaScript whatsoever. */}
+{hasVideo && <script is:inline set:html={viewportPlaybackScript} />}
