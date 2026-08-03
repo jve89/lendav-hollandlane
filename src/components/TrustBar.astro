@@ -28,7 +28,7 @@ const { locale } = Astro.props
 const c = homeCopy[locale].trust
 const [noWalk, insured, authorised, published] = c.items
 ---
-<section class="trust section--raised">
+<section class="section trust">
   <div class="wrap">
     <p class="label trust__label">{c.label}</p>
 
@@ -70,9 +70,13 @@ const [noWalk, insured, authorised, published] = c.items
 </section>
 
 <style>
-  .trust {
-    padding-block: var(--sp-7);
-  }
+  /* `.trust` has no padding rule of its own any more, and the element now
+     carries `.section` instead. It was --sp-7 inside a --bg-2 band, where the
+     band's edges did the separating and 32px was enough breathing room inside
+     them. With the band gone it takes `.section`'s rhythm like every other
+     section on the page — space is the only separator now, and a strip that
+     kept a tighter one would read as attached to whichever neighbour it
+     happened to be nearer. */
 
   .trust__label {
     text-align: center;

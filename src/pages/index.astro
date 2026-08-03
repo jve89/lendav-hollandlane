@@ -56,7 +56,7 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
 
   <TrustBar locale={locale} />
 
-  <section class="section section--raised services">
+  <section class="section services">
     <div class="wrap">
       <h2>{c.services.heading}</h2>
       <p class="lead services__lead">{c.services.lead}</p>
@@ -65,7 +65,7 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
     </div>
   </section>
 
-  <section class="section section--raised">
+  <section class="section">
     <div class="wrap">
       <h2>{c.work.heading}</h2>
       <BeforeAfter jobId={latestJob?.id} locale={locale} />

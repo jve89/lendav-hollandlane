@@ -23,7 +23,7 @@ const services = await servicesFor(locale)
   heading={t('services.heading')}
   lead={t('services.lead')}
 >
-  <section class="section section--raised section--tight">
+  <section class="section section--tight">
     <div class="wrap">
       <ServiceGrid locale={locale} entries={services} headingLevel={2} />
       <p class="fineprint services__vat">{vatNote(locale)}</p>

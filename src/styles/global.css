@@ -122,33 +122,68 @@ h3 {
   width: 100%;
 }
 
+/* SPACE IS THE ONLY SEPARATOR BETWEEN SECTIONS. There are no bands and no
+   dividers: every content section sits on --bg, and this padding is the whole
+   of what tells one from the next. That is why it is --sp-12 and not --sp-11.
+
+   The band it replaced was never doing the work anyway, which is the
+   measurement that settled this: --bg-2 against --bg is 1.05:1. A reader was
+   not seeing a raised surface, they were seeing the 1px hairline drawn at its
+   edge — so the page had dividers dressed as bands, on whichever sections
+   happened to carry the class. Removing both and paying for the separation in
+   space is the honest version of the same thing.
+
+   IT RAMPS WITH THE VIEWPORT, because the right amount of separation is not a
+   constant. A flat --sp-12 shipped first and was confirmed too airy on a real
+   320px handset: 192px between sections is most of a phone screen spent on
+   nothing, while the same 192px reads correctly on a desktop column three times
+   as wide. Measured on the two ends this is bounded by:
+
+       320px .....  64px padding -> 128px between sections
+       375px .....  64px
+       640px .....  64px   (10vw reaches the floor here; ramp starts)
+       768px .....  77px
+       960px .....  96px   (10vw reaches the ceiling; desktop value)
+      1440px .....  96px
+
+   BOUNDED BY TOKENS, NOT BY NUMBERS. --sp-10 and --sp-12 are the floor and the
+   ceiling, so the spacing scale still owns both ends and only the interpolation
+   between them is fluid. Do not replace either bound with a raw length.
+
+   WHY clamp() AND NOT A MEDIA QUERY, given this codebase does use explicit
+   breakpoints elsewhere. Those breakpoints exist where something genuinely
+   changes state — a grid goes from one column to two, the navigation stops being
+   a toggle. Vertical rhythm changes no state; it is a continuous quantity that
+   should track the viewport continuously, and a breakpoint would put a visible
+   32px jump at whatever width it was set to. One declaration, no breakpoint to
+   remember, and nothing to keep in sync with the two that already exist.
+
+   DO NOT LOWER THE FLOOR WITHOUT PUTTING SOMETHING BACK. With no band and no
+   divider, this padding is the entire separation mechanism; below --sp-10 the
+   page starts reading as one undifferentiated column, which is the failure this
+   declaration exists to prevent. --sp-12 is the top of the scale in tokens.css;
+   more space than that needs a new token and a reason. */
 .section {
-  padding-block: var(--sp-11);
+  padding-block: clamp(var(--sp-10), 10vw, var(--sp-12));
 }
 
+/* For a section that opens a page directly under PageLayout's header, where the
+   header has already supplied the separation and a full --sp-12 would push the
+   first line of content below the fold on a phone. Deliberately NOT fluid and
+   deliberately unchanged twice over: nothing was ever banded here, so the band
+   removal did not touch it, and it is not separating two sections from each
+   other, so the argument for ramping `.section` does not reach it either. */
 .section--tight {
   padding-block: var(--sp-8);
-}
-
-/* Raised band on the near-black base, bounded by hairlines. */
-.section--raised {
-  background: var(--bg-2);
-  border-block: 1px solid var(--line);
-}
-
-/* Two raised bands in a row share one hairline instead of stacking two. This
-   could not arise before Phase 10's palette change: the paper services section
-   always sat between the trust strip and the evidence band, so no two raised
-   sections were ever siblings. Now all three are, on both home pages. */
-.section--raised + .section--raised {
-  border-block-start: 0;
 }
 
 /* UNUSED as of Phase 10's palette change — no element carries this class any
    more, and it is kept for one commit only so the change reverts cleanly.
    The next commit deletes it together with the --paper-* tokens it reads.
    Do not reach for it: the services sections it used to invert are now
-   .section--raised, and a light surface anywhere is a fresh decision.
+   on --bg like every other section, and a light surface anywhere is a fresh
+   decision. (`.section--raised` was named here until the bands were removed;
+   that class no longer exists either.)
 
    What it did: the one deliberate inversion in the page. Re-mapped the on-dark
    tokens to their paper equivalents, so anything nested inside inverted
@@ -311,11 +346,26 @@ h3 {
 }
 
 /* ---------- card ----------
-   Elevated surface, one step LIGHTER than the band it sits on: --panel on
-   --bg-2. That is the whole of the Phase 10 palette decision — the card grid
-   carries the weight, not the section, which is how a dark interface reads
-   elevation. The luminance step is small by construction (1.05:1), so the
-   hairline is what actually draws the card edge and is not decoration. */
+   THE ONLY RAISED SURFACE ON THE PAGE, since the section bands came off. The
+   card grid carries all of the structural weight now, which means this border
+   is load-bearing rather than decorative — it is the single thing separating a
+   card from the page behind it.
+
+   Measured, on --bg rather than the --bg-2 it used to sit on:
+
+       fill    --panel on --bg .......... 1.10:1   (was 1.05:1 on --bg-2)
+       edge    --line  on --bg .......... 1.25:1   (was 1.19:1 on --bg-2)
+
+   Both went UP, because --bg is darker than the band was and the card did not
+   move. Losing the band cost the card nothing; it gained a little.
+
+   The edge stays --line. --ghost-line (2.39:1 here, 2.47:1 on the old band) was
+   the alternative and is roughly twice any fill difference this palette can
+   reach — but at 0.28 white it draws a visible outline rather than an edge, and
+   a grid of outlined boxes on a flat black page reads as a wireframe. The card
+   is meant to sit on the page, not be drawn on it. If a real screen at real
+   brightness says otherwise, --ghost-line is the value to reach for and the
+   numbers above are why; do not invent a third token in between. */
 .card {
   background: var(--panel);
   border: 1px solid var(--line);
