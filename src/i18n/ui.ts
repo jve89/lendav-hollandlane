@@ -195,9 +195,18 @@ export const ui = {
     // before/after evidence. The empty state is the DEFAULT state at launch and
     // states a policy about ourselves, which is verifiable — it never apologises
     // for a missing photo and never promises one by a date.
+    //
+    // NARROWED 3 AUGUST 2026, AND THE SCOPE IS THE POINT. This said "iga foto
+    // sellel lehel" — every photo on this page — which became false the moment
+    // the placeholder hero poster landed a few hundred pixels above it. The
+    // promise is now about BEFORE AND AFTER photos, which is where it does the
+    // work: those are evidence of our own jobs, and SPEC section 9's scoped
+    // footage exception excludes them in all circumstances. Do not widen it back
+    // to every image on the page, and do not weaken it here — the hero needs no
+    // disclaimer because it claims nothing.
     'beforeAfter.emptyHeading': 'Fotod lisame pärast esimesi töid',
     'beforeAfter.emptyBody':
-      'Iga foto sellel lehel on meie enda töö. Ostetud ega võõraid pilte me ei kasuta, seega enne ja pärast pilte siin veel ei ole.',
+      'Iga enne ja pärast foto on meie enda töö. Ostetud ega võõraid pilte me siia ei pane, seega enne ja pärast pilte siin veel ei ole.',
     'beforeAfter.before': 'Enne',
     'beforeAfter.after': 'Pärast',
     'beforeAfter.altBefore': 'Enne pesu, {town}',
@@ -322,10 +331,12 @@ export const ui = {
     'footer.claimInsured': 'The work is insured.',
     'footer.claimPermitted': 'We hold an official authorisation to fly over houses.',
 
-    // before/after evidence
+    // before/after evidence. Narrowed 3 August 2026 with its Estonian source —
+    // see the note there. The claim covers before and after photos, not every
+    // image on the page.
     'beforeAfter.emptyHeading': 'Photos go up after the first jobs',
     'beforeAfter.emptyBody':
-      'Every photo on this site is our own work. We do not use stock or borrowed images, so there are no before and after photos here yet.',
+      'Every before and after photo is our own work. We do not put stock or borrowed images here, so there are no before and after photos yet.',
     'beforeAfter.before': 'Before',
     'beforeAfter.after': 'After',
     'beforeAfter.altBefore': 'Before cleaning, {town}',
