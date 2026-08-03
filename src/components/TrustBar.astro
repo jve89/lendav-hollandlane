@@ -30,7 +30,14 @@ const [noWalk, insured, authorised, published] = c.items
 ---
 <section class="section trust">
   <div class="wrap">
-    <p class="label trust__label">{c.label}</p>
+    {/* An <h2>, not the <p class="label"> it was until 3 August 2026. It is the
+        first section under the page's h1 and its text was always a section
+        heading in content terms — it was only SET as furniture, which the band
+        removal exposed: with one background and one rhythm, a section is a
+        section-sized heading over a body of content, and this was the only one
+        opting out. Promoting it is also the semantic fix, since a <p> styled as
+        a label put no heading in the outline here at all. */}
+    <h2 class="trust__label">{c.label}</h2>
 
     <ul class="trust__grid">
       <li class="trust__item">
@@ -78,9 +85,21 @@ const [noWalk, insured, authorised, published] = c.items
      kept a tighter one would read as attached to whichever neighbour it
      happened to be nearer. */
 
+  /* NO `text-align: center`, AND ITS ABSENCE IS THE POINT rather than an
+     omission. This heading was centred while the four items and the fineprint
+     beneath it were left-aligned, and while every other section heading on the
+     page — "Teenused ja hinnad", "Enne ja pärast", the FAQ — is left-aligned
+     too. Alignment is part of the same grammar as size and weight, so matching
+     one without the other would have left the mismatch half-fixed. Nothing else
+     in the strip needed reconciling: the items are flex rows and the fineprint
+     is body copy, both already left-aligned. The heading was the outlier.
+
+     --sp-7 rather than the --sp-6 it carried as a micro-label, because a
+     2.5rem heading needs more air beneath it than a 0.71rem one. It matches
+     `Faq`'s h2-to-body distance, which is the same shape: a section heading
+     with content directly under it and no lead paragraph between. */
   .trust__label {
-    text-align: center;
-    margin-block-end: var(--sp-6);
+    margin-block-end: var(--sp-7);
   }
 
   .trust__grid {
