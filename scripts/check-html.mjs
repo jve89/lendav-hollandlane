@@ -45,7 +45,7 @@
  * this check can find the page in the sitemap at all, those two already agree.
  *
  * Check 7 exists because PLAN Phase 10 caps the hero video at 1.5 MB and that cap is
- * the one hero constraint a machine can actually check. The rest of the list — 8–12
+ * the one hero constraint a machine can actually check. The rest of the list — 8–16
  * seconds, no audio track, a scrimmed background loop — is a judgement about footage;
  * a byte count is not. The CSS `@supports` gap is documented as a manual step for
  * exactly the opposite reason, so where a guard CAN be mechanical it should be one
@@ -269,10 +269,13 @@ if (!existsSync(SITEMAP)) {
 /*
  * 7. the hero video is inside its budget
  *
- * PLAN Phase 10 caps it at 1.5 MB, which is TIGHTER than SPEC section 9's 2 MB and
- * deliberately so — the SPEC ceiling is not a licence to spend up to it. Footage that
- * cannot meet the cap is re-cut or re-encoded, never exempted, so this check does not
- * take an override and must not be given one.
+ * PLAN Phase 10 caps it at 1.5 MB, and SPEC section 9 states the same number — SPEC's
+ * ceiling came down from 2 MB on 29 July 2026. Where they ever differ again the tighter
+ * one governs; a ceiling is not a licence to spend up to it. Footage that cannot meet
+ * the cap is re-cut or re-encoded, never exempted, so this check does not take an
+ * override and must not be given one. It is also the ONLY hard limit on the hero clip:
+ * the 8–16 second loop length is a judgement and was widened on 3 August 2026 precisely
+ * because this number, not that one, is what protects a visitor on a phone.
  */
 const VIDEO_DIR = join('public', 'video')
 const VIDEO_MAX_BYTES = Math.round(1.5 * 1024 * 1024)

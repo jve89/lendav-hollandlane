@@ -268,9 +268,10 @@ arrives — not a paying customer's roof. One flight answers most of what the si
 cannot say:
 
 - **Hero footage** into `public/video/hero.mp4`, plus its poster still into
-  `src/assets/hero-poster.jpg` — SPEC section 9's FOOTAGE state. **Under 1.5 MB and 8–12
-  seconds**, not the 2 MB / 12-second SPEC ceilings, and check 7 fails the build if the
-  video misses it. **Mobile fetches the video too** — the width condition came off the
+  `src/assets/hero-poster.jpg` — SPEC section 9's FOOTAGE state. **Under 1.5 MB and 8–16
+  seconds**, and check 7 fails the build if the video misses the byte cap. **Both paths are
+  occupied today by a third-party placeholder** — see "The placeholder footage" below; this
+  bullet is about the operator's own footage, which is still owed. **Mobile fetches the video too** — the width condition came off the
   `<source>` gate on 29 July 2026; see piece two below. Note the two directories: the
   poster is in `src/` so Astro can process it, the video in `public/` because Astro cannot
   process video. ARCHITECTURE section 4.
@@ -370,13 +371,36 @@ surfaces. Both may survive the change or may not; neither goes as an obvious lef
 worth more for long reading than for a card grid. Do not fold them in on the grounds of
 consistency.
 
-#### Piece two — the hero video. BUILT 29 July 2026, against placeholder footage.
+#### Piece two — the hero video. BUILT 29 July 2026. Placeholder footage installed 3 August 2026.
 
-**The component ships; the footage does not exist yet and nothing about that changed.**
-The media layers render only when the assets are actually present, so the repository as
-committed still emits the type-led no-footage hero — that state is enforced by
-construction now, not by discipline. Swapping in real footage is dropping two files:
-`src/assets/hero-poster.jpg` and `public/video/hero.mp4`. No code change.
+**The component shipped first and the footage came later, and what is there now is not
+ours.** The media layers render only when the assets are actually present, so between
+29 July and 3 August the repository emitted the type-led no-footage hero — that state is
+enforced by construction, not by discipline, and it still is. Swapping footage is dropping
+two files: `src/assets/hero-poster.jpg` and `public/video/hero.mp4`. No code change.
+
+##### The placeholder footage — a dated, temporary exception
+
+**`public/video/hero.mp4` and `src/assets/hero-poster.jpg` contain manufacturer-supplied
+footage of a third party's building, used with the supplier's written permission, installed
+3 August 2026.** It is a placeholder pending the operator's first controlled flight, and it
+is decorative hero background only: no caption, no context, no before/after pair, no claim
+that the work is ours.
+
+**This is permitted under the amended no-stock-footage rule in SPEC section 9, which is
+scoped and conditional — read it before touching either file.** In particular,
+**before/after imagery is excluded from that exception in all circumstances**; borrowed
+footage may never fill `BeforeAfter`, whose empty state is still the answer until a real
+job file lands.
+
+**Removal trigger: it is replaced the moment the operator has his own footage** — the same
+first flight this phase already waits on. **The swap is two file copies and no code
+change.** It is not deleted as a violation in the meantime, and it is not kept a day past
+the real footage arriving.
+
+**It is 15.4 seconds, 1,233,248 bytes (1.18 MB), 1280×720, no audio track.** The clip is
+what widened SPEC's loop-length bound from 8–12 to 8–16 seconds; the byte cap did not move
+and is still the limit that governs.
 
 It was built against a **pure-white placeholder clip** generated with ffmpeg and deleted
 before the commit. That is not a violation of "do not build it speculatively": white is
@@ -394,9 +418,17 @@ Hard constraints, all of them, and what happened to each:
   exit and resume on re-entry** — an observer that disconnected after first entry would
   leave a phone decoding off-screen for the rest of the session.
 - **No audio track in the file at all** — stripped at encode, not muted at playback. Held.
-- **Under 1.5 MB total, for 8–12 seconds at 1080p.** Held, and now **mechanically
+- **Under 1.5 MB total, for 8–16 seconds.** Held, and now **mechanically
   enforced**: check 7 in `scripts/check-html.mjs` fails the build on any file under
   `public/video/` over the cap. Confirmed to fire, including at the exact byte boundary.
+  **The bound was 8–12 seconds until 3 August 2026** and was widened on the first real
+  cut — SPEC section 9 has the reasoning, and the short version is that the byte cap is
+  the constraint and the seconds were a judgement about encoding headroom that 1.18 MB
+  disposed of. **The cap did not move and must not.** *Also dropped from this line:
+  "at 1080p". The placeholder is 1280×720, so the phrase was about to become a
+  requirement nothing in the repository meets. The operator's own footage should still be
+  shot and delivered at 1080p where the cap allows — but resolution is a quality
+  judgement here, not a constraint, and it was never the thing check 7 protects.*
 - **`prefers-reduced-motion` honoured**, under both guards. Held, and guard one is now
   **confirmed honoured in Chrome by direct test** — a false `media` query on `<source>`
   leaves `currentSrc` empty and fetches nothing. Still unverified on real iOS Safari and
@@ -442,16 +474,21 @@ corrected in the same commit** rather than left to contradict the code.
 deployed site scores **99 on PageSpeed mobile today**, measured before the hero existed.
 **If it drops below 90 after the hero ships, revert to the still frame.** Not
 "investigate", not "optimise it later" — revert. The poster-only state is a finished
-design, so reverting to it costs nothing but the video. **This gate cannot be run until
-there is real footage and a deploy**, so it stays open: the component being built does not
-close it.
+design, so reverting to it costs nothing but the video. **This gate stays open, but as of
+3 August 2026 it is runnable rather than blocked** — it needed footage and a deploy, and
+the placeholder supplies the footage half. A browser cannot tell whose building is in the
+frame: 1.18 MB over the wire behaves identically whether the clip is ours or the
+supplier's, so the number this gate wants can be measured now and does not have to wait
+for the first flight. **Run it on the next deploy.** Re-run it when the real footage lands,
+because a different encode is a different number.
 
 **Viewport-entry playback is the third client-JavaScript exception, and the second
 actually taken.** ARCHITECTURE section 2 carried it as a *planned* entry so it would arrive
 as a decision rather than as a script that turned up in a diff; it is now marked BUILT. It
 is not a precedent for a fourth.
 
-**Still outstanding on this piece:** real footage, the native-speaker review below, the
+**Still outstanding on this piece:** the operator's own footage — the placeholder above is
+a stopgap and closes nothing — the native-speaker review below, the
 post-deploy PageSpeed run, and playback verification on a real handset — Chrome's
 `media`-on-`<source>` behaviour is confirmed but iOS Safari and Android Chrome are not, and
 pause-on-exit is inferred from the code rather than observed.

@@ -182,8 +182,8 @@ No other runtime dependencies. Adding one requires explicit approval — see CLA
 **Client-side JavaScript is permitted only for three named exceptions, one of which is planned rather than built, and this list is closed the same way the dependency list is.** Anything not on it is a violation; anything on it must not be deleted as one.
 
 1. **The mobile navigation toggle, and FAQ disclosure.** Both use native `<details>`, so **this exception has never actually been taken** — it costs zero bytes. It stays named because the toggle is where a future session would reach for a script first.
-2. **The quote form's Formspree submit** — `QuoteForm.astro`, one `is:inline` script, 23 lines of code. **This is the only client JavaScript the site ships today.** Full contract in section 6; the reasoning is below.
-3. **The hero video's viewport-entry playback — BUILT, 29 July 2026.** `Hero.astro`, one `is:inline` script, 22 lines. Approved on 27 July 2026 and named on this list before it existed, precisely so it arrived as a decision that was taken rather than as a script that turned up in a diff. The hero loads `preload="none"` and an `IntersectionObserver` starts playback when the hero enters the viewport, **pausing it when it leaves and resuming on re-entry** — browsers throttle timers off-screen but keep decoding video, so an observer that disconnected after first entry would leave a phone decoding for the rest of the session. Full contract in section 6; the budget and the acceptance gate stay in PLAN. **It is emitted only when the footage exists**, so the no-footage hero — which is the launch state — still ships no client JavaScript at all. Not a precedent for a fourth.
+2. **The quote form's Formspree submit** — `QuoteForm.astro`, one `is:inline` script, 23 lines of code. **This was the only client JavaScript the site shipped until 3 August 2026**, when hero footage landed and exception 3 below started being emitted. It is still the only script on any page except the two home pages. Full contract in section 6; the reasoning is below.
+3. **The hero video's viewport-entry playback — BUILT, 29 July 2026.** `Hero.astro`, one `is:inline` script, 22 lines. Approved on 27 July 2026 and named on this list before it existed, precisely so it arrived as a decision that was taken rather than as a script that turned up in a diff. The hero loads `preload="none"` and an `IntersectionObserver` starts playback when the hero enters the viewport, **pausing it when it leaves and resuming on re-entry** — browsers throttle timers off-screen but keep decoding video, so an observer that disconnected after first entry would leave a phone decoding for the rest of the session. Full contract in section 6; the budget and the acceptance gate stay in PLAN. **It is emitted only when the footage exists** — which it now does, so **as of 3 August 2026 the two home pages ship this script**, and the no-footage hero that shipped nothing is a state the repository can return to by deleting two files rather than the state it is in. Not a precedent for a fourth.
 
 The language switch is a link to a real URL, not a JS toggle — this matters for indexing.
 
@@ -522,6 +522,19 @@ Built 29 July 2026. This replaces the SUPERSEDED-PENDING contract that stood her
 27 July, which specified `autoplay` with no script and a media band above the price
 block. Both are gone; what follows is what ships.
 
+**The footage on the site today is not the operator's, and this is a dated, temporary
+exception.** `public/video/hero.mp4` and `src/assets/hero-poster.jpg` contain
+**manufacturer-supplied footage of a third party's building, used with the supplier's
+written permission**, installed **3 August 2026** as a placeholder pending the operator's
+first controlled flight. It is decorative hero background only — the media container is
+`aria-hidden`, it carries no caption, no address, no date and no claim, and it appears in
+no before/after pair. It is permitted by the scoped amendment to the no-stock-footage rule
+in **SPEC section 9**, which is conditional and which **excludes before/after imagery in
+all circumstances**: borrowed media may never fill `BeforeAfter`. **Removal trigger — it is
+replaced the moment the operator has his own footage, and the swap is two file copies with
+no code change.** Do not delete it as a rule violation before then, and do not leave it a
+day after. PLAN's Phase 10 carries the same record.
+
 **Structure.** One `<section>`. In the no-footage state it contains only the type: the
 pills, the `h1`, the sub, the actions, and the price and credentials block. **When the
 footage exists the section gains a background behind that type — not a band above it.**
@@ -669,7 +682,7 @@ of **0.58**, below which even `--ink` fails; the derivation is beside `--hero-sc
 **The fallback chain.** Three states, all implemented:
 
 1. **Video** — the poster paints immediately and is the LCP element; the video fades in over it once it is actually playing.
-2. **Poster only** — a real still from our own footage. Served to reduced-motion visitors, to anyone without JavaScript, and to anyone whose video fails.
+2. **Poster only** — the still that matches whatever clip is installed. Served to reduced-motion visitors, to anyone without JavaScript, and to anyone whose video fails. *(This said "a real still from our own footage", which is the intended end state and is not true of the placeholder above.)*
 3. **No footage at all** — no video, no poster, no scrim, no reserved band. A designed, image-free hero carried by type and the tokens. Not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon".
 
 **State 3 is the default path**, and it is enforced by construction rather than by
@@ -681,15 +694,26 @@ or turns out unusable.
 
 *(Corrected in Phase 6. This line said "it is what the site launches with and may be what it runs on for months", which was true only under the old ordering, where launch preceded the content drop. SPEC section 9 was corrected first; this was the last copy of the old launch order in the documents. The design decision is unchanged — state 3 is still the default path.)*
 
-**What state 3 must not become.** It must not acquire a stock image, a stock video, an illustration of a drone we do not own, or a photograph of someone else's roof. SPEC section 4 and CLAUDE.md apply to the hero identically. The marker for missing footage lives in the repo, not rendered onto the production home page — the visitor sees a complete image-free hero, and the marker exists so a future session does not mistake the empty state for a finished one.
+**What state 3 must not become.** It must not acquire an illustration of a drone we do not own, a grey box, or the words "video coming soon". SPEC section 4 and CLAUDE.md apply to the hero identically. The marker for missing footage lives in the repo, not rendered onto the production home page — the visitor sees a complete image-free hero, and the marker exists so a future session does not mistake the empty state for a finished one.
+
+*This sentence read "a stock image, a stock video … or a photograph of someone else's roof" until 3 August 2026, and the site now ships exactly that.* **The prohibition is not repealed, it is scoped** — SPEC section 9's amendment permits third-party footage as decorative hero background under four conditions that must hold together, and the placeholder above meets them. Everything the sentence forbade that is *not* covered by those four conditions is still forbidden, and **before/after imagery is excluded from the exception in all circumstances**. Read the amendment before concluding either that the placeholder is a violation or that the rule has gone.
 
 **Budget.** The poster is the LCP element and is the only hero asset counted against the
 500 KB first-load budget in SPEC section 6. The video is capped at **1.5 MB** for
-**8–12 seconds at 1080p** — PLAN's number, tighter than SPEC section 9's 2 MB and
-12 seconds on both counts, and **the tighter number governs**; the SPEC caps are not a
-licence to spend up to them. The cap is measured as the single file the browser actually
-fetches. `scripts/check-html.mjs` **check 7 enforces it mechanically** — section 8.
-Footage that cannot meet it is re-cut or re-encoded, not exempted.
+**8–16 seconds**. **SPEC section 9 and PLAN Phase 10 now carry the same two numbers**, and
+where they ever differ again the tighter one governs — a ceiling is not a licence to spend
+up to it. The cap is measured as the single file the browser actually fetches.
+`scripts/check-html.mjs` **check 7 enforces it mechanically** — section 8. Footage that
+cannot meet it is re-cut or re-encoded, not exempted.
+
+*Two corrections, 3 August 2026.* This read "8–12 seconds at 1080p — PLAN's number, tighter
+than SPEC section 9's 2 MB and 12 seconds on both counts". **The 2 MB half was already
+wrong**: SPEC's ceiling became 1.5 MB on 29 July and this sentence was not updated with it,
+so it described a gap that had closed. The seconds half is now 8–16 in both documents —
+widened on the first real cut, reasoning in SPEC section 9. **"At 1080p" is dropped rather
+than restated**: the clip installed today is 1280×720, so keeping it would assert a
+requirement the repository does not meet. Resolution is a quality judgement about the
+shot; the byte cap is the constraint, and it is the only one check 7 can enforce.
 
 **Mobile is no longer zero bytes of video, and SPEC sections 6 and 9 were corrected to
 match.** Both said the 500 KB budget was satisfied because no phone fetched any video. That
@@ -887,11 +911,12 @@ twelve `sitemap: (none)` errors across the service pages in both locales.
 ### Why `check-html` fails on an oversized hero video
 
 Check 7, added in Phase 10 with the hero video. Every file under **`public/video/`** must
-be at or under **1.5 MB** — PLAN's cap, tighter than SPEC section 9's 2 MB, and the tighter
-number governs.
+be at or under **1.5 MB** — the same cap SPEC section 9 and PLAN Phase 10 both now state.
+*(This said "tighter than SPEC section 9's 2 MB". SPEC's ceiling came down to 1.5 MB on
+29 July 2026 and the two have agreed since.)*
 
 It exists because that cap is **the one hero constraint a machine can actually check**. The
-rest of PLAN's list is a judgement about footage — 8–12 seconds, no audio track, a scrimmed
+rest of PLAN's list is a judgement about footage — 8–16 seconds, no audio track, a scrimmed
 background loop, is the shot any good — and none of that is mechanisable. A byte count is.
 The CSS `@supports` gap is documented as a manual step for precisely the opposite reason,
 so where a guard *can* be mechanical it should be one rather than a paragraph somebody is

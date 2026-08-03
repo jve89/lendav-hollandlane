@@ -1,5 +1,19 @@
 # SPEC.md — Lendav Hollandlane website
 
+**Version 1.5 · 3 August 2026** — **a hero video is now on the site, and it is
+not the operator's own footage.** Three things moved, all in section 9. The loop
+length widened from **8–12 to 8–16 seconds**, because the first real cut is 15.4
+seconds and encodes to 1.2 MB — well inside the byte cap, which is the limit that
+actually governs. The **no-stock-footage rule was amended rather than repealed**:
+third-party footage is permitted as decorative hero background under four
+conditions that must hold together, and **before/after imagery is excluded from
+that exception in all circumstances**. And the **current placeholder is recorded
+as a dated, temporary exception with an explicit removal trigger** — here, in
+PLAN's Phase 10 and in the ARCHITECTURE section 6 Hero contract, because a
+version note at the top of one document is not where a future session will meet
+it. Nothing else moved: the byte cap, the sequence that gates launch on the first
+flight, and the ban on invented evidence are all unchanged.
+
 **Version 1.4 · 29 July 2026** — **the hero video was built, and two statements
 in this document turned out to describe a hero that is not what shipped.** Both
 are corrected in place rather than annotated, because a governing document that
@@ -55,7 +69,7 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 - **No blog at launch — neither the posts nor the machine.** The infrastructure is built after launch, and the posts wait beyond that until there is something real to say.
 - **No Russian at launch.** The routing and content model must make Russian a translation drop, not a refactor.
 - **No customer login, no CRM, no dashboard.**
-- **No stock photography, no invented testimonials, no fabricated case studies.** See CLAUDE.md — this is a hard rule, not a preference.
+- **No stock photography, no invented testimonials, no fabricated case studies.** See CLAUDE.md — this is a hard rule, not a preference. **One narrow, conditional exception exists for decorative hero background video, and it is written out in section 9.** It does not reach photography of work, it does not reach before/after imagery under any circumstances, and it is not a general licence for third-party media.
 
 ## 5. Non-negotiable content constraints
 
@@ -102,19 +116,40 @@ Russian translation · blog posts · additional regional pages backed by real jo
 
 This is the whole of section 3 items 1 and 2 in a single screen. The video answers "what is this" faster than a paragraph can; the block under it answers "what does it cost and can I trust them" before the visitor has scrolled.
 
-**The footage does not exist yet, and what governs is the sequence, not a date.** The equipment is ordered; delivery follows roughly a week after that. The first flight is a **controlled job on family property, not a paying customer's roof**, flown as soon as the kit arrives. That flight produces the hero footage, a before/after pair, a measured job duration and the water-and-power answer. **The site launches after that flight, not before it.**
+**Our own footage does not exist yet, and what governs is the sequence, not a date.** The equipment is ordered; delivery follows roughly a week after that. The first flight is a **controlled job on family property, not a paying customer's roof**, flown as soon as the kit arrives. That flight produces the hero footage, a before/after pair, a measured job duration and the water-and-power answer. **The site launches after that flight, not before it.**
+
+**What is on the site today is a placeholder that is not ours**, installed on 3 August 2026 under the amended rule below and recorded as a dated, temporary exception further down this section. It changes none of the above: the flight still produces the real footage, and it still gates launch.
 
 An earlier version of this section put the footage at "September 2026" and had the site launching without it. That was an assumption made in session one and never checked with the operator; it is recorded here so it is not reinstated. Express this as a sequence — dates rot, and this one already did.
 
-**No design decision changes.** The footage does not exist *today*, so the hero must still be built so that the state with no footage is the *default* path, not a degraded one — the same principle already applied to `BeforeAfter` in ARCHITECTURE section 6. Building the empty path first is what stops a placeholder shipping to production.
+**No design decision changes.** Our footage did not exist when the hero was built, so the hero is built so that the state with no footage is the *default* path, not a degraded one — the same principle already applied to `BeforeAfter` in ARCHITECTURE section 6. **That remains a requirement of the component and is not softened by there being a file in `public/video/` today**: the media layers are gated on the assets existing, so deleting both files returns the site to a finished type-led hero with no code change. That property is what makes the placeholder below removable in one step.
 
-**No stock footage.** Section 4 and CLAUDE.md forbid stock photography, and that applies identically to video. If the footage is not ours, it does not go on the page.
+### No stock footage — amended 3 August 2026, scoped rather than repealed
 
-**Hosting — self-hosted in `public/video/`.** Not a video CDN. At this site's traffic the file is free to serve on the hosting plan we already have, with roughly two orders of magnitude of headroom. More importantly, what a video CDN sells — adaptive bitrate, a media library, a player — is of no use to a twelve-second silent loop, and its player is client JavaScript delivering HLS, which works against both the Lighthouse target above and the zero-JS rule. Revisit only if a real video library appears, meaning several job clips at Phase 10.
+**The rule as it stood.** Section 4 and CLAUDE.md forbid stock photography, and that applied identically to video: if the footage was not ours, it did not go on the page.
+
+**What the rule is actually protecting is authenticity, not copyright.** A visitor must never be shown work that is not this operator's and be led to believe it is. Written permission from a rights holder settles whether we may publish a file; it settles nothing about whether the visitor is misled, which is the only thing this rule was ever for. **So permission alone does not open the rule**, and the exception below is narrow by construction rather than by good intentions.
+
+**Third-party footage is permitted only where all four of these hold together.** Any one of them failing puts the footage back under the flat prohibition above:
+
+1. **Written permission from the rights holder exists and is recorded** — recorded in this repository, naming who granted it and for what.
+2. **It is used only as decorative hero background.** Never in a before/after pair, never in a `jobs` entry, and never anywhere a claim about the operator's own work is made or implied.
+3. **It carries no caption, alt text, address, date or surrounding context suggesting it is our job.** The hero media container is `aria-hidden` decoration and every claim the page makes is made in text beside it; nothing in that text may point at the footage as evidence.
+4. **It is replaced by the operator's own footage as soon as that exists.** It is a placeholder carrying a removal trigger, not an asset.
+
+**Before/after imagery is excluded from this exception in all circumstances** — third-party or not, permitted or not, captioned however carefully. Those images are *evidence*: section 3 item 3 asks the site to show real before/after evidence **of our own work**, and a borrowed pair is a false claim regardless of who owns the copyright. The hero is decoration and asserts nothing on its own; a before/after pair is an assertion. **That distinction is the entire boundary of this exception and it does not move.** `BeforeAfter`'s empty state stays the answer until a real job file lands.
+
+### Current hero footage — a dated, temporary exception
+
+**`public/video/hero.mp4` and `src/assets/hero-poster.jpg` are not the operator's footage.** They are **manufacturer-supplied footage of a third party's building**, used with the **supplier's written permission**, and they were installed on **3 August 2026** as a placeholder pending the operator's first controlled flight. They are used as decorative hero background only, carry no caption or context claiming the work, and appear in no before/after pair.
+
+**Removal trigger: they are replaced the moment the operator has his own footage** — which is the same first flight this section already gates launch on. **The swap is two file copies and no code change**, at the two paths above. This is recorded here, in PLAN's Phase 10 and in the ARCHITECTURE section 6 Hero contract, so a session that meets the files meets the reason for them.
+
+**Hosting — self-hosted in `public/video/`.** Not a video CDN. At this site's traffic the file is free to serve on the hosting plan we already have, with roughly two orders of magnitude of headroom. More importantly, what a video CDN sells — adaptive bitrate, a media library, a player — is of no use to a single short silent loop, and its player is client JavaScript delivering HLS, which works against both the Lighthouse target above and the zero-JS rule. Revisit only if a real video library appears, meaning several job clips at Phase 10.
 
 **Two states, and the NO-FOOTAGE state is the one that is built first.** `reference/direction-d.html` is the approved design direction and demonstrates both states on the same page.
 
-- **NO-FOOTAGE — what the site renders today, and until the first flight.** A black, type-led hero: the headline, the sub, and the price and credentials block, carried by type and the tokens alone. **No media band, no poster, no placeholder.** Not a reserved empty band, not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon" — the section simply has no media in it. This is the default path. It is built first and it must look finished, for two reasons: it is the state every preview build and every review renders in until the footage lands, and it is what launch falls back to if that footage slips or turns out unusable. A hero that looks broken without footage will ship looking broken.
+- **NO-FOOTAGE — the default path, and what the site rendered until 3 August 2026.** A black, type-led hero: the headline, the sub, and the price and credentials block, carried by type and the tokens alone. **No media band, no poster, no placeholder.** Not a reserved empty band, not a grey box, not a blurred gradient standing in for a photograph, not the words "video coming soon" — the section simply has no media in it. This is the default path. It is built first and it must look finished, for two reasons: it is the state every preview build and every review renders in until the footage lands, and it is what launch falls back to if that footage slips or turns out unusable. A hero that looks broken without footage will ship looking broken.
 - **FOOTAGE — what the same hero becomes.** It *gains a scrimmed background behind the type* — the video and its poster sit behind the headline, the sub and the price and credentials block, under a uniform scrim. Within this state the media degrades video → poster still, under the guards below.
 
   **Corrected 29 July 2026: this said "a media band above the price and credentials block", and the hero was not built that way.** PLAN's Phase 10 constraint list said "scrimmed background loop … background, not foreground", that list governs where the two disagree, and background is what shipped. The sentence is corrected rather than annotated because a governing document that describes a layout the site does not have is worse than no description.
@@ -130,7 +165,11 @@ Detail in the Hero contract, ARCHITECTURE section 6.
 **Budget.**
 
 - **1.5 MB maximum** for the hero video, on every device, counted as the single file the browser actually fetches rather than the sum of the encodings offered. **This replaces the "2 MB desktop / zero mobile" split** that stood here until 29 July 2026. It is PLAN Phase 10's tighter number, and it is enforced by check 7 in `scripts/check-html.mjs` rather than trusted.
-- **Loop length: 8–12 seconds.** Long enough to show the work, short enough to encode well under the cap and to loop without the seam becoming obvious.
+- **Loop length: 8–16 seconds.** Long enough to show the work, short enough to encode well under the cap and to loop without the seam becoming obvious.
+
+  **Widened from 8–12 on 3 August 2026, and here is the reasoning, because the number itself carries none.** The first real cut is **15.4 seconds and 1,233,248 bytes — 1.18 MB against the 1.5 MB cap**, leaving about 330 KB of headroom. The 12-second figure was never a measurement: it was a judgement about two things, whether a longer cut could still be encoded well under the cap, and whether the loop seam would become obvious. Neither binds here. The encoding question is answered by the file, which came in a fifth under the cap; and seam visibility is a property of *where* the cut is made, not of how long it runs.
+
+  **The byte cap is the governing limit, and the loop length is not a second one.** 1.5 MB is what actually protects a visitor on a phone connection, and it is the only one of these two numbers a machine enforces — check 7 in `scripts/check-html.mjs`. **A longer loop is therefore not licensed by this change: it must still satisfy the byte cap**, and a cut that cannot is re-cut or re-encoded exactly as the line below says. If a future cut needs more than 16 seconds *and* still fits in 1.5 MB, widen this bound again on the same reasoning — deliberately, with the numbers written down, and never by exempting the cap.
 - **No audio track in the file at all** — stripped at encode, not muted at playback.
 - **The poster** is the LCP element and is the hero asset counted against the 500 KB first-load budget in section 6.
 
