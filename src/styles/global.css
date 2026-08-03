@@ -177,32 +177,25 @@ h3 {
   padding-block: var(--sp-8);
 }
 
-/* UNUSED as of Phase 10's palette change — no element carries this class any
-   more, and it is kept for one commit only so the change reverts cleanly.
-   The next commit deletes it together with the --paper-* tokens it reads.
-   Do not reach for it: the services sections it used to invert are now
-   on --bg like every other section, and a light surface anywhere is a fresh
-   decision. (`.section--raised` was named here until the bands were removed;
-   that class no longer exists either.)
+/* `.section--paper` STOOD HERE AND IS DELETED. It was Direction D's "one
+   deliberate inversion" — a white services section that re-mapped --ink,
+   --ink-2, --ink-3, --muted, --line and --accent-text to paper equivalents, so
+   anything nested inside it inverted without needing a light variant of its
+   own. Phase 10's palette change moved all four sections that used it onto a
+   dark surface on 29 July 2026, and this block plus its seven tokens were left
+   in place "for one commit" so the change could be reverted in one command.
+   That commit is this one.
 
-   What it did: the one deliberate inversion in the page. Re-mapped the on-dark
-   tokens to their paper equivalents, so anything nested inside inverted
-   without needing a light-mode variant of its own. */
-.section--paper {
-  background: var(--paper);
-  color: var(--paper-ink);
+   There is one surface family now, and a light surface anywhere is a fresh
+   decision rather than a class waiting to be reused. If one is ever wanted, the
+   re-map pattern is the right shape and this comment is the record of how it
+   worked — but the contrast pairs would all need re-validating against the new
+   surface, which is what made the original removal a contrast audit rather than
+   a find-and-replace. */
 
-  --ink: var(--paper-ink);
-  --ink-2: var(--paper-ink);
-  --ink-3: var(--paper-muted);
-  --muted: var(--paper-muted);
-  --line: var(--paper-line);
-  --accent-text: var(--accent-on-paper);
-}
-
-/* Accent as *text*. One surface family since Phase 10, so this resolves to
-   --accent everywhere; the indirection stays because it is what components
-   already reference and because a second surface would need it again. */
+/* Accent as *text*. One surface family, so this resolves to --accent
+   everywhere; the indirection stays because it is what components already
+   reference and because a second surface would need it again. */
 :root {
   --accent-text: var(--accent);
 }

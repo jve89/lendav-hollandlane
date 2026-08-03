@@ -2,13 +2,14 @@
 /**
  * ServiceCard — one card in a services grid.
  *
- * Phase 10 moved that grid off the paper section onto --bg-2, and this card
- * onto --panel with a --line hairline. The rules below had to move with it
- * rather than being left for the dead-code commit: they name --paper-muted,
- * --paper-line, --accent-wash and --accent-on-paper DIRECTLY, not through the
- * `.section--paper` re-map, so nothing would have re-pointed them. Left alone
- * they would have rendered a near-white icon chip and 3.1:1 body text on a
- * near-black card. The tokens they used to name are unreferenced now.
+ * Phase 10 moved that grid off the white services section and this card onto
+ * --panel with a --line hairline; the section under it is --bg since the bands
+ * came off. The card's own rules had to be rewritten at the time rather than
+ * left for the dead-code commit, because they named --paper-muted,
+ * --paper-line, --accent-wash and --accent-on-paper DIRECTLY rather than
+ * through a re-map, so nothing would have re-pointed them and they would have
+ * rendered a near-white icon chip and 3.1:1 body text on a near-black card.
+ * Those tokens no longer exist — they were deleted with `.section--paper`.
  *
  * Since Phase 4 the data comes from the `services` content collection rather
  * than an array in `i18n/home.ts`, on both the home pages and the services

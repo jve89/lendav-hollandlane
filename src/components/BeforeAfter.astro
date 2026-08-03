@@ -114,9 +114,15 @@ const caption = job
 }
 
 <style>
-  /* Both states are built from `--line`, `--ink` and `--muted`, all of which
-     `.section--paper` re-maps in global.css. That is what lets one component sit
-     on the near-black base and on the paper section without a light variant. */
+  /* Both states are built from `--line`, `--ink` and `--muted`, and nothing
+     re-maps them any more. This said those three were re-mapped by
+     `.section--paper`, which is what let one component render on the near-black
+     base and on the white services section without a light variant; that class
+     and its token set are deleted, and there is one surface family now.
+
+     What survives is the reason the component reads tokens rather than naming
+     colours: a second surface, if one is ever introduced, re-points these three
+     and this file does not change. The re-map is gone; the discipline is not. */
   .ba {
     border: 1px solid var(--line);
     border-radius: var(--r-card);
@@ -177,8 +183,18 @@ const caption = job
     border: 1px solid var(--glass-line);
     border-radius: var(--r-pill);
     padding: var(--sp-1) var(--sp-3);
-    /* Not --ink: .section--paper re-maps that to near-black, which would put
-       dark text on this dark glass pill. The glass is dark on every surface. */
+    /* --ink-on-glass, NOT --ink, AND THIS OUTLIVED THE REASON IT WAS WRITTEN.
+       The original reason was `.section--paper`, which re-mapped --ink to
+       near-black and would have put dark text on this dark glass pill; that
+       class is deleted, so --ink would render correctly here today.
+
+       The token stays anyway, and this is not inertia. The pill sits on a
+       PHOTOGRAPH, not on a surface this stylesheet controls — see --glass-media
+       in tokens.css, whose alpha is derived to hold --ink-on-glass at 4.5:1
+       against a pure-white highlight. The glass is dark whatever the page
+       around it does, so the text on it is light for a reason that has nothing
+       to do with which surfaces the site happens to have. Collapsing this to
+       --ink would work now and break the day a light surface returns. */
     color: var(--ink-on-glass);
     font-size: var(--step-micro);
     font-weight: var(--fw-strong);
