@@ -276,7 +276,44 @@ cannot say:
   poster is in `src/` so Astro can process it, the video in `public/` because Astro cannot
   process video. ARCHITECTURE section 4.
 - **A before/after pair** into `src/content/jobs/`, which fills `BeforeAfter` on both home
-  pages the moment the file lands — no code change needed, that is the contract.
+  pages the moment the file lands — no code change needed, that is the contract. **But one
+  pair is not the target state — see below, and read it before the first flight, because it
+  changes what has to be shot.**
+
+##### Before/after evidence is planned as several pairs mapped to services — NOT BUILT
+
+**Recorded now rather than when it is built, because it is a shooting instruction before it
+is a code change.** A session that reads only the bullet above will come back from the first
+flights with one pair, and the pairs cannot be obtained retrospectively — the "before" no
+longer exists once the roof is clean.
+
+**The intended shape:**
+
+- **One pair per service**, across the five: roof, facade, solar panels, windows, gutters.
+- **Each service page carries its own pair** — the evidence on `/teenused/katusepesu` is a
+  roof, not whatever job happens to be newest. A facade pair on the roof-cleaning page is
+  weak evidence and mildly misleading.
+- **The home pages carry a selection of two or three, not all five.** The home page is
+  making one argument and then asking for the enquiry; five pairs is a gallery, and SPEC
+  section 1 says this site is not a portfolio for its own sake.
+
+**None of that exists.** `BeforeAfter` takes a single optional `jobId`, both home pages call
+it with "the newest published job", and with no job files present every caller renders the
+empty state — which is the launch state and a finished design, per SPEC section 9. Building
+this means a service↔job mapping and a multi-pair caller, and it is **not** in scope for the
+current phase.
+
+**What it changes about the flights: five services need five sets of before shots, and the
+before shot is the one that cannot be taken twice.** The first flight is one controlled job
+on family property and will not produce all five. So this is a constraint on the *sequence*
+of early jobs rather than on the first one — shoot every job as if its pair is the one that
+will represent that service, and keep the before frames even for jobs that never get
+published. `published: false` governs whether a pair appears; it costs nothing to have the
+photographs and not use them, and everything to need them and not have them.
+
+**Unchanged by any of this: the pairs are the operator's own work.** SPEC section 9's
+third-party footage exception is decorative hero background only and **excludes before/after
+imagery in all circumstances**.
 - **A measured job duration and throughput**, feeding both the copy and the financial
   model, and restoring the figure `CompareTable` currently withholds.
 - **The water and power answer**, replacing the unconfirmed FAQ entry in `src/i18n/faq.ts`.
