@@ -1,6 +1,6 @@
 ---
 /**
- * ServiceGrid — the five service cards, from the content collection.
+ * ServiceGrid — the service cards, from the content collection.
  *
  * Extracted in Phase 4. The list and its flex rules previously sat inline in
  * both home pages; the services index in two locales would have made four
@@ -9,7 +9,7 @@
  *
  * It takes entries rather than fetching them, so a caller can decide the order
  * and the subset. Every current caller passes `servicesFor(locale)`, which is
- * all five in `order`.
+ * all six in `order`.
  */
 import type { CollectionEntry } from 'astro:content'
 import ServiceCard from './ServiceCard.astro'
@@ -40,10 +40,13 @@ const { locale, entries, headingLevel = 3 } = Astro.props
 </ul>
 
 <style>
-  /* Flex, not grid: five cards in a three-up row leave a trailing row of two,
-     and a grid would stretch those two across the full width. Each card sets
-     its own track width from `--card-gap`, so a row of two keeps exactly the
-     width of a row of three and the ragged edge stays centred. */
+  /* Flex, not grid, and the reason is a trailing row that does not fill.
+     Six services divide evenly three-up, so there is no ragged row TODAY — but
+     five left a trailing row of two, seven would leave one, and a grid would
+     stretch whatever was left across the full width. Each card sets its own
+     track width from `--card-gap`, so a short row keeps exactly the width of a
+     full one and the ragged edge stays centred. Do not simplify this to a grid
+     on the strength of the count happening to divide right now. */
   .services__grid {
     --card-gap: var(--sp-5);
     display: flex;

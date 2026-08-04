@@ -84,6 +84,15 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3'
         <path d="M12 14v6" />
       </svg>
     )}
+    {/* A sawtooth factory roof. One closed path, so it reads at 20px where a
+        chimney and a door would only add noise. This chain has no exhaustiveness
+        check — a `ServiceIcon` with no branch here compiles and renders an empty
+        chip — so a new service key needs a branch adding by hand. */}
+    {icon === 'industrial' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
+        <path d="M3 21V9l6 4V9l6 4V9l6 4v8z" />
+      </svg>
+    )}
   </span>
 
   <Heading><a class="service__link" href={href}>{title}</a></Heading>

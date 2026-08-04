@@ -4,7 +4,7 @@ import type { Locale } from './ui'
  * Home page copy, both locales.
  *
  * Why this file exists: the home page ships in Phase 2 and the `services` content
- * collection does not exist until Phase 3. Its repeating blocks — five service
+ * collection does not exist until Phase 3. Its repeating blocks — the service
  * cards, five comparison rows, three FAQ entries — are lists, not UI strings, so
  * they are modelled as arrays here rather than flattened into ~45 `ui.ts` keys.
  *
@@ -33,7 +33,7 @@ import type { Locale } from './ui'
  */
 
 /**
- * The five services, as keys. The SINGLE source of the set: `content.config.ts`
+ * The six services, as keys. The SINGLE source of the set: `content.config.ts`
  * builds `z.enum(serviceKeys)` from this tuple for both the `services.icon` and
  * the `jobs.service` field, so a service cannot exist in a content file and be
  * unknown to the card that draws it. Order here is not meaningful — the services
@@ -41,8 +41,16 @@ import type { Locale } from './ui'
  *
  * A service key and its icon are 1:1 by design, which is why `ServiceIcon` is an
  * alias rather than a second list to keep in step.
+ *
+ * `industrial` is the sixth and it was added after Phase 4, outside the phase
+ * order. Adding a key here is the whole of a new service: `servicePairs()`
+ * asserts one entry per key per locale, so the two markdown files are demanded
+ * by the build, and the grid, the price table, the quote form's select and the
+ * hreflang pairing all follow from the collection. The ONE thing that does not
+ * follow is the icon — `ServiceCard`'s conditional chain has no exhaustiveness
+ * check, so a key with no matching branch renders an empty chip and compiles.
  */
-export const serviceKeys = ['roof', 'facade', 'solar', 'glass', 'gutter'] as const
+export const serviceKeys = ['roof', 'facade', 'solar', 'glass', 'gutter', 'industrial'] as const
 
 /** Which price a service shows. A reference, never an amount. */
 export const priceKinds = ['roof', 'facade', 'quote', 'addon'] as const

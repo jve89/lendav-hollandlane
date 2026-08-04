@@ -127,7 +127,7 @@ export function vatNote(locale: Locale): string {
  * rather than once per price.
  *
  * It lived inside `ServiceCard` until Phase 4, when the same line started
- * rendering on the services index and on five service pages. It sits beside
+ * rendering on the services index and on every service page. It sits beside
  * `formatPrice` for the same reason that one does, and Phase 5's `PriceTable`
  * is the next caller.
  *

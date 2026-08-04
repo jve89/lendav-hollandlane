@@ -289,7 +289,9 @@ longer exists once the roof is clean.
 
 **The intended shape:**
 
-- **One pair per service**, across the five: roof, facade, solar panels, windows, gutters.
+- **One pair per service, across the five domestic services**: roof, facade, solar panels,
+  windows, gutters. **Five, not six** — the sixth service is deliberately excluded, and the
+  rule for it is below rather than left to be inferred from a count.
 - **Each service page carries its own pair** — the evidence on `/teenused/katusepesu` is a
   roof, not whatever job happens to be newest. A facade pair on the roof-cleaning page is
   weak evidence and mildly misleading.
@@ -297,14 +299,33 @@ longer exists once the roof is clean.
   making one argument and then asking for the enquiry; five pairs is a gallery, and SPEC
   section 1 says this site is not a portfolio for its own sake.
 
+**The industrial and large-scale service must never carry a before/after pair, and this is a
+rule rather than a gap in the list above.** Two independent reasons, either of which is
+sufficient:
+
+1. **No industrial work has been performed.** A before/after pair is not decoration, it is
+   evidence of a job this business did — SPEC section 3 item 3 — and the industrial page is
+   written from end to end so that it claims no completed work. One pair would undo the
+   whole page: it would turn an invitation to scope a site into a portfolio of one.
+2. **Nothing may be borrowed to fill it.** SPEC section 9's third-party footage exception is
+   decorative hero background only and **excludes before/after imagery in all
+   circumstances** — permitted, captioned, third-party or not. There is no route by which
+   an industrial pair arrives before an industrial job does.
+
+So the page's evidence section is the documentation it already leads with, and it stays that
+way until this operator has flown a real industrial job of his own. **When that happens it is
+a new decision, taken then, with the client's agreement** — the `published: false` default and
+the `testimonial`/`testimonialAuthor` both-or-neither rule apply to it exactly as they do to
+every other job file. It is emphatically not a slot standing empty for someone to fill.
+
 **None of that exists.** `BeforeAfter` takes a single optional `jobId`, both home pages call
 it with "the newest published job", and with no job files present every caller renders the
 empty state — which is the launch state and a finished design, per SPEC section 9. Building
 this means a service↔job mapping and a multi-pair caller, and it is **not** in scope for the
 current phase.
 
-**What it changes about the flights: five services need five sets of before shots, and the
-before shot is the one that cannot be taken twice.** The first flight is one controlled job
+**What it changes about the flights: the five domestic services need five sets of before
+shots, and the before shot is the one that cannot be taken twice.** The first flight is one controlled job
 on family property and will not produce all five. So this is a constraint on the *sequence*
 of early jobs rather than on the first one — shoot every job as if its pair is the one that
 will represent that service, and keep the before frames even for jobs that never get
@@ -715,6 +736,18 @@ authorisation to cite, or physical cleaning with no authorisation and no organis
 claim made anywhere on the site. **Not in this commit, and not by guessing which route it
 is.** It is blocked on the operator's product decision and the rewrite belongs to the phase
 that has the answer.
+
+**The industrial and large-scale service page has no cleaning-products section, this is
+deliberate, and it must not acquire one when the item above is resolved.** It is the sixth
+service and it is the only service page with no such section. Copying the sentence there
+would have made the rewrite above fourteen strings instead of twelve, on a page where the
+claim was never load-bearing — and the chemicals question an industrial buyer actually has
+is about their own discharge consent and safety file, not about which product we name in a
+quote. That page answers it through scoping instead, and **it keeps answering it that way
+whichever route the operator's decision takes.** The same note is written into
+`src/content/services/et/toostusobjektide-pesu.md` and its English pair, where a session
+tidying the six pages for consistency will be standing when it matters. Six pages per
+locale, not seven.
 
 **A Formspree plan decision — MOSTLY SOLVED ON 26 JULY 2026, and what is left is a much
 smaller question.** The account is on the free tier, where `_next` is ignored: measured in

@@ -21,6 +21,12 @@ export const defaultLocale: Locale = 'et'
  * native speaker has a better six-character answer, take it, but re-measure at
  * 320px before committing it.
  *
+ * The two strings rewritten for the sixth service — `services.lead` and
+ * `meta.services.description` — are AI-drafted on the same terms and are NOT
+ * reviewed. They were already unreviewed before the edit, so the marker's scope
+ * has not changed; this sentence exists so nobody reads a recent edit date as a
+ * review.
+ *
  * `footer.emailTitle` was added when the address started working. It is the one
  * Estonian string here that is a dictionary word rather than drafted prose —
  * `E-post` is the standard term — and it is a visually-hidden label in the
@@ -82,8 +88,17 @@ export const ui = {
     'meta.notFound.title': 'Lehte ei leitud',
     'meta.notFound.description': 'Seda lehte ei ole olemas või on see kolinud.',
     'meta.services.title': 'Teenused ja hinnad',
+    /**
+     * KEEP THIS UNDER ~155 CHARACTERS. Check 3 in `scripts/check-html.mjs`
+     * asserts that a description exists and says nothing about its length, so
+     * nothing in the repository fails when one grows past the point a search
+     * result truncates it — the words are simply spent and never read. It gained
+     * industrial work when the sixth service landed and was re-counted, not
+     * eyeballed; `päikesepaneelide pesu` shortened to `päikesepaneelid` to pay
+     * for it. Count it again before adding a seventh.
+     */
     'meta.services.description':
-      'Katusepesu, fassaadipesu, päikesepaneelide pesu, aknad ja vihmaveesüsteemid. Kõik drooniga, katusele astumata. Hinnad on avaldatud.',
+      'Katusepesu, fassaadipesu, päikesepaneelid, aknad, vihmaveesüsteemid ja tööstusobjektid. Kõik drooniga, katusele astumata. Hinnad on avaldatud.',
     'meta.pricing.title': 'Hinnakiri',
     'meta.pricing.description':
       'Katuse- ja fassaadipesu ruutmeetrihind, väikseima töö maksumus ja see, mis hinda muudab. Kõik hinnad on ilma käibemaksuta.',
@@ -104,8 +119,16 @@ export const ui = {
 
     // services index
     'services.heading': 'Teenused',
+    /**
+     * THE COUNT IS LIVE COPY, not furniture. It said "Viis teenust" and the
+     * sixth service would have made it false on `/teenused` the moment the
+     * markdown files landed — the exact class of failure SPEC section 9 records
+     * for the before/after promise, where documentation stayed consistent while
+     * the page told the visitor something untrue. Adding a service means editing
+     * this line and its English twin.
+     */
     'services.lead':
-      'Viis teenust, kõik drooniga. Vali teenus, et näha, mida see hõlmab ja mida mitte.',
+      'Kuus teenust, kõik drooniga. Vali teenus, et näha, mida see hõlmab ja mida mitte.',
 
     /**
      * The price vocabulary. It lived in `home.ts` until Phase 4, when the price
@@ -258,8 +281,9 @@ export const ui = {
     'meta.notFound.title': 'Page not found',
     'meta.notFound.description': 'This page does not exist, or it has moved.',
     'meta.services.title': 'Services and prices',
+    /** Under ~155 characters, counted rather than eyeballed — see the Estonian block. */
     'meta.services.description':
-      'Roof cleaning, facade cleaning, solar panels, windows and guttering. All by drone, with nobody on your roof. Prices published.',
+      'Roof cleaning, facade cleaning, solar panels, windows, guttering and industrial work. All by drone, with nobody on your roof. Prices published.',
     'meta.pricing.title': 'Pricing',
     'meta.pricing.description':
       'The square-metre price for roof and facade cleaning, the minimum job, and what moves the price. All prices exclude VAT.',
@@ -280,8 +304,9 @@ export const ui = {
 
     // services index
     'services.heading': 'Services',
+    /** The count is live copy and goes stale when a service is added — see the Estonian block. */
     'services.lead':
-      'Five services, all done by drone. Pick one to see what it covers and what it does not.',
+      'Six services, all done by drone. Pick one to see what it covers and what it does not.',
 
     // the price vocabulary — see the Estonian block
     'price.from': 'From',

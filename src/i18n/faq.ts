@@ -38,7 +38,9 @@ import { formatPrice, monthRange } from './utils'
  *
  * needs-native-review — every Estonian string below is AI-drafted and has NOT
  * been read by a native speaker. The three moved from `home.ts` were already
- * marked; the eleven new ones are on the same terms. Phase 10 clears it.
+ * marked; the eleven new ones are on the same terms, and so are the four
+ * industrial questions added with the sixth service, plus the rewritten
+ * `price-basis` answer. Phase 10 clears it. Nothing here has been reviewed.
  */
 
 /** The three sections of the page. Order here is the order they render in. */
@@ -68,6 +70,17 @@ export const faqIds = [
   'permission',
   'insurance',
   'ku-documents',
+  /**
+   * The four industrial questions, added with the sixth service. They are
+   * appended rather than interleaved by subject: `faqIds` order is render order
+   * within a group, and a question is looked up by id from `faqRefs`, so moving
+   * an existing id to make room would reshuffle `/kkk` for no gain. The group
+   * map below is what actually places them on the page.
+   */
+  'industrial-scope',
+  'industrial-price',
+  'industrial-info',
+  'industrial-documents',
 ] as const
 export type FaqId = (typeof faqIds)[number]
 
@@ -91,6 +104,10 @@ export const faqGroupOf = {
   permission: 'documents',
   insurance: 'documents',
   'ku-documents': 'documents',
+  'industrial-scope': 'work',
+  'industrial-price': 'price',
+  'industrial-info': 'price',
+  'industrial-documents': 'documents',
 } as const satisfies Record<FaqId, FaqGroup>
 
 /**
@@ -178,8 +195,12 @@ export const faqCopy = {
         a: 'Ütleme kestuse pakkumises, teie objekti kohta eraldi. Üldist arvu me ei avalda: see sõltub objektist ja meil ei ole veel oma mõõtmisi, millele tugineda.',
       },
       'price-basis': {
+        // THIS ANSWER ENUMERATES THE SERVICES, so it goes stale every time one is
+        // added. It named four when there were five; `tööstusobjektid` was added
+        // with the sixth. An enumeration that silently omits a service is not
+        // merely incomplete — it tells a reader their job is not priced here.
         q: 'Kuidas hind kujuneb?',
-        a: 'Katuse- ja fassaadipesu hind arvutatakse ruutmeetri järgi ja algab avaldatud hinnast. Aknad, päikesepaneelid ja vihmaveesüsteemid hinnastame objekti järgi. Kõik hinnad on ilma käibemaksuta ja täpne hind on kirjas pakkumises.',
+        a: 'Katuse- ja fassaadipesu hind arvutatakse ruutmeetri järgi ja algab avaldatud hinnast. Aknad, päikesepaneelid, vihmaveesüsteemid ja tööstusobjektid hinnastame objekti järgi. Kõik hinnad on ilma käibemaksuta ja täpne hind on kirjas pakkumises.',
       },
       minimum: {
         q: 'Kas väikesel tööl on miinimumhind?',
@@ -209,6 +230,38 @@ export const faqCopy = {
       'ku-documents': {
         q: 'Mida te korteriühistule ja ärikliendile esitate?',
         a: 'Käitamisloa koopia, vastutuskindlustuse tõendi ja objektipõhise riskianalüüsi. Küsige neid koos pakkumisega, siis saadame need hinnaga ühes kirjas.',
+      },
+      /**
+       * The four industrial questions. NONE OF THEM ASSERTS A COMPLETED JOB, and
+       * that is the constraint they were written under rather than a happy
+       * accident: this business has cleaned nothing yet, and an FAQ is exactly
+       * where a capability list would sound like a track record. Every answer is
+       * either a statement about our own conduct — what we send, when we send
+       * it, what we ask before quoting — or an explicit invitation to ask.
+       * `industrial-scope` in particular does NOT open with "Jah": a bare yes to
+       * "do you cover industrial buildings" reads as "we have done them", which
+       * is the one thing it must not say.
+       *
+       * `industrial-documents` deliberately overlaps `ku-documents` and does not
+       * repeat it: that answer lists the three documents, this one is about WHEN
+       * they arrive and in what form, because a safety officer's problem is
+       * lead time rather than the contents.
+       */
+      'industrial-scope': {
+        q: 'Kas te teete ka tööstus- ja ärihooneid?',
+        a: 'Tööstus- ja suurobjektidel on eraldi teenus ja need lepime enne pakkumist teiega läbi. Tehased, laod, spordihooned, põllumajandushooned, silod ja mahutid, päikesepargid, laevad ja tuulikud on objektid, mille kohta tasub küsida. Öelge, mis objekt see on, kui kõrge, millest on pind ja kuidas ligi pääseb — selle põhjal ütleme, kas ja kuidas me töö ette võtame.',
+      },
+      'industrial-price': {
+        q: 'Kuidas kujuneb tööstusobjekti hind ja miks mitte ruutmeetri järgi?',
+        a: 'Suurobjekti hinna otsustavad ligipääs, kõrgus, pinnakate ja see, kas ja kui kaua saab tööks tootmise või liikluse peatada. Kaks ühesuguse pinnaga hoonet võivad nõuda päris erinevat tööd. Ruutmeetrihind annaks siin arvu, mis oleks kas teie või meie kahjuks vale, seepärast me seda ei avalda. Hind tuleb pärast läbirääkimist ja kirjalikult.',
+      },
+      'industrial-info': {
+        q: 'Mida on tööstusobjekti pakkumiseks vaja teada?',
+        a: 'Mis hoone või rajatis see on ja kui kõrge; millest on pind, mida pesta tuleb; kuidas objektile ligi pääseb ja mis jääb selle ümber; kas töö saab käia tootmise ajal või on vaja seisakuakent; ja objekti aadress. Fotod aitavad. Kui midagi neist veel teada ei ole, kirjutage ikkagi — puuduva osa lepime läbirääkimisel kokku.',
+      },
+      'industrial-documents': {
+        q: 'Mida saab meie tööohutuse eest vastutav inimene?',
+        a: 'Käitamisloa koopia, vastutuskindlustuse tõendi ja objektipõhise riskianalüüsi. Saadame need kirjalikult enne töö algust, mitte töö päeval, nii et jõuate need oma majas edasi anda ja läbi vaadata. Küsige need koos pakkumisega, siis tulevad need hinnaga ühes kirjas.',
       },
     },
   },
@@ -252,8 +305,9 @@ export const faqCopy = {
         a: 'We give the duration in the quote, for your property specifically. We do not publish a general figure: it depends on the property, and we have no measurements of our own to stand on yet.',
       },
       'price-basis': {
+        // Enumerates the services and goes stale when one is added — see the Estonian block.
         q: 'How is the price worked out?',
-        a: 'Roof and facade cleaning are priced by the square metre, from the published price. Windows, solar panels and guttering are priced per property. All prices exclude VAT, and the exact price is set out in the written quote.',
+        a: 'Roof and facade cleaning are priced by the square metre, from the published price. Windows, solar panels, guttering and industrial work are priced per site. All prices exclude VAT, and the exact price is set out in the written quote.',
       },
       minimum: {
         q: 'Is there a minimum charge for a small job?',
@@ -274,6 +328,23 @@ export const faqCopy = {
       'ku-documents': {
         q: 'What do you supply to a housing association or a commercial client?',
         a: 'A copy of the operational authorisation, proof of liability insurance and a site-specific risk assessment. Ask for them with the quote and they arrive in the same email as the price.',
+      },
+      /** The four industrial questions — see the constraint note in the Estonian block. */
+      'industrial-scope': {
+        q: 'Do you cover industrial and commercial buildings?',
+        a: 'Industrial and large-scale work is a service of its own, and every job is scoped with you before we quote. Factories, warehouses, sports halls, agricultural buildings, silos and tanks, solar arrays, ships and wind turbines are all structures worth asking about. Tell us what the structure is, how tall, what the surface is and how the site is reached — from that we tell you whether and how we would take the work on.',
+      },
+      'industrial-price': {
+        q: 'How is industrial work priced, and why not by the square metre?',
+        a: 'What decides the price on a large structure is access, height, the surface, and whether production or traffic has to stop for the work and for how long. Two buildings with the same surface area can be completely different jobs. A square-metre price here would produce a number that was wrong in your favour or in ours, so we do not publish one. The price comes after scoping, in writing.',
+      },
+      'industrial-info': {
+        q: 'What do you need to know before you can quote an industrial site?',
+        a: 'What the building or structure is and how tall; what the surface to be cleaned is made of; how the site is reached and what surrounds it; whether the work can run during production or needs a shutdown window; and the address. Photographs help. If you do not know some of it yet, write anyway — we settle the rest at the scoping stage.',
+      },
+      'industrial-documents': {
+        q: 'What does our safety or facilities team get?',
+        a: 'A copy of the operational authorisation, proof of liability insurance and a site-specific risk assessment. We send them in writing before the work starts rather than on the day, so there is time to pass them on and read them. Ask for them with the quote and they arrive in the same email as the price.',
       },
     },
   },
