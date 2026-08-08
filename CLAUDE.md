@@ -199,12 +199,34 @@ template, do not — Astro preserves `<!-- -->` and it will fail the build. Use
 - Any specific percentage, speed multiple or saving that is not backed by a measurement in this repo.
 - Guarantees about outcomes, longevity or damage.
 
-## The inspection page — read SPEC section 11 before editing a word of it
+## The inspection line — read SPEC section 11 before editing a word of it
 
-`/inspektsioon` and `/en/inspection` are the second pillar, added 8 August 2026.
-The copy is in `src/i18n/inspection.ts` and it is the **highest-risk copy on this
-site**: it describes work that has never been done, for a line of business that
-holds **no qualification of any kind**, using payloads the operator does not own.
+`/inspektsioon` and `/en/inspection` are the second line of business, added
+8 August 2026. The copy — the page **and its three pointers** — is in
+`src/i18n/inspection.ts`, and it is the **highest-risk copy on this site**: it
+describes work that has never been done, for a line of business that holds **no
+qualification of any kind**, using payloads the operator does not own.
+
+**Two structural rules, both of which a tidy-up will want to break:**
+
+- **POINTER, NEVER MEMBER.** Inspection appears everywhere the washing set
+  appears — the services grid, the price table, `/teenused`, `/hinnakiri` — but
+  never *inside* it. Not a seventh service card, not a seventh price-table row,
+  not a seventh `serviceKey`, not a nav item. It is a standalone service that
+  happens to be linkable from the washing pages. The six washing services stay
+  six, and they are now headed "Droonipesu teenused" / "Droonipesu hinnad" so
+  they read as *a* set rather than *the* set.
+- **OFFER, NEVER REPORT.** Any copy connecting inspection to washing says *"you
+  can have it looked at first"* — never *"customers often…"*, *"many housing
+  associations start here"*, or anything else in the reporting voice. **No
+  inspection job has been performed and no customer has done this.** This is the
+  no-unperformed-work rule arriving through a side door, and it is the single
+  most likely error in this area, because the reporting voice reads so naturally
+  that it does not look like a violation.
+
+`inspection` being absent from `navOrder` is deliberate, not an oversight — and
+because `Footer.astro` renders `liveNav` too, that one omission is also what
+keeps it out of the footer. ARCHITECTURE section 3 says why.
 
 Three things it must never claim, and they are absolute:
 

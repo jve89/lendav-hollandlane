@@ -1,0 +1,77 @@
+---
+/**
+ * InspectionSection — the home page's pointer to the inspection line, and the
+ * largest of the three. Added 8 August 2026, replacing `PathChooser`.
+ *
+ * WHERE IT SITS, AND WHY THAT IS NOT NEGOTIABLE: after the before/after
+ * evidence section, before `CompareTable`. Services → evidence is the washing
+ * argument start to finish — here is what we do, here is proof we did it — and
+ * putting anything between those two breaks the one sequence on the page that
+ * has to hold. So this arrives after the argument has landed, where a reader who
+ * is convinced about washing meets a second thing we do, rather than before it,
+ * where `PathChooser` used to make them choose between the two.
+ *
+ * IT IS A POINTER, NOT A MEMBER of the washing set — SPEC section 11. It is a
+ * section of its own with its own heading, not a seventh card in the grid above.
+ *
+ * THE COPY IS IN `i18n/inspection.ts`, not `home.ts`, with the prohibitions that
+ * bind it — see the note over `inspectionPointers`. Every constraint in SPEC
+ * section 11 applies to it: no qualification, no equipment, no price, no
+ * turnaround, no report format, and nothing implying an inspection has ever been
+ * performed. The last body paragraph is the before-a-wash connection and it is
+ * phrased as an OFFER; a session rewriting it into "customers often…" would
+ * break constraint 1.
+ *
+ * Zero client JavaScript, no new tokens: `.card` and the existing type scale.
+ */
+import { inspectionPointer } from '../i18n/inspection'
+import { path } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const c = inspectionPointer('home', locale)
+const href = path('inspection', locale)
+---
+<section class="section inspection-block">
+  <div class="wrap">
+    <div class="card inspection-block__card">
+      <h2 class="inspection-block__heading">{c.heading}</h2>
+      {c.body.map((paragraph) => <p class="inspection-block__body">{paragraph}</p>)}
+      <p class="inspection-block__cta">
+        <a class="btn btn--ghost" href={href}>{c.cta}</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Inside a `.card` rather than flat on the page, deliberately. Every other
+     section on the home page is washing; this one is a different line of
+     business, and the raised surface is what says "this is a separate thing"
+     without a band, a rule or a colour — the same job the card border does in
+     the services grid. */
+  .inspection-block__card {
+    max-width: var(--measure-wide);
+  }
+
+  .inspection-block__heading {
+    font-size: var(--step-prose-h2);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--ls-h3);
+  }
+
+  .inspection-block__body {
+    margin-block-start: var(--sp-4);
+    max-width: var(--measure);
+    color: var(--ink-2);
+    line-height: var(--lh-body);
+  }
+
+  .inspection-block__cta {
+    margin-block-start: var(--sp-7);
+  }
+</style>

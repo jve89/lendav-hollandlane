@@ -199,7 +199,19 @@ export const faqCopy = {
         // added. It named four when there were five; `tööstusobjektid` was added
         // with the sixth. An enumeration that silently omits a service is not
         // merely incomplete — it tells a reader their job is not priced here.
-        q: 'Kuidas hind kujuneb?',
+        //
+        // THE QUESTION WAS SCOPED TO `pesu` ON 8 AUGUST 2026 AND THE ANSWER WAS
+        // DELIBERATELY LEFT ALONE. It read "Kuidas hind kujuneb?", which promised
+        // to cover all of this site's pricing and delivered only the six washing
+        // services — a hole, once inspection existed and was priced per job.
+        //
+        // The fix is on the QUESTION and must stay there. Adding inspection to
+        // the answer would make the FAQ treat it as a seventh washing service,
+        // which is exactly what SPEC section 11's pointer-never-member rule
+        // forbids, and there is no inspection FAQ entry for the same reason: the
+        // FAQ is washing copy. `/hinnakiri` answers the inspection pricing
+        // question, in a block under the table where it belongs.
+        q: 'Kuidas pesu hind kujuneb?',
         a: 'Katuse- ja fassaadipesu hind arvutatakse ruutmeetri järgi ja algab avaldatud hinnast. Aknad, päikesepaneelid, vihmaveesüsteemid ja tööstusobjektid hinnastame objekti järgi. Kõik hinnad on ilma käibemaksuta ja täpne hind on kirjas pakkumises.',
       },
       minimum: {
@@ -305,8 +317,10 @@ export const faqCopy = {
         a: 'We give the duration in the quote, for your property specifically. We do not publish a general figure: it depends on the property, and we have no measurements of our own to stand on yet.',
       },
       'price-basis': {
-        // Enumerates the services and goes stale when one is added — see the Estonian block.
-        q: 'How is the price worked out?',
+        // Enumerates the services and goes stale when one is added. The QUESTION
+        // was scoped to washing on 8 August 2026 and the answer deliberately was
+        // not — see the Estonian block for why the fix stays on the question.
+        q: 'How is the washing price worked out?',
         a: 'Roof and facade cleaning are priced by the square metre, from the published price. Windows, solar panels, guttering and industrial work are priced per site. All prices exclude VAT, and the exact price is set out in the written quote.',
       },
       minimum: {

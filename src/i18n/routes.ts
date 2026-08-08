@@ -66,19 +66,30 @@ export type RouteKey = keyof typeof routes
  */
 export const navOrder = [
   'services',
-  /**
-   * IMMEDIATELY AFTER `services`, BECAUSE THE TWO ARE THE SAME KIND OF THING.
-   * They are the two pillars the home page's `PathChooser` splits the visitor
-   * between, and separating them in the menu would make the second one look
-   * like a sub-page of pricing. Six entries plus the CTA; measured in the
-   * header at 320px and 375px in both variants before it shipped.
-   */
-  'inspection',
   'pricing',
   'about',
   'faq',
   'contact',
 ] as const satisfies readonly RouteKey[]
+
+/**
+ * `inspection` IS DELIBERATELY NOT IN `navOrder`, AND IT IS NOT AN OVERSIGHT —
+ * it was added here on 8 August 2026 and taken out again the same day.
+ *
+ * It is in `builtRoutes` below, so `path('inspection', locale)` resolves and the
+ * page is built, indexed and paired for hreflang like any other. What it is not
+ * is a menu item. The page is reached from three in-page pointers — a section on
+ * both home pages, a note under the services grid, and a block under the price
+ * table — each of which arrives in the middle of a washing argument, at the
+ * moment the offer is relevant. A sixth nav entry competes with the five that
+ * carry the washing journey and gives a visitor no reason to click it.
+ *
+ * Note the consequence, since it is the reason this comment is here rather than
+ * in a commit message: `Footer.astro` renders `liveNav` too, so leaving the key
+ * out of `navOrder` is also what keeps inspection out of the footer. There is no
+ * second list to remember. See SPEC section 11 — inspection is a POINTER
+ * wherever the washing set appears, never a MEMBER of it.
+ */
 
 /**
  * Routes that have a built page RIGHT NOW.

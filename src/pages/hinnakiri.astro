@@ -14,6 +14,7 @@
  */
 import PageLayout from '../layouts/PageLayout.astro'
 import PriceTable from '../components/PriceTable.astro'
+import InspectionPricing from '../components/InspectionPricing.astro'
 import PricingDetails from '../components/PricingDetails.astro'
 import Cta from '../components/Cta.astro'
 import { pricingCopy } from '../i18n/pricing'
@@ -42,6 +43,9 @@ const services = await servicesFor(locale)
   <section class="section section--tight">
     <div class="wrap">
       <PriceTable locale={locale} entries={services} />
+      {/* AFTER the table, never a row in it — a row would imply a per-m² price
+          for work that is quoted per job. SPEC section 11. */}
+      <InspectionPricing locale={locale} />
     </div>
   </section>
 

@@ -173,6 +173,14 @@ export const inspectionCopy = {
         heading: 'Pesu ja ülevaatus on kaks eri tööd',
         body: [
           'Pesu ei ole ülevaatus ja ülevaatus ei ole pesu. Neid saab tellida koos ja sama käiguga, aga need lepitakse kokku ja hinnastatakse eraldi.',
+          /* THE BEFORE-A-WASH CONNECTION, and it is ONE sentence on purpose.
+             Ülevaatus is a standalone service and this paragraph is secondary —
+             an option, not the definition. Phrased as an OFFER ("saab ... üle
+             vaadata"), never as a report: nobody has done this, no inspection
+             job has been performed, and "kliendid tellivad sageli" would be
+             constraint 1 arriving through a side door. See the note over
+             `inspectionPointers`. */
+          'Ülevaatust saab tellida ka enne pesu: kui te ei ole kindel, kas pesu on üldse vaja, saab objekti enne üle vaadata ja siis otsustada.',
           'Kui soovite mõlemat, kirjutage seda päringusse — siis vastame mõlemale ühes kirjas.',
         ],
       },
@@ -235,6 +243,9 @@ export const inspectionCopy = {
         heading: 'Cleaning and inspection are two different jobs',
         body: [
           'Cleaning is not an inspection and an inspection is not a clean. They can be booked together and flown on the same visit, but they are scoped and priced separately.',
+          /* The before-a-wash connection — one sentence, secondary, and phrased
+             as an offer. See the note on the Estonian block. */
+          'An inspection can also be booked before a wash: if you are not sure whether a wash is needed at all, you can have the property looked at first and decide afterwards.',
           'If you want both, say so in your enquiry and we answer both in the same email.',
         ],
       },
@@ -259,6 +270,131 @@ export const inspectionCopy = {
  */
 export function inspectionSections(locale: Locale): readonly InspectionSection[] {
   return inspectionCopy[locale].sections
+}
+
+/**
+ * THE THREE POINTERS — the inspection copy that appears on WASHING surfaces.
+ *
+ * Added 8 August 2026, replacing `PathChooser`. Inspection is reached from
+ * three places, decreasing in size, each arriving in the middle of a washing
+ * argument at the moment the offer is relevant:
+ *
+ *   home     a full section on both home pages, after the before/after evidence
+ *            and before `CompareTable`
+ *   services a short note under the six-card grid on `/teenused`
+ *   pricing  a short block under the washing price table on `/hinnakiri`
+ *
+ * THE GOVERNING RULE, AND IT IS SPEC SECTION 11: inspection appears wherever the
+ * washing set appears **as a POINTER, never as a MEMBER of the set**. Not a
+ * seventh card in the grid, not a seventh row in the price table, not a seventh
+ * `serviceKey`. It is a standalone service that happens to be linkable from the
+ * washing pages. A card would read as a seventh service; a table row would imply
+ * a per-m² price it does not have.
+ *
+ * THEY LIVE HERE RATHER THAN IN `home.ts`, `pricing.ts` OR `ui.ts`, and that is
+ * the same reasoning `inspectionServiceOption` below already rests on: every one
+ * of these strings is bound by the prohibitions at the top of THIS file, and a
+ * session editing them should be standing next to those prohibitions rather than
+ * two files away from them. It also means the pointers leave with the page if
+ * the page ever goes.
+ *
+ * THREE PIECES OF COPY, NOT ONE COMPONENT WITH A SIZE PROP. They differ in
+ * length, in shape and in what they have to say — the pricing block has to
+ * answer "what does it cost" and the other two do not — so each has its own
+ * component and its own markup. Do not unify them.
+ *
+ * THE ERROR THIS COPY IS MOST LIKELY TO ACQUIRE, and it is worth naming because
+ * it is one word away at all times: **the connection to washing is phrased as an
+ * OFFER, never as a REPORT.** Write "you can have it looked at first". Never
+ * "customers often have it looked at first", "many housing associations start
+ * here", "this is a common first step", or anything else implying it has
+ * happened. **No inspection job has been performed and no customer has done
+ * this.** That is constraint 1 — the unperformed-work prohibition — arriving
+ * through a side door, and a sentence in the reporting voice reads so naturally
+ * that it will not look like a violation.
+ */
+export interface InspectionPointer {
+  readonly heading: string
+  readonly body: readonly string[]
+  /** Link text. A phrase, never "Read more" — it is the link's accessible name. */
+  readonly cta: string
+}
+
+export interface InspectionPointers {
+  home: InspectionPointer
+  services: InspectionPointer
+  pricing: InspectionPointer
+}
+
+export const inspectionPointers = {
+  et: {
+    home: {
+      heading: 'Ülevaatus droonilt',
+      body: [
+        'Pesu kõrval teeme ka teist tööd: lendame ja pildistame pinnad, mida muidu ilma tellingute, tõstuki või katusel kõndimiseta näha ei ole. Katus, korsten, plekiliited, fassaadi ülemine serv, rennid — need kohad, mille seisukorrast räägitakse tavaliselt oletustes, sest keegi ei ole neid lähedalt näinud.',
+        'Saate pildid ja kirjaliku ülevaate sellest, mis neil näha on: kuupäev, asukoht objektil ja see, mis seal on. Kirjeldame, mida on näha — näiteks et harjal on kolm pragunenud katusekivi. Akte ega sertifikaate me ei väljasta, konstruktsiooni ei hinda ja remondi maksumust ei ütle.',
+        'Enamik tähelepanekuid ei vaja selleks kedagi teist. Kui mõni siiski vajab, on see järgmine samm ja selle teeb oma ala spetsialist — meie materjal on täpselt see, millelt tema alustab. Me asendame tellingud, mitte spetsialisti.',
+        'Ülevaatust saab tellida ka enne pesu, kui te ei ole kindel, kas pesu üldse vaja on.',
+      ],
+      cta: 'Vaata, kuidas ülevaatus käib',
+    },
+    services: {
+      heading: 'Ülevaatus on eraldi töö',
+      body: [
+        'Ülevaatus ei ole selles nimekirjas ega ole pesuteenus. Selle puhul me ei pese midagi: lendame, pildistame ja paneme kirja, mis pildil näha on.',
+        'Kui te ei ole kindel, kas pesu on üldse vaja, saab objekti enne üle vaadata ja siis otsustada.',
+      ],
+      cta: 'Ülevaatus droonilt',
+    },
+    pricing: {
+      heading: 'Ülevaatuse hind',
+      body: [
+        'Ülevaatus ei ole selles tabelis, sest sellel ei ole ruutmeetrihinda. Hinna ütleme töö kaupa: see sõltub objektist, ligipääsust ja sellest, mida te dokumenteeritud näha soovite.',
+        'Kirjutage, mis objekt see on ja mida te näha soovite. Ütleme hinna kirjalikult.',
+      ],
+      cta: 'Vaata, kuidas ülevaatus käib',
+    },
+  },
+  en: {
+    home: {
+      heading: 'Inspection by drone',
+      body: [
+        'Alongside the washing we do a second kind of work: we fly and photograph the surfaces you cannot otherwise see without scaffolding, a lift, or somebody standing on the roof. The roof, the chimney, the flashings, the top edge of a facade, the gutters — the places whose condition usually gets discussed in guesses, because nobody has seen them close up.',
+        'You get the images and a written record of what is visible on them: the date, where on the property it is, and what is there. We describe what can be seen — that there are three cracked tiles at the ridge, say. We issue no certificates, we do not assess structure, and we do not tell you what a repair will cost.',
+        'Most findings need nobody else at all. Where one does, that is the next step and it belongs to a specialist in that field — and what we hand them is exactly what they start from. We replace the scaffolding, not the expert.',
+        'An inspection can also be booked before a wash, if you are not sure whether a wash is needed at all.',
+      ],
+      cta: 'See how an inspection works',
+    },
+    services: {
+      heading: 'Inspection is separate work',
+      body: [
+        'Inspection is not on this list and it is not a washing service. Nothing gets washed: we fly, we photograph, and we write down what is visible on the images.',
+        'If you are not sure whether a wash is needed at all, you can have the property looked at first and decide afterwards.',
+      ],
+      cta: 'Inspection by drone',
+    },
+    pricing: {
+      heading: 'What an inspection costs',
+      body: [
+        'Inspection is not in this table, because it has no square-metre price. It is quoted per job: it depends on the property, on the access, and on what you want documented.',
+        'Write and tell us what the property is and what you want to see. We give the price in writing.',
+      ],
+      cta: 'See how an inspection works',
+    },
+  },
+} as const satisfies Record<Locale, InspectionPointers>
+
+/**
+ * One pointer, widened to the declared interface — same reason as
+ * `inspectionSections()` above: `as const satisfies` keeps the literal types,
+ * and a component mapping over the raw array trips over readonly literals.
+ */
+export function inspectionPointer(
+  surface: keyof InspectionPointers,
+  locale: Locale,
+): InspectionPointer {
+  return inspectionPointers[locale][surface]
 }
 
 /**

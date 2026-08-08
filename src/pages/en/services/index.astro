@@ -5,6 +5,7 @@
  */
 import PageLayout from '../../../layouts/PageLayout.astro'
 import ServiceGrid from '../../../components/ServiceGrid.astro'
+import InspectionNote from '../../../components/InspectionNote.astro'
 import Cta from '../../../components/Cta.astro'
 import { servicesFor } from '../../../i18n/services'
 import { useTranslations, vatNote } from '../../../i18n/utils'
@@ -23,8 +24,10 @@ const services = await servicesFor(locale)
 >
   <section class="section section--tight">
     <div class="wrap">
-      <ServiceGrid locale={locale} entries={services} headingLevel={2} />
+      <h2 class="services__set-heading">{t('services.washHeading')}</h2>
+      <ServiceGrid locale={locale} entries={services} headingLevel={3} />
       <p class="fineprint services__vat">{vatNote(locale)}</p>
+      <InspectionNote locale={locale} />
     </div>
   </section>
 
@@ -32,6 +35,13 @@ const services = await servicesFor(locale)
 </PageLayout>
 
 <style>
+  .services__set-heading {
+    font-size: var(--step-prose-h2);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--ls-h3);
+    margin-block-end: var(--sp-6);
+  }
+
   .services__vat {
     margin-block-start: var(--sp-7);
   }
