@@ -1,0 +1,73 @@
+---
+/**
+ * The inspection page, Estonian. `en/inspection.astro` is its pair.
+ *
+ * The second pillar, added 8 August 2026. Composition only — `PageLayout` with
+ * a heading and a lead, the sections from `i18n/inspection.ts`, and `Cta` at the
+ * foot, exactly as `meist.astro` is built.
+ *
+ * A STATIC page registered in `i18n/routes.ts`, NOT a content collection entry,
+ * and that is what made it cheap: the two slugs sit in the route map, so
+ * `BaseLayout` pairs the hreflang from `alternates('inspection')` and the
+ * sitemap lifts the pair back out of the built head — no `alternates` prop to
+ * pass, no `collections.ts` pairing helper to write, no `getStaticPaths`.
+ * ARCHITECTURE section 3 has the distinction against a collection page.
+ *
+ * IT RENDERS THROUGH `.prose` AND CARRIES NO `<style>` BLOCK OF ITS OWN, which
+ * is why there is no `Inspection.astro` component the way `/meist` has
+ * `Credentials.astro`. That extraction exists to keep two locale pages' MARKUP
+ * and CSS in step; here both pages are a `map` over their own locale's copy
+ * with no scoped rule between them, so there is nothing to drift. `.prose` is
+ * global rather than scoped precisely because rendered markdown carries no
+ * scope attribute — see the note on it in `global.css` — which is what lets a
+ * hand-built page borrow it. If this page ever grows markup of its own, extract
+ * it then.
+ *
+ * TODO(equipment): NO EQUIPMENT IS NAMED ON THIS PAGE — no drone, no camera, no
+ * payload, no sensor. The payloads for this work are rented and nothing is
+ * owned. The same marker and prohibition are at the top of `i18n/about.ts`; the
+ * copy-side version, with the two rules that matter more here — no completed
+ * work, no qualification — is at the top of `i18n/inspection.ts`, beside the
+ * strings it governs. Read that before editing a sentence. SPEC section 11
+ * governs.
+ *
+ * There is deliberately no `Credentials` block, no `BeforeAfter` and no FAQ
+ * entry on this page. `Credentials` renders the operational authorisation and
+ * the insurance, and whether either reaches inspection work is unverified;
+ * `BeforeAfter` is evidence of jobs done, and none have been.
+ */
+import PageLayout from '../layouts/PageLayout.astro'
+import Cta from '../components/Cta.astro'
+import { inspectionCopy, inspectionSections } from '../i18n/inspection'
+import { useTranslations } from '../i18n/utils'
+
+const locale = 'et' as const
+const t = useTranslations(locale)
+const c = inspectionCopy[locale]
+/* Through the accessor, not `c.sections` — see the note on it in `inspection.ts`. */
+const sections = inspectionSections(locale)
+---
+<PageLayout
+  title={t('meta.inspection.title')}
+  description={t('meta.inspection.description')}
+  locale={locale}
+  routeKey="inspection"
+  heading={t('inspection.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="prose">
+        {sections.map((section) => (
+          <>
+            <h2>{section.heading}</h2>
+            {section.body.map((paragraph) => <p>{paragraph}</p>)}
+            {section.list && <ul>{section.list.map((item) => <li>{item}</li>)}</ul>}
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>

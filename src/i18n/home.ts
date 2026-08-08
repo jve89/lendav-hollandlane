@@ -20,7 +20,8 @@ import type { Locale } from './ui'
  * reference/one-pager-v1.html and reference/direction-d.html, and has NOT been
  * read by a native speaker. CLAUDE.md's `<!-- needs-native-review -->` marker is
  * for content files; this is TypeScript, so the marker is this comment, as it is
- * in `ui.ts`. Phase 10 clears it.
+ * in `ui.ts`. Phase 10 clears it. The `paths` block added on 8 August 2026 for
+ * the inspection pillar is AI-drafted and unreviewed on the same terms.
  *
  * Dropped from the reference copy, deliberately: "enamik eramaju saab valmis ühe
  * päevaga" and "pakkumine 24 tunni jooksul". Both are operational figures and the
@@ -89,6 +90,28 @@ export interface CompareRow {
 }
 
 /**
+ * One of the two cards in `PathChooser` — the fork directly under the hero
+ * between the two things this business does.
+ *
+ * `label` is the pillar's name and carries the whole navigational job; `title`
+ * and `body` say what the pillar is. NO HREF: the component resolves both
+ * through `path()` from its own route keys, so a URL is never typed into copy.
+ *
+ * The inspection card's `body` is bound by the same rules as everything in
+ * `i18n/inspection.ts` — no work claimed as done, no qualification implied — and
+ * it is the string most likely to be "improved" into a claim, because it is
+ * short and it is selling. It says who reads the material, deliberately.
+ */
+export interface PathCard {
+  /** The pillar's name. Short — it reads as a kicker above the title. */
+  label: string
+  title: string
+  body: string
+  /** Link text. A phrase, not "Read more": it is the card's accessible name. */
+  cta: string
+}
+
+/**
  * The three FAQ items left this file in Phase 5, for `i18n/faq.ts`, the same
  * way the service cards left it in Phase 4 and the price vocabulary left it for
  * `ui.ts`. `/kkk` renders the full set and the home page shows three of them;
@@ -108,6 +131,18 @@ export interface HomeCopy {
     priceLead: string
     priceUnit: string
     vatNote: string
+  }
+  /**
+   * The path chooser — the two pillars, directly under the hero. Keyed by ROUTE
+   * KEY rather than held in an array, so `PathChooser` pairs each card with
+   * `path('services'|'inspection', locale)` by name instead of by index. A copy
+   * edit that reorders an array cannot then silently swap the two links.
+   */
+  paths: {
+    heading: string
+    lead: string
+    services: PathCard
+    inspection: PathCard
   }
   trust: {
     label: string
@@ -158,6 +193,22 @@ export const homeCopy = {
       priceLead: 'Hind alates',
       priceUnit: '/m²',
       vatNote: 'hinnale lisandub käibemaks',
+    },
+    paths: {
+      heading: 'Kaks tööd, mida droon teie eest ära teeb',
+      lead: 'Vali see, mille pärast siia tulid.',
+      services: {
+        label: 'Pesu',
+        title: 'Katuse-, fassaadi- ja päikesepaneelide pesu',
+        body: 'Sammal, mustus ja setted maha, ilma et keegi katusele astuks. Ruutmeetrihind on avaldatud.',
+        cta: 'Vaata pesuteenuseid ja hindu',
+      },
+      inspection: {
+        label: 'Ülevaatus',
+        title: 'Pildid kohtadest, kuhu muidu ligi ei pääse',
+        body: 'Pildistame ära selle, mida muidu näeks ainult tellingutelt. Hinnangu teeb teie oma spetsialist, mitte meie.',
+        cta: 'Vaata, kuidas ülevaatus käib',
+      },
     },
     trust: {
       label: 'Mida see teie jaoks tähendab',
@@ -237,6 +288,22 @@ export const homeCopy = {
       priceLead: 'From',
       priceUnit: '/m²',
       vatNote: 'VAT is added to the price',
+    },
+    paths: {
+      heading: 'Two jobs a drone does for you',
+      lead: 'Pick the one you came here for.',
+      services: {
+        label: 'Cleaning',
+        title: 'Roof, facade and solar panel cleaning',
+        body: 'Moss, dirt and silt off, with nobody stepping on the roof. The square-metre price is published.',
+        cta: 'See the cleaning services and prices',
+      },
+      inspection: {
+        label: 'Inspection',
+        title: 'Pictures from places you cannot otherwise reach',
+        body: 'We photograph what would otherwise only be visible from scaffolding. Your own specialist makes the assessment, not us.',
+        cta: 'See how an inspection works',
+      },
     },
     trust: {
       label: 'What this means for you',

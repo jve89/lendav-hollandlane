@@ -73,9 +73,13 @@ work for us.
 
 **Cleaning is not an inspection.** We produce no report, assessment or certificate
 on the condition of a structure, a roof or a piece of equipment, and a clean is
-not a substitute for a survey. If you need a report on the condition of the site,
-say so separately in your enquiry — that is different work and we answer it
-separately.
+not a substitute for a survey.
+
+Photographing a site is separate work and it has its own page:
+[inspection by drone](/en/inspection). We make no assessment there either — we
+supply the pictures and the written observations your own specialist makes the
+decision on. If you want both, say so in your enquiry: they are scoped and priced
+separately, though they can be flown on the same visit.
 
 We do no repairs. We do not fix damaged sheeting, loose fixings or failed
 penetrations. If we see any while cleaning, we tell you.

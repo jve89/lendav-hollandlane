@@ -1,0 +1,40 @@
+---
+/**
+ * The inspection page, English. Identical composition to `inspektsioon.astro`,
+ * different locale — see the notes there, including the equipment marker and
+ * why this page has no component of its own.
+ */
+import PageLayout from '../../layouts/PageLayout.astro'
+import Cta from '../../components/Cta.astro'
+import { inspectionCopy, inspectionSections } from '../../i18n/inspection'
+import { useTranslations } from '../../i18n/utils'
+
+const locale = 'en' as const
+const t = useTranslations(locale)
+const c = inspectionCopy[locale]
+const sections = inspectionSections(locale)
+---
+<PageLayout
+  title={t('meta.inspection.title')}
+  description={t('meta.inspection.description')}
+  locale={locale}
+  routeKey="inspection"
+  heading={t('inspection.heading')}
+  lead={c.lead}
+>
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="prose">
+        {sections.map((section) => (
+          <>
+            <h2>{section.heading}</h2>
+            {section.body.map((paragraph) => <p>{paragraph}</p>)}
+            {section.list && <ul>{section.list.map((item) => <li>{item}</li>)}</ul>}
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Cta locale={locale} />
+</PageLayout>

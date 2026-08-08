@@ -14,6 +14,7 @@ work *after* it.
 |---|---|---|
 | — | Phases 0–6 | ✅ complete and committed |
 | — | Phase 9 — SEO, performance, launch readiness | ✅ complete and committed |
+| — | **Phase 12 — the inspection pillar** | ✅ **done, 8 August 2026** · outside the order, like the sixth service |
 | 1 | **Phase 10 — real content drop, and the visual decisions** | **next** · launch-blocking · the footage half is blocked on the operator, the palette half is not |
 | — | **LAUNCH** | |
 | 2 | Phase 7 — regional pages | post-launch |
@@ -631,6 +632,87 @@ that the site is not broken — see SPEC section 6. The gate is the list below b
 
 ---
 
+## Phase 12 — The inspection pillar ✅ *(done, 8 August 2026 · not launch-blocking)*
+
+**Taken outside the order table**, the same way the sixth service was: it is
+additive, it blocks nothing, and Phase 10 is still next. **Numbered 12 rather
+than inserted**, because PLAN phase numbers are cited by number across `src/`
+and renumbering would edit all of them to gain nothing. Note the gap: there is
+no Phase 11 work in here — Phase 11 is still the domain single-sourcing job
+below, still post-launch, and untouched.
+
+The site sells two things now. **Cleaning, and inspection.**
+
+**What shipped:**
+
+- **`/inspektsioon` and `/en/inspection`** — one **static** page per locale,
+  registered in `i18n/routes.ts`, copy in `i18n/inspection.ts`, composed exactly
+  as `meist.astro` is: `PageLayout` with a heading and a lead, then `Cta`.
+- **`PathChooser`** on both home pages, directly under `<Hero />` — two cards,
+  side by side from 760px and stacked below it, one per pillar. Takes only
+  `locale`; both hrefs resolve through `path()`.
+- **`inspection` in `navOrder`**, immediately after `services`. Six items plus
+  the CTA.
+- **One added option in the quote form's service `<select>`**, both locales, so
+  a visitor arriving from the inspection page can say what they want.
+- **The industrial service page's "Pesu ei ole ülevaatus" paragraph rewritten**
+  in both locales. It promised that an inspection request was *"different work
+  and we answer it separately"*; the separate answer now exists and is linked.
+
+**SPEC section 11 is the governing document and it is stricter than anything
+else on this site.** No work claimed as done, **no qualification, certification,
+licence or professional standing claimed or implied**, no regulatory statement
+about what is permitted, no equipment, no price, no turnaround. Read it before
+editing a sentence of that page; the same prohibitions are repeated at the top
+of `i18n/inspection.ts`, beside the strings they govern.
+
+**Why it was cheap, in one line:** a static page registered in `routes.ts` pairs
+for hreflang and the sitemap through `alternates(routeKey)`, so the two slugs
+were the whole of the pairing work. ARCHITECTURE section 3 has the reasoning
+against a collection page, and it is the paragraph to read before adding the
+next page to this site.
+
+### Deliberately deferred, and recorded so it is not read as an omission
+
+- **`/pesu` — NOT BUILT, and not owed.** The cleaning card points at the
+  existing `/teenused` index. A second landing page for cleaning would duplicate
+  it and split its ranking, and there is no content for it that `/teenused` does
+  not already carry. If the two pillars ever want visual symmetry badly enough
+  to justify one, that is a fresh decision made on its own merits — not a gap
+  left here.
+- **No inspection FAQ entries.** `i18n/faq.ts` is cleaning copy — roof damage,
+  chemicals, weather, water and power — and its ids are a closed tuple that
+  `content.config.ts` builds `z.enum(faqIds)` from. Adding inspection questions
+  means adding to that id space and answering questions nobody has asked yet.
+  The page answers its own objections inline, which is the right shape while
+  there is one page.
+- **No slug migration, and no redirect exists.** Every `/teenused/*` and
+  `/en/services/*` URL is byte-for-byte what it was. This was a constraint on
+  the work rather than an outcome of it: the cleaning pages rank, and moving a
+  URL to make a taxonomy tidier is a ranking cost paid for nothing.
+- **Inspection is not a `serviceKey`** and must not become one — SPEC section 11
+  says why, and the quote-form option is the one named exception that follows
+  from it (ARCHITECTURE section 6).
+- **No `BeforeAfter` on the page.** No inspection work has been done, and SPEC
+  section 9's third-party media exception **excludes before/after imagery in all
+  circumstances**. The same rule, and the same reasoning, as the industrial
+  service page above.
+- **Whether the line ever gets its own section or its own domain** stays open —
+  ARCHITECTURE section 10. One page per locale does not decide it.
+
+**Verified:** `npm run verify` exits 0 · `npm run links` clean on 32 pages ·
+sitemap 26 → **28** URLs and 78 → **84** `xhtml:link`, both predicted before the
+build · hreflang pairs `/inspektsioon` ↔ `/en/inspection` in both directions, in
+both pages' heads and in the sitemap · `PathChooser` renders on both home pages
+and both cards resolve · heading order clean, no skipped levels · **zero new
+client JavaScript** — four pages carry one script each, the same two exceptions
+as before · header measured at 320px and 375px in both variants and both
+locales, figures in the phase report.
+
+**Commit:** `feat: add drone inspection as a second pillar`
+
+---
+
 ## Phase 7 — Regional pages *(post-launch)*
 
 The first ranking work after launch. Tallinn and Harjumaa only. No other towns until a
@@ -801,8 +883,24 @@ paired with. A future session must not resolve it by adding the address on a tid
 section 2, and the local-discovery half of the same analytics decision.
 
 **Native-speaker Estonian review.** All Estonian copy in this repo is AI-drafted and
-unverified. Twelve `needs-native-review` markers; each is cleared by a native speaker
-signing the copy off, or the copy is rewritten.
+unverified. Each marker is cleared by a native speaker signing the copy off, or the
+copy is rewritten.
+
+**Count the markers, do not trust a number written here.** This line said "twelve
+markers" and was **already stale before the inspection pillar was added** — the
+figure was not re-counted when Phase 4's service files and the sixth service
+landed. As of 8 August 2026 the true figure is **17 markers across 14 files**, of
+which one file is `i18n/inspection.ts`, new that day. Get it with:
+
+```
+grep -rn "needs-native-review" src/
+```
+
+**The two strings worth a native speaker's attention first are both new:**
+`nav.inspection` (`Ülevaatus`), because it is a menu label measured against the
+header at 320px and a longer synonym is not a free substitution; and the
+`homeCopy.paths` block, because it is the first thing a visitor reads after the
+hero and it has to make the two pillars distinguishable in one line each.
 
 The registry code, the VAT number, the legal name and the phone number came off this list
 when they landed in `site.ts`. **The Formspree account came off it in Phase 6**, when the

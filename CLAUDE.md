@@ -199,6 +199,34 @@ template, do not — Astro preserves `<!-- -->` and it will fail the build. Use
 - Any specific percentage, speed multiple or saving that is not backed by a measurement in this repo.
 - Guarantees about outcomes, longevity or damage.
 
+## The inspection page — read SPEC section 11 before editing a word of it
+
+`/inspektsioon` and `/en/inspection` are the second pillar, added 8 August 2026.
+The copy is in `src/i18n/inspection.ts` and it is the **highest-risk copy on this
+site**: it describes work that has never been done, for a line of business that
+holds **no qualification of any kind**, using payloads the operator does not own.
+
+Three things it must never claim, and they are absolute:
+
+- **No work done.** No job count, no case study, no "we have inspected". Where it
+  lists kinds of job it says in the copy the visitor reads that the list describes
+  the kind of work and not completed work — same rule as the industrial page.
+- **No qualification, certification, licence or professional standing** — claimed
+  *or implied*. What is sold is imagery and documented observations; the
+  interpretation belongs to the client's own specialist and the page says so, as
+  a selling point rather than as small print. Watch the soft forms: *"our
+  assessment"*, *"our findings"*, *"professional inspection"* are the same claim
+  with the noun moved.
+- **No equipment.** The `TODO(equipment)` prohibition in `about.ts` applies here
+  in full — no drone, no camera, no payload, no sensor.
+
+**The full rule, including what may not be said about airspace, prices,
+turnaround and thermal imaging, is SPEC section 11. It is not restated here** —
+a second copy of a rule is a rule that drifts, which is the same reason the
+footage exception lives only in SPEC section 9. The prohibitions are also written
+at the top of `src/i18n/inspection.ts`, beside the strings they govern, because
+that is where somebody will be standing when it matters.
+
 **Customer language, not regulator language.** Customer-facing pages use the customer's language, not the regulator's.
 
 `SAIL II`, `SORA` and `määrus (EÜ) 785/2004` must not appear in hero copy, in badges or pills, or in body text aimed at homeowners. A homeowner does not know what SAIL II is and will not look it up. The term buys no trust and spends attention that the price and the benefit need.

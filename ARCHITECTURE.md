@@ -1,5 +1,21 @@
 # ARCHITECTURE.md — Lendav Hollandlane website
 
+**Version 2.0 · 8 August 2026** — **a second pillar was added to the site and
+almost nothing here had to change, which is itself the thing worth recording.**
+Section 3 gains the paragraph that explains why: a **static page registered in
+`routes.ts` pairs for hreflang and the sitemap through `alternates(routeKey)`,
+while a collection page pairs through `collections.ts` and has to be handed its
+alternates as a prop** — so the inspection line cost two route-map values and no
+pairing code at all. Section 4 lists `i18n/inspection.ts`, `PathChooser.astro`
+and the two new pages. Section 6 gains the **`PathChooser` contract** and records
+**one named exception to `QuoteForm`'s "options come from the collection" rule**:
+inspection is not a service in the collection and must not become one, so its
+`<option>` comes from `i18n/inspection.ts` instead. Nothing was removed, no slug
+moved, no redirect exists, and the client-JavaScript exception list in section 2
+is untouched — `PathChooser` is two links in a list. **SPEC section 11 is new and
+governs what the inspection page may say**; it is stricter than anything else on
+this site and this document does not restate it.
+
 **Version 1.9 · 29 July 2026** — **the hero video is built, so the third
 client-JavaScript exception in section 2 flips from PLANNED to BUILT and the
 Hero contract in section 6 is rewritten as a single accurate contract with its
@@ -230,6 +246,49 @@ So:
 `routes.ts` still owns the **section** a content-derived page sits in — the first segment of its URL, its breadcrumb parent and its navigation highlight all come from the route key. What it does not own is the last segment.
 
 Pairing across locales therefore needs a key the entries share. For `services` that key is `icon`, which is an alias of `ServiceKey` and 1:1 with the service; `servicePairs()` in `i18n/services.ts` asserts that every key resolves to exactly one entry per locale, which is what makes the pairing safe rather than merely likely. `locations` and `posts` will each need to answer the same question when they arrive.
+
+### Why the inspection pillar was cheap, and it is this distinction
+
+**Added 8 August 2026, and worth writing down because the next new page is a
+choice between these two shapes rather than an obvious default.** The inspection
+line is a **static page**, so it took the top row of the table above and
+absolutely nothing else:
+
+- Two values in `routes.ts` — `inspection: { et: '/inspektsioon', en: '/en/inspection' }`.
+- `BaseLayout` derives the whole `hreflang` set from `alternates('inspection')`
+  with **no `alternates` prop passed**, because the route key already knows both
+  slugs.
+- `astro.config.mjs` lifts that set back out of the built `<head>` for the
+  sitemap, so both pages arrived in `sitemap-0.xml` with correct
+  `<xhtml:link>` alternates **before anything was written about them** — 26 URLs
+  to 28, 78 `xhtml:link` to 84, and check 6 green on the first build.
+- The language switch retargets itself from the same array, so it cannot
+  disagree with the hreflang.
+
+**A collection page would have been the bottom row and a materially larger
+job:** a schema entry, a locale-paired key with an assertion behind it like
+`servicePairs()`, a `getStaticPaths`, a `localisedAlternates()` call, and an
+`alternates` prop threaded to `BaseLayout` on every page in the section.
+`services` needs all of that because it has ten leaves whose slugs are content;
+**a section with exactly one page in it needs none of it, and modelling it as a
+collection would buy an editing workflow nobody asked for at the cost of the
+pairing being derived rather than declared.**
+
+**So: one page per locale, static. Several pages whose slugs are authored as
+content, a collection.** The line is the number of leaves, not the importance of
+the section — the inspection page is a pillar of the business and is still one
+static file per locale.
+
+*One consequence, recorded because it is a first for this repository:* the
+industrial service markdown files now contain **a typed internal link** —
+`](/inspektsioon)` and `](/en/inspection)` — where every other internal link on
+the site is built by `path()` from the route map. Markdown cannot import, so
+there is no way to route it through `path()` short of a hast plugin, which is a
+large mechanism for two links. **What makes it acceptable is that
+`scripts/check-html.mjs` check 1 fails the build on a broken internal link**, so
+if either slug ever moves, the link cannot rot silently — the same bargain as
+`astro.config.mjs`'s domain copy, which check 6 guards. If a third such link ever
+appears, revisit it as a mechanism rather than adding a fourth.
 - UI strings live in `src/i18n/ui.ts` as a typed object keyed by locale. A missing key is a type error.
 - Page content lives in content collections, one file per locale.
 
@@ -283,6 +342,8 @@ name out of a diagram that does not need one.
     │   ├── pricing.ts              # pricing page copy; contains no figure at all
     │   ├── faq.ts                  # the FAQ, its id space, and the token resolver
     │   ├── about.ts                # credentials page copy; the one place SORA/SAIL II render
+    │   ├── inspection.ts           # inspection page copy. SPEC section 11 binds every string
+    │   │                           #   in it; the prohibitions are repeated at the top of the file
     │   ├── contact.ts              # contact + form copy, the GDPR notice, which fields are required
     │   └── privacy.ts              # the privacy policy; retention as a criterion, not a number
     ├── styles/
@@ -296,6 +357,7 @@ name out of a diagram that does not need one.
     │   ├── Footer.astro
     │   ├── LangSwitch.astro
     │   ├── Hero.astro
+    │   ├── PathChooser.astro       # the two pillars, directly under the hero on both home pages
     │   ├── TrustBar.astro
     │   ├── ServiceCard.astro
     │   ├── ServiceGrid.astro       # the card list + its flex layout, in one place
@@ -324,6 +386,7 @@ name out of a diagram that does not need one.
     └── pages/
         ├── index.astro                        # ET home
         ├── hinnakiri.astro
+        ├── inspektsioon.astro                 # the inspection pillar. Static, not a collection
         ├── meist.astro
         ├── kkk.astro
         ├── kontakt.astro
@@ -341,6 +404,7 @@ name out of a diagram that does not need one.
         └── en/
             ├── index.astro
             ├── pricing.astro
+            ├── inspection.astro
             ├── about.astro
             ├── faq.astro
             ├── contact.astro
@@ -501,7 +565,8 @@ unattributed review must not be publishable.
 - **`BaseLayout`** — props `{ title, description, locale, routeKey, brandSuffix?, ogImage?, headerVariant?, noindex?, alternates?, jsonLd? }`. Emits `<html lang>`, canonical, the full `hreflang` set, the icon and `theme-color` tags, Open Graph and Twitter card, and `LocalBusiness` JSON-LD built from `site.ts`. **`ogImage` now has a default** — the one sitewide image, section 7 — so a page that passes nothing still emits a card; no page overrides it today. `theme-color` is resolved from `tokens.css` rather than typed, and throws if the token is gone. Every page goes through it. **It also owns the `<title>` brand suffix**: `title` is the page-specific part only, and ` | ${site.brandText}` is composed here, in the one expression every page title passes through — `PageLayout` forwards and composes nothing. `<title>` and `og:title` are both built from that string so they cannot drift apart. `brandSuffix={false}` suppresses the suffix for a page whose title already carries the brand; it does not license authoring the name, which still comes from `site.brandText`. No page sets it today. **No page writes its own `<head>`** — which is why the two Phase 4 additions are props and not a head slot. `alternates` overrides the `routeKey`-derived hreflang set for a page whose slug is localised per locale, and also retargets the language switch, so the two can never disagree; see section 3. `jsonLd` takes structured data as *data* and serialises it here, in the one file that escapes `<` before writing it into a `<script>` body — a page assembling its own JSON-LD string is the failure `scripts/check-html.mjs` exists to catch.
 - **`BeforeAfter`** — props `{ jobId?, locale }`. Renders the photo pair when the job exists and `published` is true. When no jobs exist it renders an explicit, styled empty state that says photos are added after real work. It must never render a placeholder that could be mistaken for a real result. `locale` is required because both the empty state and the images' alt text are localised. `jobId` is optional: a caller that selects "the newest published job" has nothing to pass until a job exists, and must not invent an id that resolves to nothing. Both home pages use it that way, so the evidence section on `/` fills itself the moment a job file lands. The empty state uses no heading element, so it cannot disturb the calling page's heading order, and it is sized to its own sentence rather than to the image pair it replaces — at full width an empty panel reads as a reserved slot, which is the impression CLAUDE.md rules out.
 - **`Hero`** — props `{ locale, headline, sub }`. The home page hero specified in SPEC section 9. A type-led hero — headline, sub, and the price and credentials block — which **gains a scrimmed background video** when the footage exists, and renders exactly as it always did when it does not. The no-footage state is the default path and the launch state. Full contract below.
-- **`QuoteForm`** — props `{ locale, defaultService? }`. A native `<form action method="POST">` posting straight to Formspree. **That native POST is the baseline, and it is the requirement rather than an optimisation: it works with JavaScript disabled, and it is what runs when the enhancement does not.** On top of it sits one `is:inline` script — the second named exception in section 2, and the only client JavaScript on the site — which intercepts the submit, POSTs by `fetch` with `Accept: application/json`, and navigates to our own thank-you page, because Formspree's `_next` redirect is a paid feature. **It reads the redirect target out of the rendered `_next` field rather than from a second copy of the expression that built it**, so the two mechanisms cannot disagree, and it navigates by same-origin path so a preview build stays on the preview build. Any failure — `fetch` throwing, CORS refused, a non-ok response — logs and calls `form.submit()`, so the browser posts natively; none of those failure modes leaves a submission on Formspree, so the re-post cannot duplicate an enquiry. *(This bullet said "**Zero client JavaScript** … because there is no script to disable" until 26 July 2026. There is now a script to disable, and disabling it returns the form to the native POST rather than breaking it — which is the honest version of the same guarantee.)* `@formspree/ajax` and `@formspree/react` are still rejected — they are dependencies, the list in section 1 is closed, and the AJAX path needs neither. Native HTML validation only: `required`, `type="email"`, `inputmode`, `autocomplete`, no scripted checks and no `novalidate`. **Required: name, email, address. Optional: phone, area, message** — the reasoning is in `src/i18n/contact.ts` and is deliberate; a required area field a homeowner cannot answer is a field they abandon. The service options come from `servicesFor()`, never from a list in the component, so they cannot drift from the service pages. Spam is Formspree's `_gotcha` honeypot only — no CAPTCHA, no third-party script — hidden from sight, from the tab order and from assistive tech. `_next` must be an **absolute** URL, built from `site.domain` and the route map.
+- **`PathChooser`** — props `{ locale }`. **Added 8 August 2026 with the second pillar.** The fork directly under the hero on both home pages: two cards, side by side from 760px and stacked below it, sending a visitor to cleaning (`path('services')` — the existing services index) or to inspection (`path('inspection')`). It takes **only `locale`**, like `TrustBar`, `Cta` and `CompareTable`; every string comes from `homeCopy[locale].paths` and **neither card knows its own address** — both hrefs are resolved through `path()` from a `ROUTE_KEYS` tuple typed `readonly RouteKey[]`, so a key that is not a real route fails to compile. **The copy is keyed by route key rather than held in an array**, which is what stops a copy edit reordering the cards and silently swapping the two destinations. **The link is the title, not the card**, with an `::after` overlay extending the hit area — the same construction and the same reasoning as `ServiceCard`, so the accessible name is the pillar's title rather than the title, the body and the call to action run together; the visible cta line is consequently `aria-hidden`. **Zero client JavaScript**: it is two links in a list, not a tab strip, a toggle or a carousel, and it must not become one — the list in section 2 is closed. **No new colour values**: it borrows `.card` and the existing `--pill-fill`/`--pill-line` chip pair, and the two cards are deliberately *not* differentiated by accent, because they are equals and accenting one makes the other read as secondary. **The inspection card's body copy is bound by SPEC section 11** like everything else about that pillar, and it is the string most likely to be quietly improved into a claim, because it is short and it is selling.
+- **`QuoteForm`** — props `{ locale, defaultService? }`. A native `<form action method="POST">` posting straight to Formspree. **That native POST is the baseline, and it is the requirement rather than an optimisation: it works with JavaScript disabled, and it is what runs when the enhancement does not.** On top of it sits one `is:inline` script — the second named exception in section 2, and the only client JavaScript on the site — which intercepts the submit, POSTs by `fetch` with `Accept: application/json`, and navigates to our own thank-you page, because Formspree's `_next` redirect is a paid feature. **It reads the redirect target out of the rendered `_next` field rather than from a second copy of the expression that built it**, so the two mechanisms cannot disagree, and it navigates by same-origin path so a preview build stays on the preview build. Any failure — `fetch` throwing, CORS refused, a non-ok response — logs and calls `form.submit()`, so the browser posts natively; none of those failure modes leaves a submission on Formspree, so the re-post cannot duplicate an enquiry. *(This bullet said "**Zero client JavaScript** … because there is no script to disable" until 26 July 2026. There is now a script to disable, and disabling it returns the form to the native POST rather than breaking it — which is the honest version of the same guarantee.)* `@formspree/ajax` and `@formspree/react` are still rejected — they are dependencies, the list in section 1 is closed, and the AJAX path needs neither. Native HTML validation only: `required`, `type="email"`, `inputmode`, `autocomplete`, no scripted checks and no `novalidate`. **Required: name, email, address. Optional: phone, area, message** — the reasoning is in `src/i18n/contact.ts` and is deliberate; a required area field a homeowner cannot answer is a field they abandon. The service options come from `servicesFor()`, never from a list in the component, so they cannot drift from the service pages — **with exactly one named exception, added 8 August 2026, which is an exception to that rule rather than the end of it.** Inspection is not an entry in the `services` collection and **must not become one**: a seventh `serviceKey` would put it into the services grid, the price table and `/teenused`, all of which describe cleaning work with a published per-m² price. But a visitor arriving from `/inspektsioon` has to be able to say what they want, and a select offering only cleaning would make them either describe it in the message field or pick a wrong answer. So one `<option>` is appended after the collection-derived six, from `inspectionServiceOption` in `i18n/inspection.ts` — **still not typed in the component**, and kept beside the page that justifies it so it leaves with that page if the page ever does. It is rendered last and is never preselected: `defaultService` compares against a collection slug, and inventing one for this option would put a fake id into a collection-shaped comparison. **A second such option is not licensed by this one.** Spam is Formspree's `_gotcha` honeypot only — no CAPTCHA, no third-party script — hidden from sight, from the tab order and from assistive tech. `_next` must be an **absolute** URL, built from `site.domain` and the route map.
 
   **The endpoint comes from `src/config/formspree.ts`, which imports the id from `astro:env/client` — not from `import.meta.env`.** That is the difference between a guard and a comment. `import.meta.env` is inlined at build time in a static build, so an unset variable becomes `undefined`, the form posts nowhere, and `npm run verify` passes: the page builds and every link resolves. `astro.config.mjs` declares `PUBLIC_FORMSPREE_ID` required in `env.schema`, and Astro coerces an empty string to missing before validating, so **both a missing and an empty value fail `astro build`**. `scripts/check-html.mjs` check 5 is the second, independent guard, asserting on the built output. Do not simplify the import back.
 
@@ -1146,7 +1211,9 @@ Webmaster Tools**.
 
 ## 10. Decisions deliberately deferred
 
-Whether Decap CMS is ever needed (only if publishing becomes a real blocker) · Russian (structure is ready, content is not) · whether the survey business gets a section here or its own domain.
+Whether Decap CMS is ever needed (only if publishing becomes a real blocker) · Russian (structure is ready, content is not).
+
+**Whether the inspection business gets a section here or its own domain — still deferred, but the question has narrowed.** As of 8 August 2026 it is **one static page per locale on this site**, plus a card on each home page: the smallest shape the question has, taken because it cost two route-map values and no pairing code (section 3). What is still open is whether it ever earns a `/inspektsioon/*` section with pages of its own — at which point it becomes a content collection and the section 3 reasoning runs the other way — or a separate domain. **Neither is decided by the page existing**, and a future session should not read the page as a commitment to either.
 
 **A real mailbox on the domain, so outbound mail is domain-aligned.** Today
 outbound goes through Gmail SMTP and authenticates as `gmail.com`; the domain

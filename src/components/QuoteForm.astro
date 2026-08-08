@@ -40,6 +40,19 @@
  * same locale guard and cross-locale assertion the nav, the grid and the price
  * table run.
  *
+ * THERE IS EXACTLY ONE OPTION THAT IS NOT A COLLECTION ENTRY, added 8 August
+ * 2026 with the inspection pillar, and it is a NAMED EXCEPTION to the paragraph
+ * above rather than the end of it. Inspection is not a service in the
+ * collection and must not become one — a seventh `serviceKey` would put it into
+ * the services grid, the price table and `/teenused`, all of which describe
+ * cleaning work with a published per-m² price. But a visitor arriving from
+ * `/inspektsioon` has to be able to say what they want, and a select that only
+ * offers cleaning would make them describe it in the message field or pick a
+ * wrong answer. The string is still not typed here: it comes from
+ * `inspectionServiceOption` in `i18n/inspection.ts`, beside the page that
+ * justifies it, so it leaves with that page if the page ever goes. A SECOND
+ * such option is not licensed by this one.
+ *
  * SPAM IS `_gotcha` AND NOTHING ELSE. No CAPTCHA, no third-party script, no
  * challenge. **The script below does not reopen this.** Its argument was never
  * "we ship no JavaScript" — it is that a challenge is a third-party dependency
@@ -56,6 +69,7 @@
 import { formspreeAction } from '../config/formspree'
 import { site } from '../config/site'
 import { contactContent } from '../i18n/contact'
+import { inspectionServiceOption } from '../i18n/inspection'
 import { servicesFor } from '../i18n/services'
 import { path } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
@@ -155,6 +169,13 @@ const selected = defaultService ?? services[0]?.data.slug
             {entry.data.title}
           </option>
         ))}
+        {/* Last, and never preselected — the six above are the cleaning work
+            this site mostly sells, and `defaultService` compares against a
+            collection slug this option deliberately does not have. See the
+            named exception in the header comment. */}
+        <option value={inspectionServiceOption[locale]}>
+          {inspectionServiceOption[locale]}
+        </option>
       </select>
     </p>
 

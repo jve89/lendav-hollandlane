@@ -78,9 +78,13 @@ ole meie töö.
 ## Mida see teenus ei hõlma
 
 **Pesu ei ole ülevaatus.** Me ei koosta konstruktsiooni, katuse ega seadme
-seisukorra kohta aruannet, hinnangut ega akti, ja pesu ei asenda ülevaatust. Kui
-teil on objekti seisukorra kohta aruannet vaja, öelge seda päringus eraldi — see
-on teine töö ja me vastame sellele eraldi.
+seisukorra kohta aruannet, hinnangut ega akti, ja pesu ei asenda ülevaatust.
+
+Pildistamine on eraldi töö ja sellel on oma leht:
+[ülevaatus droonilt](/inspektsioon). Ka seal me hinnangut ei anna — anname pildid
+ja kirjalikud tähelepanekud, mille põhjal teie oma spetsialist otsuse teeb. Kui
+soovite mõlemat, kirjutage seda päringusse: lepime need kokku eraldi, aga lennata
+saab sama käiguga.
 
 Me ei tee remonditöid. Katkiseid plekke, lahtiseid kinnitusi ja vigaseid
 läbiviike me ei paranda. Kui me neid pesu käigus näeme, anname teile teada.

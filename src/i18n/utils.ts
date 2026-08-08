@@ -48,6 +48,7 @@ export function bcp47(locale: Locale): string {
 const navLabelKeys = {
   home: 'nav.home',
   services: 'nav.services',
+  inspection: 'nav.inspection',
   pricing: 'nav.pricing',
   about: 'nav.about',
   faq: 'nav.faq',

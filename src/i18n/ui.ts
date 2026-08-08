@@ -27,6 +27,12 @@ export const defaultLocale: Locale = 'et'
  * has not changed; this sentence exists so nobody reads a recent edit date as a
  * review.
  *
+ * The four strings added for the inspection pillar on 8 August 2026 —
+ * `nav.inspection`, `meta.inspection.title`, `meta.inspection.description` and
+ * `inspection.heading` — are AI-drafted and NOT reviewed, on the same terms.
+ * `nav.inspection` is the one to look at hardest: it is a menu label measured
+ * against the header at 320px, so a longer synonym is not a free substitution.
+ *
  * `footer.emailTitle` was added when the address started working. It is the one
  * Estonian string here that is a dictionary word rather than drafted prose —
  * `E-post` is the standard term — and it is a visually-hidden label in the
@@ -37,6 +43,15 @@ export const ui = {
     // navigation
     'nav.home': 'Avaleht',
     'nav.services': 'Teenused',
+    /**
+     * The second pillar. `Ülevaatus` and not `Inspektsioon`: the slug carries
+     * the international word because that is what an Estonian types into a
+     * search box, but the menu label is the ordinary Estonian one. The two are
+     * allowed to differ — `routes.ts` owns the URL, this owns what the reader
+     * sees. Measured in the header at 320px and 375px before it shipped; the
+     * figures are in the note on `.nav__brand` in `Header.astro`.
+     */
+    'nav.inspection': 'Ülevaatus',
     'nav.pricing': 'Hinnakiri',
     'nav.about': 'Meist',
     'nav.faq': 'KKK',
@@ -99,6 +114,15 @@ export const ui = {
      */
     'meta.services.description':
       'Katusepesu, fassaadipesu, päikesepaneelid, aknad, vihmaveesüsteemid ja tööstusobjektid. Kõik drooniga, katusele astumata. Hinnad on avaldatud.',
+    /**
+     * The inspection page. NOTE WHAT THIS DESCRIPTION DOES NOT SAY, because a
+     * search-result snippet is copy like any other and the same rules bind it:
+     * no qualification, no assessment, no report, no completed work. It
+     * promises material and names who interprets it. See SPEC section 11.
+     */
+    'meta.inspection.title': 'Ülevaatus',
+    'meta.inspection.description':
+      'Pildid ja tähelepanekud kohtadest, kuhu muidu on vaja tellinguid. Hinnangut me ei koosta — materjali loeb teie oma spetsialist.',
     'meta.pricing.title': 'Hinnakiri',
     'meta.pricing.description':
       'Katuse- ja fassaadipesu ruutmeetrihind, väikseima töö maksumus ja see, mis hinda muudab. Kõik hinnad on ilma käibemaksuta.',
@@ -184,6 +208,8 @@ export const ui = {
 
     // pricing, FAQ and credentials page headings
     'pricing.heading': 'Katusepesu ja fassaadipesu hinnad',
+    /** The inspection page's visible h1. Longer than its `<title>`, as `pricing` is. */
+    'inspection.heading': 'Ülevaatus droonilt',
     'about.heading': 'Load, kindlustus ja see, kes lendab',
     'faq.heading': 'Korduma kippuvad küsimused',
     /** The home page's link to the full FAQ. */
@@ -241,6 +267,8 @@ export const ui = {
     // navigation
     'nav.home': 'Home',
     'nav.services': 'Services',
+    /** The second pillar. See the note in the Estonian block on label vs slug. */
+    'nav.inspection': 'Inspection',
     'nav.pricing': 'Pricing',
     'nav.about': 'About',
     'nav.faq': 'FAQ',
@@ -284,6 +312,10 @@ export const ui = {
     /** Under ~155 characters, counted rather than eyeballed — see the Estonian block. */
     'meta.services.description':
       'Roof cleaning, facade cleaning, solar panels, windows, guttering and industrial work. All by drone, with nobody on your roof. Prices published.',
+    /** See the Estonian block on what this snippet deliberately does not claim. */
+    'meta.inspection.title': 'Inspection',
+    'meta.inspection.description':
+      'Pictures and written observations from places that would otherwise need scaffolding. We make no assessment — your own specialist reads the material.',
     'meta.pricing.title': 'Pricing',
     'meta.pricing.description':
       'The square-metre price for roof and facade cleaning, the minimum job, and what moves the price. All prices exclude VAT.',
@@ -326,6 +358,8 @@ export const ui = {
 
     // pricing, FAQ and credentials page headings
     'pricing.heading': 'Roof and facade cleaning prices',
+    /** The inspection page's visible h1. See the Estonian block. */
+    'inspection.heading': 'Inspection by drone',
     'about.heading': 'The authorisation, the insurance and the person who flies',
     'faq.heading': 'Frequently asked questions',
     'faq.all': 'All frequently asked questions',

@@ -1,5 +1,20 @@
 # SPEC.md — Lendav Hollandlane website
 
+**Version 1.6 · 8 August 2026** — **the site has two pillars now, not one, and
+section 11 is new.** Drone inspection is added as a second line of business
+alongside cleaning: a path chooser on both home pages and one static page per
+locale. Section 11 records the decision and, more importantly, **the copy
+constraints that bind the inspection line**, which are stricter than anything
+else on this site — no work claimed as done, **no qualification, certification,
+licence or professional standing claimed or implied**, no equipment, no
+regulatory statement about what is permitted, no price and no turnaround, and
+**thermal imagery as documentation only — never measurement, never diagnosis**.
+What is sold is imagery and documented observations; the interpretation belongs
+to the client's own specialist and the page says so. Section 2's tertiary audience
+and section 8's "planned for later" both described this line as future work and
+are corrected in place. Nothing else moved: the hero decision, the footage
+exception, the pricing rules and the ban on invented evidence are unchanged.
+
 **Version 1.5 · 3 August 2026** — **a hero video is now on the site, and it is
 not the operator's own footage.** Three things moved, all in section 9. The loop
 length widened from **8–12 to 8–16 seconds**, because the first real cut is 15.4
@@ -49,7 +64,9 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 
 **Secondary — housing associations (KÜ) and commercial property managers.** Larger sites, slower decisions, and they need documents: risk assessment, proof of insurance, a copy of the operational authorisation. Higher value per job, and the economics say these matter more than the volume suggests.
 
-**Tertiary — English-speaking property owners and commercial clients**, and groundwork for the future inspection/survey line.
+**Tertiary — English-speaking property owners and commercial clients**, and the inspection line.
+
+*This read "groundwork for the future inspection/survey line" until 8 August 2026. It is not future work any more — it is a pillar on the home page and a page in both locales. See section 11, which governs what that page may say.*
 
 ## 3. What the site must do
 
@@ -108,7 +125,9 @@ What keeps the budget honest instead is *when* it is fetched. The poster is the 
 
 ## 8. Out of scope for v1, planned for later
 
-Russian translation · blog posts · additional regional pages backed by real jobs · a separate section or site for the inspection and survey line · case studies with named commercial clients · review widget pulling from the Google Business Profile.
+Russian translation · blog posts · additional regional pages backed by real jobs · case studies with named commercial clients · review widget pulling from the Google Business Profile.
+
+**"A separate section or site for the inspection and survey line" came off this list on 8 August 2026**, and it came off in the smallest form the question has: **one static page per locale on this site**, not a section and not a domain. Whether it ever earns its own section or its own domain is still open and is still deferred — ARCHITECTURE section 10 carries it. What is settled is that it exists here, and section 11 is what governs its copy.
 
 ## 9. Home page hero
 
@@ -295,3 +314,176 @@ and ours does.** That is an observation about two websites and it is true.
 We have no idea. A permission absent from a marketing site is not a permission
 absent from the operator, and the inference is as forbidden as the assertion.
 This is in CLAUDE.md's forbidden-claims list, and that list governs.
+
+## 11. The inspection line — the second pillar
+
+**Decided 8 August 2026.** This site sells two things, not one. Alongside the
+cleaning services it offers **drone inspection**: `/inspektsioon` and
+`/en/inspection`, with a two-card path chooser directly under the hero on both
+home pages sending a visitor to whichever pillar they came for.
+
+**It is appended as section 11 rather than inserted thematically**, for the same
+reason section 10 was: SPEC section numbers are cited across this repository by
+number, and renumbering to place this beside the audience section would rewrite
+all of them to gain nothing.
+
+### What it is, in one sentence
+
+**We fly, we photograph, we write down what we saw, and we hand the material
+over. Somebody else decides what it means.**
+
+That sentence is the whole product and it is also the whole constraint. Every
+rule below follows from it, and a future session that keeps the sentence true
+will not break any of them by accident.
+
+### The copy constraints — binding, and stricter than the rest of the site
+
+These are not style preferences and they are not a disclaimer to be softened.
+This page describes **work that has never been done**, for a line of business
+that **holds no qualification of any kind**, using **payloads the operator does
+not own**. It is the highest-risk copy on the site: unlike most content slips in
+this repository, several of these have a route to a legal problem rather than an
+embarrassing correction.
+
+1. **No claim or implication that any inspection work has been done.** No job
+   count, no case study, no "we have inspected", no photograph of a result. Where
+   the page lists kinds of job it must say **in the copy the visitor reads** that
+   the list describes the kind of work and not work already completed — the same
+   sentence, and the same reason, as the industrial service page.
+
+2. **No claim or implication of any qualification, certification, licence or
+   professional standing.** Forbidden by name, in both locales: *energiamärgis*,
+   *energiaaudit*, *energiaaudiitor*, structural assessment, engineering opinion,
+   insurance determination, and the words *expert*, *certified* and *official*
+   applied to us. **Watch the soft forms**, exactly as with the competitor rule
+   in section 10 — "our assessment", "our findings show", "we determine",
+   "professional inspection" are all the same claim with the noun moved.
+
+   What is offered is **imagery and documented observations**. The
+   interpretation belongs to the client's own specialist, and **the page says so
+   explicitly, as a selling point rather than as small print**: what the service
+   buys is a qualified person seeing a roof without a scaffold, and that is a
+   better argument than a borrowed credential would be.
+
+3. **No statement about which airspace, altitudes, distances or object types are
+   permitted.** That follows from the operational authorisation, and whether that
+   authorisation reaches inspection flights is **unverified**. The page therefore
+   makes no regulatory claim at all — not the authorisation, not the insurance,
+   not "we are permitted to fly over houses" — and answers the question by
+   scoping instead: we say whether we can take a site on once we have been told
+   what it is. **Do not import the home page's credentials strip here on the
+   grounds that its claims are true elsewhere.** They are true of the cleaning
+   operation, which is what they were verified against.
+
+4. **No equipment claim.** The `TODO(equipment)` prohibition at the top of
+   `src/i18n/about.ts` applies here in full: no drone make or model, no camera or
+   payload name, no sensor specification, no resolution, no flight time. **The
+   payloads for this work are rented and nothing is owned yet.**
+
+5. **No price, no turnaround promise, no availability guarantee.** Quote-based
+   only, on exactly the terms the industrial service page uses. `site.ts` holds
+   no inspection price and `src/i18n/inspection.ts` must never become the place
+   one is typed.
+
+6. **No seasonal claim about thermal imaging**, unless it is stated as a general
+   physical fact rather than as a service promise. The page says a thermal image
+   shows differences in surface temperature and that those are only visible when
+   a difference exists — which is physics, is true, and promises nothing about
+   our sensor, our season or our results. *"Best results in winter"* is a service
+   promise and is forbidden.
+
+7. **Thermal imagery is documentation. It is never measurement and never
+   diagnosis** — and the page states that boundary explicitly, including the two
+   specific things it rules out: **no productivity or output measurement of solar
+   panels, and no electrical diagnosis or fault finding.** Added 8 August 2026
+   with the pillar itself; the reasoning is below, because the constraint is not
+   self-evident from the constraint.
+
+### Why constraint 7 exists, and the "fix" that must not be applied
+
+The solar panel service page says, in both locales, that we do **no
+thermal-camera or output measurement** and no electrical work — inspecting,
+repairing or replacing panels, the inverter, the cabling and the mountings needs
+a solar installer. **That disclaimer is true, it is protective, it offers
+nothing, and it stays exactly as written.** It is not to be softened, qualified
+or "reconciled" with the inspection page.
+
+The inspection page offers thermal imagery. **On a close reading the two do not
+conflict** — the solar page refuses *measurement and electrical diagnosis*, the
+inspection page supplies *pictures somebody else reads*. **A visitor does not do
+a close reading.** Someone who meets an offer of thermal imagery on one page and
+a refusal of thermal-camera work on another sees a contradiction, and that costs
+more than the nuance saves.
+
+**So the boundary is stated on the inspection side, where the offer is made,
+rather than by touching the page that is already correct.** The distinction the
+copy has to carry is *documentation versus measurement*, and it is carried in
+the same paragraph as the offer so a reader cannot get one without the other.
+
+**DO NOT ADD A CROSS-LINK FROM THE SOLAR PAGE TO THE INSPECTION PAGE.** This is
+the obvious-looking tidy-up, it is why this subsection exists, and it is the one
+change that would make the situation worse rather than better. **No thermal job
+has been flown and no payload has been rented.** A link from a cleaning page
+saying *"we do this over here"* advertises a service that has never been
+performed — which is constraint 1 in this section, arriving through the back
+door. The industrial page's link to `/inspektsioon` is not a precedent for it:
+that link replaced a promise the page was *already making* and had nothing behind
+it, whereas this one would create a new offer where the page currently makes
+none.
+
+**Revisit after the first thermal job has actually been flown**, at which point
+the link is a statement about work done and is a fresh decision taken on the
+evidence — not a gap somebody noticed in a governing document.
+
+**Where the copy lives:** `src/i18n/inspection.ts`, with the same prohibitions
+written at the top of the file beside the strings they govern — because a rule
+in a governing document is read once and a rule beside the copy is read by
+whoever is about to break it. That is the lesson section 9 paid for.
+
+### What this decision deliberately did NOT do
+
+- **There is no `/pesu`.** The cleaning card on the home page points at the
+  existing services index. A second landing page for cleaning would duplicate
+  `/teenused` and split its ranking.
+- **No slug moved and no redirect exists.** Every `/teenused/*` and
+  `/en/services/*` URL is exactly what it was.
+- **Inspection is not a `serviceKey` and must not become one.** A seventh key
+  would put it into the services grid, the price table and the collection-derived
+  quote-form options, all of which describe cleaning work with a published per-m²
+  price. It has one hand-added option in the quote form's `<select>` instead —
+  one named exception, recorded in ARCHITECTURE section 6.
+- **No FAQ entry, no `BeforeAfter`, no `Credentials` block on the page.** The
+  first because the FAQ is cleaning copy; the second because a before/after pair
+  is evidence of a job done and none have been; the third for the reason in
+  constraint 3 above.
+
+### The section 9 cross-reference rule was applied, and here is what it found
+
+Section 9 requires that amending or narrowing a rule of this kind be preceded by
+a search of `src/i18n/` and `src/content/` **in both locales, for the subject
+rather than the wording**. That search was run for *ülevaatus, inspekt, kontroll,
+inspection, survey* before anything was rewritten.
+
+**It returned two findings that mattered, and they were resolved in opposite
+directions — which is the part worth keeping.**
+
+**One piece of copy had been made stale and was corrected at the source:** the
+industrial service page, in both locales, said an inspection request was
+*"different work and we answer it separately"* — a promise with nothing behind it
+until 8 August 2026. It now names the separate answer and links to it, and it
+repeats that no assessment is made there either, so the link cannot be read as
+promising the report the paragraph above it refuses.
+
+**One piece of copy was correct and was left untouched, with the reconciliation
+written on the new page instead:** the solar panel page's refusal of
+thermal-camera and output measurement. That is constraint 7 above, and the
+asymmetry is deliberate — **when existing copy is true and protective, the new
+page adapts to it, not the other way round.** A search that finds a conflict is
+not automatically an instruction to edit what it found.
+
+Everything else the search returned is unaffected and was deliberately left
+alone; the phase report lists it. The two that look like matches and are not:
+`Andmekaitse Inspektsioon` in the privacy policy is the regulator's name, and
+*"pärast objekti ülevaatust"* on the pricing and facade pages means **looking a
+property over before quoting a clean**, which is a different sense of the word
+and remains true.

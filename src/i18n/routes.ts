@@ -18,6 +18,24 @@ import type { Locale } from './ui'
 export const routes = {
   home:     { et: '/',            en: '/en' },
   services: { et: '/teenused',    en: '/en/services' },
+  /**
+   * The inspection line — the second pillar, added 8 August 2026.
+   *
+   * A STATIC page, deliberately, and that is the whole reason it was cheap.
+   * `services` is a section whose leaves come from a content collection, so its
+   * children pair across locales through `i18n/collections.ts` and every one of
+   * them has to be handed to `BaseLayout` as an `alternates` prop. This entry is
+   * the page, not a section: the two slugs sit here, `alternates('inspection')`
+   * pairs them, and the sitemap picks the pair up out of the built `<head>` with
+   * no further work. See ARCHITECTURE section 3.
+   *
+   * It is NOT a service and must not become one. There is no `/pesu` counterpart
+   * and the cleaning card on the home page points at this `services` index —
+   * adding a seventh `serviceKey` for inspection would put it in the price
+   * table, the services grid and the quote form's collection-derived options,
+   * all of which describe cleaning work with a published per-m² price.
+   */
+  inspection: { et: '/inspektsioon', en: '/en/inspection' },
   pricing:  { et: '/hinnakiri',   en: '/en/pricing' },
   about:    { et: '/meist',       en: '/en/about' },
   faq:      { et: '/kkk',         en: '/en/faq' },
@@ -48,6 +66,14 @@ export type RouteKey = keyof typeof routes
  */
 export const navOrder = [
   'services',
+  /**
+   * IMMEDIATELY AFTER `services`, BECAUSE THE TWO ARE THE SAME KIND OF THING.
+   * They are the two pillars the home page's `PathChooser` splits the visitor
+   * between, and separating them in the menu would make the second one look
+   * like a sub-page of pricing. Six entries plus the CTA; measured in the
+   * header at 320px and 375px in both variants before it shipped.
+   */
+  'inspection',
   'pricing',
   'about',
   'faq',
@@ -72,6 +98,14 @@ export const navOrder = [
 export const builtRoutes: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'home',
   'services',
+  /**
+   * The inspection pillar, 8 August 2026 — added LAST, after both pages built
+   * and `npm run links` was green on them, exactly as the note above requires.
+   * Adding it first would have put `/inspektsioon` and `/en/inspection` into
+   * the navigation of every page on the site at once, and failed the link check
+   * on all thirty of them rather than on the two that were missing.
+   */
+  'inspection',
   'pricing',
   'about',
   'faq',
