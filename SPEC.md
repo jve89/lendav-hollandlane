@@ -1,34 +1,21 @@
 # SPEC.md — Lendav Hollandlane website
 
-**Version 1.6 · 8 August 2026** — **the site sells two things now, not one, and
+**Version 1.6 · 8 August 2026** — **the site has two pillars now, not one, and
 section 11 is new.** Drone inspection is added as a second line of business
-alongside washing: one static page per locale, reached from **three in-page
-pointers** rather than from the navigation, and the six washing services are
-**named as a set** ("Droonipesu teenused", "Droonipesu hinnad") so they no
-longer read as everything the business does.
-
-Section 11's governing rule is **POINTER, NEVER MEMBER** — inspection appears
-wherever the washing set appears, and is never folded into it: not a seventh
-card, not a seventh price row, not a seventh `serviceKey`, not a nav item. It
-also records **a two-card path chooser that was built and removed the same day**,
-because it forced an either/or between two things that are frequently
-sequential.
-
-More important than any of that are **the copy constraints binding the
-inspection line**, which are stricter than anything else on this site — no work
-claimed as done, **no qualification, certification, licence or professional
-standing claimed or implied**, no equipment, no regulatory statement about what
-is permitted, no price and no turnaround, no report format, and **thermal
-imagery as documentation only — never measurement, never diagnosis**. What is
-sold is **imagery plus a written record of what is visible on it**; the
-positioning line is **"we replace the scaffolding, not the expert"**, a referral
-to another professional is an exception rather than a prerequisite, and **the
-connection to washing is always phrased as an offer, never as a report** — no
-copy may imply anyone has done this, because nobody has. Section 2's tertiary
-audience and section 8's "planned for later" both described this line as future
-work and are corrected in place. Nothing else moved: the hero decision, the
-footage exception, the pricing rules and the ban on invented evidence are
-unchanged.
+alongside cleaning: a path chooser on both home pages and one static page per
+locale. Section 11 records the decision and, more importantly, **the copy
+constraints that bind the inspection line**, which are stricter than anything
+else on this site — no work claimed as done, **no qualification, certification,
+licence or professional standing claimed or implied**, no equipment, no
+regulatory statement about what is permitted, no price and no turnaround, and
+**thermal imagery as documentation only — never measurement, never diagnosis**.
+What is sold is **imagery plus a written record of what is visible on it**, and
+the positioning line the page has to land is **"we replace the scaffolding, not
+the expert"** — a referral to another professional is an exception, not a
+prerequisite. Section 2's tertiary audience
+and section 8's "planned for later" both described this line as future work and
+are corrected in place. Nothing else moved: the hero decision, the footage
+exception, the pricing rules and the ban on invented evidence are unchanged.
 
 **Version 1.5 · 3 August 2026** — **a hero video is now on the site, and it is
 not the operator's own footage.** Three things moved, all in section 9. The loop
@@ -81,7 +68,7 @@ Its single job is to turn a stranger into a written enquiry with an address and 
 
 **Tertiary — English-speaking property owners and commercial clients**, and the inspection line.
 
-*This read "groundwork for the future inspection/survey line" until 8 August 2026. It is not future work any more — it is a live line of business with a page in both locales, pointed at from the home pages, `/teenused` and `/hinnakiri`. See section 11, which governs what that page may say.*
+*This read "groundwork for the future inspection/survey line" until 8 August 2026. It is not future work any more — it is a pillar on the home page and a page in both locales. See section 11, which governs what that page may say.*
 
 ## 3. What the site must do
 
@@ -330,94 +317,17 @@ We have no idea. A permission absent from a marketing site is not a permission
 absent from the operator, and the inference is as forbidden as the assertion.
 This is in CLAUDE.md's forbidden-claims list, and that list governs.
 
-## 11. The inspection line
+## 11. The inspection line — the second pillar
 
 **Decided 8 August 2026.** This site sells two things, not one. Alongside the
-washing services it offers **drone inspection**: `/inspektsioon` and
-`/en/inspection`.
+cleaning services it offers **drone inspection**: `/inspektsioon` and
+`/en/inspection`, with a two-card path chooser directly under the hero on both
+home pages sending a visitor to whichever pillar they came for.
 
 **It is appended as section 11 rather than inserted thematically**, for the same
 reason section 10 was: SPEC section numbers are cited across this repository by
 number, and renumbering to place this beside the audience section would rewrite
 all of them to gain nothing.
-
-### The governing rule: a POINTER, never a MEMBER
-
-**Inspection appears everywhere the washing set appears — as a pointer to a
-standalone service, never as a member of the set.** It is a separate line of
-business that happens to be linkable from the washing pages. Concretely:
-
-- **Not a seventh card** in the services grid, on the home page or on
-  `/teenused`. A card in that grid reads as a seventh washing service.
-- **Not a seventh row** in the price table. Every row there carries a per-m²
-  from-price or a `priceKind` resolved against `site.prices`; an inspection row
-  would imply a square-metre price for work that is quoted per job.
-- **Not a seventh `serviceKey`.** That is what would force both of the above,
-  plus an entry in the collection-derived quote-form options.
-- **Not a navigation item, and not in the footer.** See "How it is reached"
-  below.
-
-**This rule is not to be re-litigated.** It has already been broken in the
-obvious direction once — see the chooser below — and the pressure to make
-inspection "consistent" with the washing services by folding it into their
-lists is exactly what it exists to resist. The washing set stays six.
-
-### How it is reached, and why not from the navigation
-
-**Three in-page pointers, decreasing in size**, each arriving in the middle of a
-washing argument at the point the offer is relevant:
-
-| where | what |
-|---|---|
-| both home pages | a full section, after the before/after evidence and before `CompareTable` |
-| `/teenused` | a short note under the six-card grid — **not a card** |
-| `/hinnakiri` | a short block under the washing price table — **not a row** |
-
-**`inspection` is deliberately absent from `navOrder`**, so the menu is five
-items and the footer lists the same five. It is in `builtRoutes`, so the page is
-built, indexed and hreflang-paired like any other. A sixth nav entry would
-compete with the five that carry the washing journey and would give a visitor no
-reason to click it; a pointer that arrives beside the thing it relates to has
-already earned its context. Note the mechanism, since it is one list and not
-two: `Footer.astro` renders `liveNav` as well, so leaving the key out of
-`navOrder` is what keeps inspection out of both.
-
-### The washing sets are named as sets
-
-Because the site now sells two things, the six washing services must read as **a**
-set rather than **the** set. Three headings carry that, and they are the whole of
-the rename:
-
-- the services grid on both home pages and on `/teenused` — **"Droonipesu
-  teenused" / "Drone washing services"**, one shared string in `ui.ts`
-  (`services.washHeading`) rather than one per surface;
-- the price table on `/hinnakiri` — **"Droonipesu hinnad" / "Drone washing
-  prices"** (`priceTable.washHeading`), which is also the first visible heading
-  that table has ever had.
-
-**The PAGE headings are unchanged and must stay that way.** `/teenused` is still
-"Teenused" and `/hinnakiri` is still "Hinnakiri" / "Katusepesu ja fassaadipesu
-hinnad". Those pages genuinely cover both lines now — a washing block plus a
-pointer — so it is the block inside each page that needed naming, not the page.
-The nav labels are untouched for the same reason.
-
-### The path chooser — built and removed the same day
-
-**A two-card `PathChooser` sat directly under the hero on both home pages for
-part of 8 August 2026, offering cleaning or inspection, and it was the wrong
-shape.** It is recorded here rather than quietly dropped, because it is a
-plausible idea that will occur to somebody again:
-
-- **It forced an either/or between two things that are frequently sequential.**
-  Somebody unsure whether their roof needs washing can have it looked at first
-  and decide afterwards. A chooser makes those two answers compete when one
-  leads to the other.
-- **It spent the top of the page on the smaller line of business**, above the
-  washing argument most visitors actually came for.
-
-What replaced it explains inspection as a service in its own right, in a section
-low enough on the page that the washing argument has already landed. **Do not
-reinstate a chooser.**
 
 ### What it is, in one sentence
 
@@ -497,7 +407,7 @@ embarrassing correction.
    diagnosis** — and the page states that boundary explicitly, including the two
    specific things it rules out: **no productivity or output measurement of solar
    panels, and no electrical diagnosis or fault finding.** Added 8 August 2026
-   with the line itself; the reasoning is below, because the constraint is not
+   with the pillar itself; the reasoning is below, because the constraint is not
    self-evident from the constraint.
 
 8. **The page offers imagery AND a written record of what is visible on it.** Not
@@ -522,25 +432,6 @@ embarrassing correction.
    deliverable shape is also how a plain description starts sounding like a
    regulated document; and **nothing about whether the work is free or paid**,
    which is not decided and is not needed.
-
-9. **The connection to washing is phrased as an OFFER, never as a REPORT.**
-   Write *"you can have it looked at first"* / *"saab objekti enne üle
-   vaadata"*. **Never** *"customers often have it looked at first"*, *"many
-   housing associations start here"*, *"this is a common first step"*, or
-   anything else in the reporting voice. **No inspection job has been performed
-   and no customer has done this.**
-
-   This is constraint 1 — the unperformed-work prohibition — arriving through a
-   side door, and it is **the single most likely error in any copy that connects
-   the two lines**, because a sentence in the reporting voice reads so naturally
-   that it does not look like a violation. It binds all three pointers and the
-   before-a-wash paragraph on the inspection page itself.
-
-   **The before-a-wash use is secondary and stays secondary.** Inspection is and
-   remains a standalone service; on the page it gets **one sentence near the
-   end**, and in the home page section it is **the last paragraph, after
-   inspection has been explained in its own right**. It is an option, not the
-   definition, and the page is not to be restructured around it.
 
 ### Why constraint 8 replaced a "no report" framing, and what went wrong
 
@@ -600,24 +491,15 @@ none.
 the link is a statement about work done and is a fresh decision taken on the
 evidence — not a gap somebody noticed in a governing document.
 
-**Where the copy lives:** `src/i18n/inspection.ts` — the page copy **and all
-three pointers**, with the prohibitions written at the top of the file beside the
-strings they govern, because a rule in a governing document is read once and a
-rule beside the copy is read by whoever is about to break it. That is the lesson
-section 9 paid for. The pointers live there rather than in `home.ts`,
-`pricing.ts` or `ui.ts` for exactly that reason: every one of them is bound by
-the constraints above, and a session editing them should be standing next to
-those constraints. It also means they leave with the page if the page ever does.
-
-**Three pointers are three pieces of copy, not one component with a size prop.**
-They differ in length, in shape and in what they have to answer — only the
-pricing block has to say what it costs — so each has its own component and its
-own markup. Do not unify them.
+**Where the copy lives:** `src/i18n/inspection.ts`, with the same prohibitions
+written at the top of the file beside the strings they govern — because a rule
+in a governing document is read once and a rule beside the copy is read by
+whoever is about to break it. That is the lesson section 9 paid for.
 
 ### What this decision deliberately did NOT do
 
-- **There is no `/pesu`.** The washing pointers on the site point at the
-  existing services index. A second landing page for washing would duplicate
+- **There is no `/pesu`.** The cleaning card on the home page points at the
+  existing services index. A second landing page for cleaning would duplicate
   `/teenused` and split its ranking.
 - **No slug moved and no redirect exists.** Every `/teenused/*` and
   `/en/services/*` URL is exactly what it was.

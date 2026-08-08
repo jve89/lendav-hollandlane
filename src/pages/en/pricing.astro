@@ -6,7 +6,6 @@
  */
 import PageLayout from '../../layouts/PageLayout.astro'
 import PriceTable from '../../components/PriceTable.astro'
-import InspectionPricing from '../../components/InspectionPricing.astro'
 import PricingDetails from '../../components/PricingDetails.astro'
 import Cta from '../../components/Cta.astro'
 import { pricingCopy } from '../../i18n/pricing'
@@ -29,8 +28,6 @@ const services = await servicesFor(locale)
   <section class="section section--tight">
     <div class="wrap">
       <PriceTable locale={locale} entries={services} />
-      {/* After the table, never a row in it. See the note in `hinnakiri.astro`. */}
-      <InspectionPricing locale={locale} />
     </div>
   </section>
 

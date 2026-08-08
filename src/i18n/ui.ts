@@ -142,24 +142,7 @@ export const ui = {
       'Mida päringuvorm küsib, milleks me seda kasutame ja kui kaua hoiame. Küpsiseid ega analüütikat me ei kasuta.',
 
     // services index
-    /** The PAGE h1 on `/teenused`. Not the grid — see `services.washHeading`. */
     'services.heading': 'Teenused',
-    /**
-     * THE HEADING OVER THE SIX-CARD WASHING GRID, on the home page AND on
-     * `/teenused`. Added 8 August 2026, and it exists to make the grid read as
-     * A SET rather than THE SET.
-     *
-     * Both surfaces read this one key deliberately. The home page carried its
-     * own `services.heading` in `home.ts` until now, which meant two strings
-     * over one grid; they must say the same words, so they are one string.
-     *
-     * `/teenused`'s own `<h1>` stays `Teenused` and is NOT renamed: that page
-     * genuinely covers both lines now — the washing grid plus a pointer to
-     * inspection under it — and it is the block inside the page that needed
-     * naming, not the page. Same reasoning on `/hinnakiri`; see
-     * `priceTable.washHeading`.
-     */
-    'services.washHeading': 'Droonipesu teenused',
     /**
      * THE COUNT IS LIVE COPY, not furniture. It said "Viis teenust" and the
      * sixth service would have made it false on `/teenused` the moment the
@@ -167,18 +150,9 @@ export const ui = {
      * for the before/after promise, where documentation stayed consistent while
      * the page told the visitor something untrue. Adding a service means editing
      * this line and its English twin.
-     *
-     * THE NOUN IS LIVE COPY TOO, AND THAT IS THE SECOND HALF OF THE SAME LESSON.
-     * It said "Kuus teenust" until 8 August 2026, and the inspection line made
-     * that false in a way the count check would never have caught: the number
-     * was still right, but this is the PAGE lead — it sits above both the
-     * washing grid and the pointer to inspection below it, so it describes the
-     * whole page, and the page no longer offers six things. `pesuteenust`
-     * scopes it to the grid it introduces. **Watch the noun as well as the
-     * number**: a count going stale is loud, a scope going stale is silent.
      */
     'services.lead':
-      'Kuus pesuteenust, kõik drooniga. Vali teenus, et näha, mida see hõlmab ja mida mitte.',
+      'Kuus teenust, kõik drooniga. Vali teenus, et näha, mida see hõlmab ja mida mitte.',
 
     /**
      * The price vocabulary. It lived in `home.ts` until Phase 4, when the price
@@ -225,21 +199,6 @@ export const ui = {
      * from `site.prices` and resolves each service's `priceKind` through
      * `priceLine`. These are the column headers and the labels around them.
      */
-    /**
-     * THE VISIBLE HEADING OVER THE WASHING PRICE TABLE, added 8 August 2026 for
-     * the same reason as `services.washHeading`: the table prices six washing
-     * services and must not read as pricing everything the business does.
-     *
-     * The table had no visible heading at all before this — only the
-     * visually-hidden `caption` below — which was fine while washing was the
-     * only thing priced anywhere. It is not fine now that a block about
-     * inspection pricing follows it: without a heading the two would read as one
-     * table with a footnote.
-     *
-     * `/hinnakiri`'s own `<h1>` is unchanged. The page covers both; the table
-     * covers one.
-     */
-    'priceTable.washHeading': 'Droonipesu hinnad',
     'priceTable.caption': 'Teenuste hinnad',
     'priceTable.service': 'Teenus',
     'priceTable.price': 'Hind',
@@ -376,13 +335,10 @@ export const ui = {
       'What the quote form asks for, what we use it for, and how long we keep it. We set no cookies and run no analytics.',
 
     // services index
-    /** The page h1 on `/en/services`. Not the grid — see the Estonian block. */
     'services.heading': 'Services',
-    /** The heading over the six-card washing grid, home page and index. See the Estonian block. */
-    'services.washHeading': 'Drone washing services',
     /** The count is live copy and goes stale when a service is added — see the Estonian block. */
     'services.lead':
-      'Six washing services, all done by drone. Pick one to see what it covers and what it does not.',
+      'Six services, all done by drone. Pick one to see what it covers and what it does not.',
 
     // the price vocabulary — see the Estonian block
     'price.from': 'From',
@@ -394,8 +350,6 @@ export const ui = {
     'price.vatNote': 'Prices exclude {vat} VAT.',
 
     // the price table — see the Estonian block
-    /** The visible heading over the washing price table. See the Estonian block. */
-    'priceTable.washHeading': 'Drone washing prices',
     'priceTable.caption': 'Service prices',
     'priceTable.service': 'Service',
     'priceTable.price': 'Price',

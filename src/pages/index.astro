@@ -14,10 +14,10 @@
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Hero from '../components/Hero.astro'
+import PathChooser from '../components/PathChooser.astro'
 import TrustBar from '../components/TrustBar.astro'
 import ServiceGrid from '../components/ServiceGrid.astro'
 import BeforeAfter from '../components/BeforeAfter.astro'
-import InspectionSection from '../components/InspectionSection.astro'
 import CompareTable from '../components/CompareTable.astro'
 import Faq from '../components/Faq.astro'
 import Cta from '../components/Cta.astro'
@@ -55,15 +55,16 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
 >
   <Hero locale={locale} headline={c.hero.headline} sub={c.hero.sub} />
 
+  {/* Directly under the hero, before anything argues for either pillar. A
+      visitor who came for imagery rather than a clean had no route but the
+      menu until 8 August 2026. Nothing was removed to make room. */}
+  <PathChooser locale={locale} />
+
   <TrustBar locale={locale} />
 
   <section class="section services">
     <div class="wrap">
-      {/* `services.washHeading`, from ui.ts, and the same string `/teenused`
-          puts over the same grid. It names the grid as the WASHING set rather
-          than as everything we do — inspection is a section below, not a
-          seventh card. SPEC section 11. */}
-      <h2>{t('services.washHeading')}</h2>
+      <h2>{c.services.heading}</h2>
       <p class="lead services__lead">{c.services.lead}</p>
       <ServiceGrid locale={locale} entries={services} />
       <p class="fineprint services__vat">{vatNote(locale)}</p>
@@ -76,14 +77,6 @@ const latestJob = publishedJobs.sort((a, b) => b.data.date.getTime() - a.data.da
       <BeforeAfter jobId={latestJob?.id} locale={locale} />
     </div>
   </section>
-
-  {/* AFTER the evidence and BEFORE CompareTable, and the order is load-bearing:
-      services -> evidence is the washing argument start to finish and nothing
-      goes between them. This is where a reader who has finished that argument
-      meets the second line of business. It replaced a two-card chooser under
-      the hero, which forced an either/or between two sequential things — see
-      the note in `i18n/home.ts` where its copy used to live. */}
-  <InspectionSection locale={locale} />
 
   <CompareTable locale={locale} />
 

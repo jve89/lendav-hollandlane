@@ -2,20 +2,11 @@
 /**
  * The services index, Estonian. `en/services/index.astro` is its pair.
  *
- * THE CARDS ARE `<h3>`s SINCE 8 AUGUST 2026, AND THAT IS A CONSEQUENCE OF THE
- * GRID GAINING A HEADING, not a change of mind. They were `<h2>`s while the grid
- * sat directly under the page `<h1>`. Now `services.washHeading` is an `<h2>`
- * over the grid, so an `<h2>` card would be a sibling of its own heading —
- * h1 → h2 → h3 is the order, and `InspectionNote`'s heading is the other `<h2>`.
- * CLAUDE.md: headings in order.
- *
- * The page `<h1>` stays `Teenused`. It is the GRID that is named as the washing
- * set, because this page covers both lines now: six washing services, then a
- * pointer to inspection under them. SPEC section 11 — pointer, never member.
+ * The grid sits directly under the page `<h1>`, so the cards are `<h2>`s —
+ * an `<h3>` here would skip a level. CLAUDE.md: headings in order.
  */
 import PageLayout from '../../layouts/PageLayout.astro'
 import ServiceGrid from '../../components/ServiceGrid.astro'
-import InspectionNote from '../../components/InspectionNote.astro'
 import Cta from '../../components/Cta.astro'
 import { servicesFor } from '../../i18n/services'
 import { useTranslations, vatNote } from '../../i18n/utils'
@@ -34,10 +25,8 @@ const services = await servicesFor(locale)
 >
   <section class="section section--tight">
     <div class="wrap">
-      <h2 class="services__set-heading">{t('services.washHeading')}</h2>
-      <ServiceGrid locale={locale} entries={services} headingLevel={3} />
+      <ServiceGrid locale={locale} entries={services} headingLevel={2} />
       <p class="fineprint services__vat">{vatNote(locale)}</p>
-      <InspectionNote locale={locale} />
     </div>
   </section>
 
@@ -45,13 +34,6 @@ const services = await servicesFor(locale)
 </PageLayout>
 
 <style>
-  .services__set-heading {
-    font-size: var(--step-prose-h2);
-    line-height: var(--lh-heading);
-    letter-spacing: var(--ls-h3);
-    margin-block-end: var(--sp-6);
-  }
-
   .services__vat {
     margin-block-start: var(--sp-7);
   }

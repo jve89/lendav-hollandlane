@@ -1,0 +1,169 @@
+---
+/**
+ * PathChooser — the fork directly under the hero between the two things this
+ * business does: cleaning, and inspection. Added 8 August 2026 with the second
+ * pillar.
+ *
+ * WHY IT SITS WHERE IT SITS. The hero says what we are and what it costs; the
+ * `TrustBar` under it says why to believe us. Between those two, a visitor who
+ * came for imagery rather than for a clean had nowhere to go but the menu. This
+ * is the one section on the page whose job is routing rather than persuading,
+ * so it is short, it makes no argument, and it is out of the way by the second
+ * scroll.
+ *
+ * TAKES ONLY `locale`, like `TrustBar`, `Cta` and `CompareTable`. Every string
+ * comes from `i18n/home.ts` and both hrefs are resolved with `path()` from the
+ * route keys below — no URL is typed here, and neither card knows its own
+ * address. Adding a third pillar means a third route key, a third `PathCard`
+ * and nothing else.
+ *
+ * PAIRED BY ROUTE KEY, NOT BY INDEX. `paths.services` and `paths.inspection`
+ * are named fields rather than an array, so `ROUTE_KEYS` below drives both the
+ * link and the copy from one name. An array would have made a copy reorder able
+ * to swap the two destinations silently.
+ *
+ * ZERO CLIENT JAVASCRIPT. Two links in a list. It is not a tab strip, not a
+ * toggle and not a carousel, and it must not become one — ARCHITECTURE section
+ * 2 names three exceptions and this is not a fourth.
+ *
+ * NO NEW COLOUR VALUES. It borrows `.card` from `global.css`, which is the only
+ * raised surface on the site, and the same `--pill-fill` / `--pill-line` chip
+ * pair `ServiceCard` and `.pill` already use. The two cards are deliberately
+ * NOT differentiated by colour: they are equals, and accenting one would make
+ * the other read as secondary.
+ *
+ * THE LINK IS THE TITLE, NOT THE CARD — the same construction, and the same
+ * reason, as `ServiceCard`. The `<a>` wraps the heading text alone so its
+ * accessible name is the pillar's title; an `::after` overlay on that link
+ * makes the rest of the card clickable without dragging the body copy and the
+ * call to action into the name a screen reader announces. The visible `cta`
+ * line is therefore `aria-hidden`: it repeats the destination for sighted
+ * readers and would otherwise be an unreachable second name for the same link.
+ */
+import { homeCopy } from '../i18n/home'
+import { path } from '../i18n/utils'
+import type { RouteKey } from '../i18n/routes'
+import type { Locale } from '../i18n/ui'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const c = homeCopy[locale].paths
+
+/**
+ * The two pillars, in the order they are shown. Cleaning points at the EXISTING
+ * services index — there is no `/pesu` and PLAN records that as deliberately
+ * deferred, not as missing. Typed as `RouteKey` so a key that is not a real
+ * route fails to compile rather than rendering a dead link.
+ */
+const ROUTE_KEYS = ['services', 'inspection'] as const satisfies readonly RouteKey[]
+
+const cards = ROUTE_KEYS.map((key) => ({ key, ...c[key], href: path(key, locale) }))
+---
+<section class="section paths">
+  <div class="wrap">
+    <h2>{c.heading}</h2>
+    <p class="lead paths__lead">{c.lead}</p>
+
+    <ul class="paths__grid">
+      {cards.map((card) => (
+        <li class="card path">
+          <p class="label path__label">{card.label}</p>
+          <h3 class="path__title"><a class="path__link" href={card.href}>{card.title}</a></h3>
+          <p class="path__body">{card.body}</p>
+          <p class="path__cta" aria-hidden="true">{card.cta}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .paths__lead {
+    margin-block: var(--sp-4) var(--sp-8);
+  }
+
+  /* Grid rather than the flex the services grid uses, and the difference is not
+     an inconsistency. `ServiceGrid` is flex because six cards wrap into rows
+     and a trailing row of two must keep a full row's width. Two cards never
+     wrap into a ragged row, so equal columns are exactly what is wanted and
+     `1fr 1fr` says so in one line. Stacked below 760px, which is the same
+     breakpoint `ServiceGrid`'s cards go two-up at. */
+  .paths__grid {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  @media (min-width: 760px) {
+    .paths__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* `position: relative` is what the link overlay is positioned against.
+     Column layout so the cta line sits at the foot of both cards even when one
+     body runs a line longer than the other. */
+  .path {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.15s ease;
+  }
+
+  /* The hairline is what draws the card, so hover lifts that line rather than
+     introducing a fill — `ServiceCard` does the same. */
+  .path:hover {
+    border-color: var(--accent);
+  }
+
+  .path__label {
+    display: inline-block;
+    align-self: start;
+    background: var(--pill-fill);
+    border: 1px solid var(--pill-line);
+    border-radius: var(--r-pill);
+    padding: var(--sp-1) var(--sp-3);
+    color: var(--ink-2);
+    margin-block-end: var(--sp-5);
+  }
+
+  .path__title {
+    font-size: var(--step-h3);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--ls-h3);
+    font-weight: var(--fw-strong);
+  }
+
+  .path__link {
+    text-decoration: none;
+  }
+
+  /* Extends the hit area over the whole card without extending the accessible
+     name. The focus ring stays on the title, which is where focus actually is. */
+  .path__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .path__body {
+    margin-block-start: var(--sp-3);
+    color: var(--muted);
+    font-size: var(--step-sm);
+    line-height: var(--lh-tight);
+    /* Pushes the cta line to the foot, so both cards' lines align across the row. */
+    flex: 1 0 auto;
+  }
+
+  .path__cta {
+    margin-block-start: var(--sp-5);
+    padding-block-start: var(--sp-4);
+    border-block-start: 1px dashed var(--line);
+    color: var(--accent-text);
+    font-size: var(--step-sm);
+    font-weight: var(--fw-strong);
+  }
+</style>

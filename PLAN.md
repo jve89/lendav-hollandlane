@@ -648,46 +648,16 @@ The site sells two things now. **Cleaning, and inspection.**
 - **`/inspektsioon` and `/en/inspection`** — one **static** page per locale,
   registered in `i18n/routes.ts`, copy in `i18n/inspection.ts`, composed exactly
   as `meist.astro` is: `PageLayout` with a heading and a lead, then `Cta`.
-- **Three pointers to it**, decreasing in size — `InspectionSection` on both home
-  pages (after the before/after evidence, before `CompareTable`),
-  `InspectionNote` under the services grid, `InspectionPricing` under the price
-  table. Each takes only `locale` and resolves its link through `path()`.
-- **The washing sets renamed** so they read as *a* set rather than *the* set:
-  `services.washHeading` ("Droonipesu teenused" / "Drone washing services") over
-  the grid on the home pages and `/teenused`, and `priceTable.washHeading`
-  ("Droonipesu hinnad" / "Drone washing prices") over the price table — the
-  first visible heading that table has ever had. **The page headings and the nav
-  labels are unchanged**: those pages cover both lines now, so it is the block
-  inside each that needed naming.
-- **`inspection` is NOT in `navOrder`.** The nav is five items, and because
-  `Footer.astro` renders `liveNav` too, that one omission keeps it out of the
-  footer as well. The route stays in `builtRoutes`.
+- **`PathChooser`** on both home pages, directly under `<Hero />` — two cards,
+  side by side from 760px and stacked below it, one per pillar. Takes only
+  `locale`; both hrefs resolve through `path()`.
+- **`inspection` in `navOrder`**, immediately after `services`. Six items plus
+  the CTA.
 - **One added option in the quote form's service `<select>`**, both locales, so
   a visitor arriving from the inspection page can say what they want.
 - **The industrial service page's "Pesu ei ole ülevaatus" paragraph rewritten**
   in both locales. It promised that an inspection request was *"different work
   and we answer it separately"*; the separate answer now exists and is linked.
-
-### `PathChooser` was built and removed the same day
-
-**A two-card chooser sat directly under the hero on both home pages for part of
-8 August 2026 and was deleted before the day was out.** It is recorded because
-it is a plausible idea that will occur to somebody again, and because the
-component, its copy in `home.ts`, its nav entry and its `navOrder` slot all went
-with it:
-
-- **It forced an either/or between two things that are frequently sequential.**
-  Somebody who is not sure whether their roof needs washing can have it looked at
-  first and decide afterwards; a chooser makes those two answers compete when one
-  leads to the other.
-- **It spent the top of the page on the smaller line of business**, above the
-  washing argument most visitors came for.
-
-The three pointers replaced it, and the governing rule that came out of the
-exercise is now SPEC section 11: **inspection appears wherever the washing set
-appears as a POINTER, never as a MEMBER of it.** Not a seventh card, not a
-seventh price row, not a seventh `serviceKey`, not a nav item. **Do not
-reinstate a chooser**, and do not "tidy" inspection into the washing lists.
 
 **SPEC section 11 is the governing document and it is stricter than anything
 else on this site.** No work claimed as done, **no qualification, certification,
@@ -704,12 +674,12 @@ next page to this site.
 
 ### Deliberately deferred, and recorded so it is not read as an omission
 
-- **`/pesu` — NOT BUILT, and not owed.** The washing pointers point at the
-  existing `/teenused` index. A second landing page for washing would duplicate
+- **`/pesu` — NOT BUILT, and not owed.** The cleaning card points at the
+  existing `/teenused` index. A second landing page for cleaning would duplicate
   it and split its ranking, and there is no content for it that `/teenused` does
-  not already carry. **The chooser removal made this more settled, not less**:
-  the argument for `/pesu` was mostly symmetry with the inspection card, and
-  there are no cards any more.
+  not already carry. If the two pillars ever want visual symmetry badly enough
+  to justify one, that is a fresh decision made on its own merits — not a gap
+  left here.
 - **No inspection FAQ entries.** `i18n/faq.ts` is cleaning copy — roof damage,
   chemicals, weather, water and power — and its ids are a closed tuple that
   `content.config.ts` builds `z.enum(faqIds)` from. Adding inspection questions
@@ -732,20 +702,12 @@ next page to this site.
 
 **Verified:** `npm run verify` exits 0 · `npm run links` clean on 32 pages ·
 sitemap 26 → **28** URLs and 78 → **84** `xhtml:link`, both predicted before the
-build, and **unchanged by the restructure** — no page was added or removed by it ·
-hreflang pairs `/inspektsioon` ↔ `/en/inspection` in both directions, in both
-pages' heads and in the sitemap · all three pointers resolve, each to its own
-locale's URL, with no cross-locale leakage · nav is **five** items in both
-locales and inspection appears in neither the header nav nor the footer ·
-heading order clean on all six touched pages, no skipped levels · **zero client
-JavaScript added** — four pages carry one script each, the same two exceptions as
-before · `PathChooser` left no dead CSS in `dist/`.
-
-The header was measured at 320px and 375px in both variants and both locales
-when the nav briefly carried six items; it fitted, with the pill unchanged below
-1000px and 60px of clear space at 1000px. **Going back to five needed no
-re-measurement** — the figures are in the 8 August session report if a sixth item
-is ever proposed again.
+build · hreflang pairs `/inspektsioon` ↔ `/en/inspection` in both directions, in
+both pages' heads and in the sitemap · `PathChooser` renders on both home pages
+and both cards resolve · heading order clean, no skipped levels · **zero new
+client JavaScript** — four pages carry one script each, the same two exceptions
+as before · header measured at 320px and 375px in both variants and both
+locales, figures in the phase report.
 
 **Commit:** `feat: add drone inspection as a second pillar`
 
