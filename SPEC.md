@@ -9,8 +9,10 @@ else on this site — no work claimed as done, **no qualification, certification
 licence or professional standing claimed or implied**, no equipment, no
 regulatory statement about what is permitted, no price and no turnaround, and
 **thermal imagery as documentation only — never measurement, never diagnosis**.
-What is sold is imagery and documented observations; the interpretation belongs
-to the client's own specialist and the page says so. Section 2's tertiary audience
+What is sold is **imagery plus a written record of what is visible on it**, and
+the positioning line the page has to land is **"we replace the scaffolding, not
+the expert"** — a referral to another professional is an exception, not a
+prerequisite. Section 2's tertiary audience
 and section 8's "planned for later" both described this line as future work and
 are corrected in place. Nothing else moved: the hero decision, the footage
 exception, the pricing rules and the ban on invented evidence are unchanged.
@@ -329,12 +331,23 @@ all of them to gain nothing.
 
 ### What it is, in one sentence
 
-**We fly, we photograph, we write down what we saw, and we hand the material
-over. Somebody else decides what it means.**
+**We replace the scaffolding, not the expert.**
+
+We fly and photograph surfaces that cannot otherwise be seen without
+scaffolding, a lift, or somebody standing on the roof, and we hand over the
+images **together with a written record of what is visible on them** — dated,
+with locations marked, one plain observation per finding.
 
 That sentence is the whole product and it is also the whole constraint. Every
 rule below follows from it, and a future session that keeps the sentence true
 will not break any of them by accident.
+
+**This block said "we hand the material over — somebody else decides what it
+means" until 8 August 2026, and that framing was wrong in a way worth recording,
+because it is the wording a cautious session will reach for again.** It sold raw
+photographs, which nobody pays a premium for, and it made the referral to
+another professional read as a **prerequisite** when it is an **exception**. See
+constraint 8.
 
 ### The copy constraints — binding, and stricter than the rest of the site
 
@@ -359,11 +372,9 @@ embarrassing correction.
    in section 10 — "our assessment", "our findings show", "we determine",
    "professional inspection" are all the same claim with the noun moved.
 
-   What is offered is **imagery and documented observations**. The
-   interpretation belongs to the client's own specialist, and **the page says so
-   explicitly, as a selling point rather than as small print**: what the service
-   buys is a qualified person seeing a roof without a scaffold, and that is a
-   better argument than a borrowed credential would be.
+   What is offered is **imagery plus a written record of what is visible on it**
+   — see constraint 8, which states the positive side of this and is the half a
+   session tightening the page will be tempted to delete.
 
 3. **No statement about which airspace, altitudes, distances or object types are
    permitted.** That follows from the operational authorisation, and whether that
@@ -398,6 +409,51 @@ embarrassing correction.
    panels, and no electrical diagnosis or fault finding.** Added 8 August 2026
    with the pillar itself; the reasoning is below, because the constraint is not
    self-evident from the constraint.
+
+8. **The page offers imagery AND a written record of what is visible on it.** Not
+   raw photographs. The record is dated, marks where on the property each finding
+   is, and gives one plain observation per finding. **Writing "there are three
+   cracked tiles at the ridge" is description, and description is not a regulated
+   activity** — the page must not retreat from it. Constraints 1–7 say what may
+   not be claimed; **this one says what must not be given away**, and it is the
+   half that gets quietly deleted by a session tightening the page.
+
+   **The referral to another professional is an EXCEPTION, not a PREREQUISITE.**
+   Most findings need no second professional at all: a housing association
+   looking at photographs of cracked tiles does not need an engineer in order to
+   decide to get repair quotes. Where a finding genuinely does need an
+   assessment, a calculation or a formal document, that is a **next step** with a
+   different professional — and what we hand them is what they start from, which
+   turns their day into an hour.
+
+   **Two things the page must still not say**, and both are decisions rather
+   than omissions: **no report format** — no page count, no file type, no section
+   structure, no sample, because none of it is decided and specifying a
+   deliverable shape is also how a plain description starts sounding like a
+   regulated document; and **nothing about whether the work is free or paid**,
+   which is not decided and is not needed.
+
+### Why constraint 8 replaced a "no report" framing, and what went wrong
+
+**This section told the page to say we produce no report, no assessment and no
+certificate, and the page said it, in both locales, from 8 August 2026 until
+later the same day.** The wording was wrong twice over and neither fault is
+visible from inside it, which is why the correction is recorded rather than
+quietly applied:
+
+1. **It sold raw photographs.** Nobody pays a premium for raw photographs. What
+   is actually being offered — and what the operator will actually produce — is
+   imagery *and* the written record that makes it usable.
+2. **It made the referral sound compulsory.** "Somebody else decides what it
+   means" reads as *you will need to hire another professional before this is
+   worth anything*, which is untrue for most findings and quietly argues the
+   visitor out of buying.
+
+**"No report" reads like the safe wording**, which is exactly the trap: it is
+the phrase a session worried about constraint 2 will reach for, and it costs the
+page its product while buying no additional safety. Constraint 2 forbids
+claiming a *qualification*; it has never forbidden *describing what is in a
+photograph*.
 
 ### Why constraint 7 exists, and the "fix" that must not be applied
 

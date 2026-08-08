@@ -205,8 +205,8 @@ export const homeCopy = {
       },
       inspection: {
         label: 'Ülevaatus',
-        title: 'Pildid kohtadest, kuhu muidu ligi ei pääse',
-        body: 'Pildistame ära selle, mida muidu näeks ainult tellingutelt. Hinnangu teeb teie oma spetsialist, mitte meie.',
+        title: 'Pildid ja kirjalik ülevaade sealt, kuhu ligi ei pääse',
+        body: 'Pildistame pinnad, mida muidu näeks ainult tellingutelt, ja paneme kirja, mis neil näha on.',
         cta: 'Vaata, kuidas ülevaatus käib',
       },
     },
@@ -300,8 +300,8 @@ export const homeCopy = {
       },
       inspection: {
         label: 'Inspection',
-        title: 'Pictures from places you cannot otherwise reach',
-        body: 'We photograph what would otherwise only be visible from scaffolding. Your own specialist makes the assessment, not us.',
+        title: 'Images and a written record from places you cannot reach',
+        body: 'We photograph surfaces you could otherwise only see from scaffolding, and write down what is visible on them.',
         cta: 'See how an inspection works',
       },
     },

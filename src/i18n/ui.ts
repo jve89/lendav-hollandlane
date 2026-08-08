@@ -122,7 +122,7 @@ export const ui = {
      */
     'meta.inspection.title': 'Ülevaatus',
     'meta.inspection.description':
-      'Pildid ja tähelepanekud kohtadest, kuhu muidu on vaja tellinguid. Hinnangut me ei koosta — materjali loeb teie oma spetsialist.',
+      'Pildid pindadest, mida muidu näeb ainult tellingutelt, ja kirjalik ülevaade sellest, mis neil näha on: kus see on ja mis see on.',
     'meta.pricing.title': 'Hinnakiri',
     'meta.pricing.description':
       'Katuse- ja fassaadipesu ruutmeetrihind, väikseima töö maksumus ja see, mis hinda muudab. Kõik hinnad on ilma käibemaksuta.',
@@ -315,7 +315,7 @@ export const ui = {
     /** See the Estonian block on what this snippet deliberately does not claim. */
     'meta.inspection.title': 'Inspection',
     'meta.inspection.description':
-      'Pictures and written observations from places that would otherwise need scaffolding. We make no assessment — your own specialist reads the material.',
+      'Images of surfaces you cannot otherwise see without scaffolding, and a written record of what is visible on them: where it is, and what it is.',
     'meta.pricing.title': 'Pricing',
     'meta.pricing.description':
       'The square-metre price for roof and facade cleaning, the minimum job, and what moves the price. All prices exclude VAT.',

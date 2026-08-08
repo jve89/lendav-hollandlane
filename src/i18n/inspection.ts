@@ -22,11 +22,29 @@ import type { Locale } from './ui'
  *    PROFESSIONAL STANDING. Specifically forbidden, by name: energiamärgis,
  *    energiaaudit, energiaaudiitor, structural assessment, engineering opinion,
  *    insurance determination, and the words "expert", "certified" and
- *    "official" applied to us. What is sold here is IMAGERY AND DOCUMENTED
- *    OBSERVATIONS. The interpretation belongs to the client's own specialist,
- *    and the page says so out loud because that is the selling point — it is
- *    what lets a specialist see a roof without a scaffold — rather than a
- *    disclaimer bolted to the end.
+ *    "official" applied to us.
+ *
+ *    WHAT IS SOLD IS IMAGERY PLUS A WRITTEN RECORD OF WHAT IS VISIBLE ON IT —
+ *    dated, with locations marked, one plain observation per finding. Writing
+ *    "there are three cracked tiles at the ridge" is DESCRIPTION, and
+ *    description is not a regulated activity. Do not retreat from that.
+ *
+ *    THIS COPY SAID "we produce no report, no assessment and no certificate"
+ *    UNTIL 8 AUGUST 2026, AND IT WAS WRONG TWICE OVER. It sold RAW
+ *    PHOTOGRAPHS, which nobody pays a premium for. And it made the referral to
+ *    another professional sound like a PREREQUISITE when it is an EXCEPTION:
+ *    most findings need no second professional at all — a housing association
+ *    looking at photographs of cracked tiles does not need an engineer to
+ *    decide to get repair quotes. The correction is recorded rather than
+ *    quietly applied, because "no report" reads like the SAFE wording and a
+ *    future session tightening this page will reach for it again.
+ *
+ *    The line to preserve if any of this is ever re-drafted: WE REPLACE THE
+ *    SCAFFOLDING, NOT THE EXPERT. Where a finding genuinely does need an
+ *    assessment, a calculation or a formal document, that is a next step with a
+ *    different professional — and what we hand them is what they start from,
+ *    which turns their day into an hour. That is the argument, and it is a
+ *    better one than a borrowed credential would be.
  *
  *    NOTHING ON THIS PAGE MAKES A REGULATORY CLAIM EITHER, AND THAT IS AN
  *    OMISSION WITH A REASON. Which airspace, altitudes, distances and object
@@ -66,6 +84,16 @@ import type { Locale } from './ui'
  * terms the industrial service page uses. `site.ts` holds no inspection price
  * and this file must never become the place one is typed.
  *
+ * NO REPORT FORMAT IS DESCRIBED, AND THAT IS A DECISION RATHER THAN AN
+ * OVERSIGHT. The copy says the record is written, dated and located, and stops
+ * there: no page count, no file type, no section structure, no sample. None of
+ * that is decided, and a page that specifies it commits the operator to a
+ * deliverable shape before he has produced one. Describing the format is also
+ * how a plain description starts sounding like a regulated document.
+ *
+ * NOR DOES THE PAGE SAY WHETHER THE WORK IS FREE OR PAID. Not decided, not
+ * needed. Do not add "free with a clean" or "charged separately".
+ *
  * needs-native-review — every Estonian string below is AI-drafted and has NOT
  * been read by a native speaker. Phase 10 clears it.
  */
@@ -89,20 +117,22 @@ export interface InspectionCopy {
 
 export const inspectionCopy = {
   et: {
-    lead: 'Pildistame ära selle, mida muidu näeb ainult tellingutelt või tõstukilt. Aruannet, hinnangut ega akti me ei koosta — anname materjali, mille põhjal teie oma spetsialist otsuse teeb.',
+    lead: 'Lendame ja pildistame pinnad, mida muidu ilma tellingute, tõstuki või katusel kõndimiseta näha ei ole. Saate pildid ja kirjaliku ülevaate sellest, mis neil näha on: kus see on ja mis see on. Me asendame tellingud, mitte spetsialisti.',
     sections: [
       {
         heading: 'Mida te tellides saate',
         body: [
-          'Pildid ja kirjaliku ülestähenduse sellest, mida me lendamisel nägime: mis kohti pildistasime, mis kuupäeval ja mis on igal pildil näha.',
-          'Materjal on teie oma. Saatke see edasi kellele soovite — projekteerijale, ehitajale, katusefirmale, ühistu juhatusele. Meie luba selleks ei ole vaja.',
+          'Pildid ja nende juurde kirjaliku ülevaate. Iga tähelepanek on kirjas eraldi: kuupäev, asukoht objektil ja see, mis pildil näha on.',
+          'Kirjeldame seda, mis pildil on — näiteks et harjal on kolm pragunenud katusekivi või et ühes kohas on plekiliide lahti. See on kirjeldus, mitte hinnang: ütleme, mida on näha, mitte seda, mida sellega peale hakata.',
+          'Materjal on teie oma. Saatke see edasi kellele soovite — katusefirmale, ehitajale, ühistu juhatusele, kindlustusele. Meie luba selleks vaja ei ole.',
         ],
       },
       {
-        heading: 'Mida me ei tee, ja miks see on teie kasuks',
+        heading: 'Mida me ei tee',
         body: [
-          'Me ei koosta seisukorra hinnangut, aruannet, akti ega arvamust. Me ei ütle, kas konstruktsioon on korras, kui kaua katus vastu peab, mis remonti vaja on ega mis kahju põhjustas. Selleks pädevust meil ei ole ja me ei väida vastupidist.',
-          'Selle otsuse teeb teie oma spetsialist — see, kes selle eest ka vastutab. Meie töö on ta kohale viia ilma tellinguid püstitamata: ta näeb pilti sealt, kuhu ta muidu ise ei pääseks, ja teeb järelduse ise.',
+          'Me ei väljasta akte ega sertifikaate, ei hinda konstruktsiooni, ei diagnoosi elektrisüsteeme ega ütle, mis remont maksma läheb.',
+          'Enamik tähelepanekuid ei vaja selleks kedagi teist. Kui ühistu näeb fotolt pragunenud katusekive, ei ole inseneri vaja selleks, et otsustada remondipakkumisi küsida.',
+          'Kui mõni tähelepanek nõuab hinnangut, arvutust või ametlikku dokumenti, on see järgmine samm ja selle teeb oma ala spetsialist. Meie materjal on täpselt see, millelt tema alustab — ja see teeb tema päevatööst tunni, sest keegi ei pea enam üles ronima.',
           'Katusele ei astu keegi ja tellinguid me ei püstita. Kogu meeskond jääb maapinnale.',
         ],
       },
@@ -149,20 +179,22 @@ export const inspectionCopy = {
     ],
   },
   en: {
-    lead: 'We photograph what would otherwise only be visible from scaffolding or a lift. We produce no report, no assessment and no certificate — we hand over the material your own specialist makes the decision on.',
+    lead: 'We fly and photograph the surfaces you cannot otherwise see without scaffolding, a lift, or somebody standing on the roof. You get the images and a written record of what is visible on them: where it is, and what it is. We replace the scaffolding, not the expert.',
     sections: [
       {
         heading: 'What you get',
         body: [
-          'Pictures, and a written note of what we saw on the flight: which parts we photographed, on what date, and what each picture shows.',
-          'The material is yours. Pass it on to whoever you like — a designer, a builder, a roofing firm, the board of a housing association. You do not need our permission.',
+          'The images, and a written record to go with them. Each observation is set out on its own: the date, where on the property it is, and what is visible there.',
+          'We describe what is in the picture — that there are three cracked tiles at the ridge, say, or that a flashing has lifted in one place. That is description, not judgement: we say what can be seen, not what to do about it.',
+          'The material is yours. Pass it on to whoever you like — a roofing firm, a builder, the board of a housing association, an insurer. You do not need our permission.',
         ],
       },
       {
-        heading: 'What we do not do, and why that is in your favour',
+        heading: 'What we do not do',
         body: [
-          'We produce no condition assessment, no report, no certificate and no opinion. We do not say whether a structure is sound, how long a roof will last, what repair is needed, or what caused a piece of damage. We are not qualified to, and we do not pretend otherwise.',
-          'That decision belongs to your own specialist — the person who carries the responsibility for it. Our job is to get them there without putting up scaffolding: they see the picture from somewhere they could not otherwise reach, and they draw the conclusion themselves.',
+          'We issue no certificates, we do not assess structure, we do not diagnose electrical systems, and we do not tell you what a repair will cost.',
+          'Most findings need none of that. A housing association looking at photographs of cracked tiles does not need an engineer in order to decide to get repair quotes.',
+          'Where a finding does need an assessment, a calculation or a formal document, that is the next step and it belongs to a specialist in that field. What we hand you is exactly what they start from — and it turns their day into an hour, because nobody has to climb anything to begin.',
           'Nobody walks on the roof and we put up no scaffolding. The whole crew stays on the ground.',
         ],
       },
